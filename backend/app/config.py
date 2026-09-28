@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     secret_key: str
     cors_origins: str = "http://localhost:3000"
     rate_limit_default: str = "120/minute"
+    rate_limit_auth: str = "10/minute"  # sign up and login, per IP
+
+    # Login session (signed token in an httpOnly cookie)
+    session_cookie_name: str = "boooom_session"
+    session_days: int = 7
 
     # Database
     database_url: str

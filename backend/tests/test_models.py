@@ -1,21 +1,8 @@
-"""Model tests against the local Postgres. Each test runs in a transaction that is rolled back."""
+"""Model tests against the local Postgres (the db fixture rolls back each test)."""
 
-import pytest
 from sqlalchemy import select
 
-from app.db import SessionLocal, engine
 from app.models import AiJob, Brief, Event, JobStatus, Project, ProjectStage, ProjectStatus, User
-
-
-@pytest.fixture
-def db():
-    conn = engine.connect()
-    tx = conn.begin()
-    session = SessionLocal(bind=conn, join_transaction_mode="create_savepoint")
-    yield session
-    session.close()
-    tx.rollback()
-    conn.close()
 
 
 def make_user(db) -> User:

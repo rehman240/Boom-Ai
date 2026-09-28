@@ -32,6 +32,11 @@ class GlobalRateLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
 
+def reset_limits() -> None:
+    """Clear all counters (used by tests)."""
+    _limiter.storage.reset()
+
+
 def rate_limit(limit: str):
     """Route dependency for a stricter, per-route limit."""
     item = parse(limit)
