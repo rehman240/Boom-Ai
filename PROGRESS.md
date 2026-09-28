@@ -2,13 +2,14 @@
 
 ## Done
 - Week 1, task 1: repo setup (git, folder structure, `.gitignore`, `.env.example` files, docs renamed).
+- Week 1, task 2: backend base (FastAPI, env config, Postgres + Alembic, /health, CORS, rate limits, Dockerfile, tests). DB connection not yet tested: needs Docker Desktop running.
 
 ## In progress
-- Week 1, task 2: backend base (FastAPI, config, Postgres, migrations, Dockerfile).
+- Week 1, task 3: database tables.
 
 ## Today's plan (28 Sep 2026)
 1. Repo setup ✅
-2. Backend base
+2. Backend base ✅
 3. Database tables (users, projects, briefs, uploads, ai_jobs, events)
 4. Login (email + password, secure cookie)
 5. Frontend base (dark theme, sidebar, breadcrumb, progress bar, login pages)
