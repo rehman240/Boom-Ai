@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+/*
+ * BOOOM More design tokens. Dark navy base, blue for actions, icy cyan for data and
+ * active states, logo red/green/blue as small capability accents.
+ * Text colours are chosen for WCAG AA contrast on the surfaces they sit on.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #060b16;
+  --surface: #0b1527;
+  --surface-2: #101d34;
+  --surface-3: #162946;
+  --border: #1b2c48;
+  --border-strong: #2a4167;
+
+  --text: #eaf1fb;
+  --text-muted: #9fb0c8;
+  --text-subtle: #7a8ca8;
+
+  --primary: #1a6ee0;
+  --primary-hover: #2a7ff2;
+  --cyan: #5ad1ff;
+  --success: #3ddc97;
+  --warning: #f5c451;
+  --danger: #ff7a7a;
+
+  --accent-red: #ff4d6d;
+  --accent-green: #2ee59d;
+  --accent-blue: #3aa0ff;
+
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-cyan: var(--cyan);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-accent-red: var(--accent-red);
+  --color-accent-green: var(--accent-green);
+  --color-accent-blue: var(--accent-blue);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One clear focus ring for keyboard users everywhere. */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
