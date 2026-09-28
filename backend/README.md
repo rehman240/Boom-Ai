@@ -5,7 +5,7 @@ FastAPI + Postgres (SQLAlchemy, Alembic migrations). Python 3.13.
 ## Local setup
 
 ```bash
-# 1. Start the local database (from the repo root). Runs on port 5433.
+# 1. Start the local database (from the repo root). Runs on port 5434.
 docker compose up -d db
 
 # 2. Create a virtual env and install packages
