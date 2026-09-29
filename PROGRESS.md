@@ -21,6 +21,13 @@
   browser at 1440px and 390px, and `npm run build` produces the `standalone` output the
   frontend Dockerfile copies. The circle in the phone screenshot's bottom-left corner is
   the Next.js dev-mode indicator, not our UI.
+- 29 Sep: both Docker images verified once, so the move to AWS later is not a leap of faith.
+  Built `backend/Dockerfile` and `frontend/Dockerfile`, ran them together with a throwaway
+  Postgres container, and signed a user up through the pair: the backend ran its migrations
+  on start and answered `/health` with `db: ok`, and the frontend's `/api` rewrite reached
+  the backend container, so the `BACKEND_URL` build arg works. Both containers run as a
+  non-root user; images are about 220 MB each. Test containers, network and images removed
+  afterwards.
 
 ## Next (Week 1)
 6. Dashboard: create, continue, duplicate, delete project; status and last edited.
