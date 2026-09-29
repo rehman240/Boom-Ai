@@ -70,9 +70,21 @@
   - Bad URLs and an end date before the start date are caught in the form. When a field is
     fixed it is saved along with the next change, so nothing stays behind.
   - The example campaign's brief is readable but not editable.
+- Week 1, task 9: file uploads.
+  - `app/storage.py` holds one interface with two backends: the local disk for development
+    and any S3-compatible bucket for deployment. Nothing else knows which is in use, and
+    it is injected, so tests write to a temporary folder.
+  - The type is read from the file's own first bytes, not the browser's content type,
+    which the uploader controls. SVG is refused outright: it can carry script, and serving
+    one from our origin would let it act as this app.
+  - PNG, JPEG, WebP and PDF, 5 MB each, 10 files per campaign, one logo that replaces the
+    previous one. Storage keys are generated here, never built from the uploaded filename.
+  - Files stay private: they are streamed to their owner by the API with `nosniff`, images
+    inline and PDFs as downloads. A file id from another campaign is not served.
+  - Brand assets panel on the brief screen: logo slot, reference list with previews,
+    drag and drop, remove, and the size and type rules stated up front.
 
 ## Next (Week 1)
-9. File upload (logo, reference files).
 10. AI adapter + brief summary job.
 11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
 12. Test and wrap up.

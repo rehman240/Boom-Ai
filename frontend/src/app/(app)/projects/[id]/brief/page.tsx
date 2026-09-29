@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowRight, Check, CloudOff, Loader2, Lock, Upload } from "lucide-react";
+import { ArrowRight, Check, CloudOff, Loader2, Lock } from "lucide-react";
+import { BrandAssets } from "@/components/app/BrandAssets";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useUser } from "@/components/app/UserContext";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -323,16 +324,7 @@ export default function BriefPage() {
         {/* Sticky on wide screens, so the required-fields checklist stays in view while
             the form is filled in. */}
         <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-          <section className="rounded-3xl border border-border bg-surface p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">Brand assets</p>
-            <h2 className="mt-2 font-display text-xl font-bold">Bring your brand in</h2>
-            <p className="mt-2 text-sm text-muted">Add a logo or reference files. You can do this later.</p>
-            <div className="mt-5 grid h-28 place-items-center rounded-2xl border border-dashed border-border-strong text-sm text-subtle">
-              <span className="flex items-center gap-2">
-                <Upload className="h-4 w-4" aria-hidden="true" /> Uploads arrive in the next step
-              </span>
-            </div>
-          </section>
+          {load.status === "ready" ? <BrandAssets projectId={id} readOnly={readOnly} /> : null}
 
           <section className="rounded-3xl border border-border bg-surface p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">Before generation</p>
