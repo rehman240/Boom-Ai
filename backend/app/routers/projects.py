@@ -1,0 +1,123 @@
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import func, inspect, select
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.deps import get_current_user
+from app.events import track
+from app.models import Brief, Project, ProjectStatus, User
+from app.schemas.project import DashboardOut, ProjectCreate, ProjectOut, ProjectRename, WorkspaceStats
+
+router = APIRouter(prefix="/projects", tags=["projects"])
+
+# Copied from the source brief when a campaign is duplicated. Listing the columns to
+# skip (instead of the ones to copy) means new brief fields are picked up automatically.
+BRIEF_SKIP_COLUMNS = {"id", "project_id", "created_at", "updated_at", "summary_confirmed_at"}
+
+
+def _owned(project_id: uuid.UUID, user: User, db: Session) -> Project:
+    """The user's project, or 404. Someone else's project is also 404, so ids don't leak."""
+    project = db.get(Project, project_id)
+    if project is None or project.owner_id != user.id:
+        raise HTTPException(status_code=404, detail="Campaign not found.")
+    return project
+
+
+def _editable(project: Project) -> Project:
+    if project.is_demo:
+        raise HTTPException(status_code=403, detail="The example campaign is read-only. Duplicate it to make changes.")
+    return project
+
+
+def _stats(user: User, db: Session) -> WorkspaceStats:
+    counts = dict(
+        db.execute(
+            select(Project.status, func.count())
+            .where(Project.owner_id == user.id)
+            .group_by(Project.status)
+        ).all()
+    )
+    return WorkspaceStats(
+        active_campaigns=counts.get(ProjectStatus.DRAFT, 0) + counts.get(ProjectStatus.IN_PROGRESS, 0),
+        # Real count, so the card never shows an invented number. Creative assets arrive in
+        # week 2; until the assets table exists there is genuinely nothing drafted.
+        assets_drafted=0,
+        ready_to_export=counts.get(ProjectStatus.READY, 0),
+    )
+
+
+@router.get("", response_model=DashboardOut)
+def list_projects(user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> DashboardOut:
+    """Everything the dashboard needs in one request: the project list and the stat cards."""
+    projects = db.scalars(
+        select(Project).where(Project.owner_id == user.id).order_by(Project.updated_at.desc())
+    ).all()
+    return DashboardOut(projects=[ProjectOut.model_validate(p) for p in projects], stats=_stats(user, db))
+
+
+@router.post("", response_model=ProjectOut, status_code=201)
+def create_project(body: ProjectCreate, user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> Project:
+    project = Project(owner_id=user.id, name=body.name)
+    db.add(project)
+    db.flush()
+    # The brief row exists from the start, so autosave has somewhere to write immediately.
+    db.add(Brief(project_id=project.id))
+    track(db, "project_created", user_id=user.id, project_id=project.id)
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+@router.get("/{project_id}", response_model=ProjectOut)
+def get_project(project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> Project:
+    return _owned(project_id, user, db)
+
+
+@router.patch("/{project_id}", response_model=ProjectOut)
+def rename_project(
+    project_id: uuid.UUID,
+    body: ProjectRename,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> Project:
+    project = _editable(_owned(project_id, user, db))
+    project.name = body.name
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+@router.post("/{project_id}/duplicate", response_model=ProjectOut, status_code=201)
+def duplicate_project(
+    project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+) -> Project:
+    """Copy a campaign and its brief. The copy is the user's own draft, never a demo."""
+    source = _owned(project_id, user, db)
+    copy = Project(owner_id=user.id, name=f"{source.name} (copy)"[:200], stage=source.stage)
+    db.add(copy)
+    db.flush()
+
+    source_brief = db.scalar(select(Brief).where(Brief.project_id == source.id))
+    if source_brief is not None:
+        columns = inspect(Brief).mapper.column_attrs
+        fields = {c.key: getattr(source_brief, c.key) for c in columns if c.key not in BRIEF_SKIP_COLUMNS}
+        # The AI summary comes along, but the copy is unconfirmed: the user approves its facts.
+        db.add(Brief(project_id=copy.id, **fields))
+    else:
+        db.add(Brief(project_id=copy.id))
+
+    track(db, "project_duplicated", user_id=user.id, project_id=copy.id)
+    db.commit()
+    db.refresh(copy)
+    return copy
+
+
+@router.delete("/{project_id}", status_code=204)
+def delete_project(project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> None:
+    project = _editable(_owned(project_id, user, db))
+    # Brief, uploads and jobs go with it (ON DELETE CASCADE); events keep only a null id.
+    db.delete(project)
+    track(db, "project_deleted", user_id=user.id)
+    db.commit()

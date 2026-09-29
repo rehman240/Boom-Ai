@@ -15,7 +15,9 @@ export type StageKey = (typeof STAGES)[number]["key"] | "review";
  * the step text.
  */
 export function ProgressBar({ stage }: { stage: StageKey }) {
-  const current = stage === "review" ? STAGES.length : STAGES.findIndex((s) => s.key === stage) + 1;
+  // An unknown stage falls back to the first one rather than breaking the page.
+  const found = STAGES.findIndex((s) => s.key === stage) + 1;
+  const current = stage === "review" ? STAGES.length : found || 1;
   const label = stage === "review" ? "All steps done, reviewing" : `Step ${current} of ${STAGES.length}: ${STAGES[current - 1].label}`;
 
   return (

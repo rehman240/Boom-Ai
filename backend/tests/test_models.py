@@ -38,15 +38,11 @@ def test_deleting_user_removes_their_projects(db):
     project = Project(owner_id=user.id, name="Harbor Workshop")
     db.add(project)
     db.flush()
-    db.add_all(
-        [
-            Brief(project_id=project.id),
-            AiJob(project_id=project.id, kind="brief_summary"),
-            Event(name="project_created", user_id=user.id, project_id=project.id),
-        ]
-    )
+    event = Event(name="project_created", user_id=user.id, project_id=project.id)
+    db.add_all([Brief(project_id=project.id), AiJob(project_id=project.id, kind="brief_summary"), event])
     db.flush()
     project_id = project.id
+    event_id = event.id
 
     db.delete(user)
     db.flush()
@@ -56,8 +52,9 @@ def test_deleting_user_removes_their_projects(db):
     assert db.scalar(select(Brief).where(Brief.project_id == project_id)) is None
     assert db.scalar(select(AiJob).where(AiJob.project_id == project_id)) is None
     # Events stay for counting, but lose their links to the deleted user and project.
-    event = db.scalar(select(Event).where(Event.name == "project_created"))
-    assert event.user_id is None and event.project_id is None
+    # Looked up by id: the same event name is written by the real app too.
+    kept = db.get(Event, event_id)
+    assert kept is not None and kept.user_id is None and kept.project_id is None
 
 
 def test_job_defaults_to_queued(db):

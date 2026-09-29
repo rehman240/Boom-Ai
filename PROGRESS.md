@@ -28,9 +28,21 @@
   the backend container, so the `BACKEND_URL` build arg works. Both containers run as a
   non-root user; images are about 220 MB each. Test containers, network and images removed
   afterwards.
+- Week 1, task 6: dashboard.
+  - `GET/POST /projects`, `GET/PATCH/DELETE /projects/{id}`, `POST /projects/{id}/duplicate`.
+    Creating a campaign also creates its (empty) brief row, so autosave has somewhere to write.
+    Duplicating copies the brief but clears the summary confirmation, so the user approves
+    the copy's facts. Someone else's campaign returns 404, not 403, so ids cannot be probed.
+    The example campaign is read-only and can only be opened or duplicated.
+  - Overview screen: continue-working card, three stat cards, recent projects with status and
+    last edited, and a row menu for open, rename, duplicate and delete. Loading, empty and
+    error states. Create and rename use a dialog; delete asks first.
+  - "Assets drafted" is a real count, which is 0 until creative assets exist in week 2. It is
+    deliberately not a made-up number.
+  - `/projects/[id]/[stage]` is a shell with the breadcrumb, title and progress bar. Each
+    stage's screen replaces the placeholder in its own task.
 
 ## Next (Week 1)
-6. Dashboard: create, continue, duplicate, delete project; status and last edited.
 7. Settings: account, privacy, export data, delete project/account, billing placeholder.
 8. Campaign Brief form with autosave.
 9. File upload (logo, reference files).
