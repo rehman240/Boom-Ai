@@ -8,7 +8,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { BreadcrumbContext, BreadcrumbTrail, type Crumb } from "./Breadcrumbs";
 import { Sidebar } from "./Sidebar";
-import { UserContext } from "./UserContext";
+import { SetUserContext, UserContext } from "./UserContext";
 
 type State = { status: "loading" } | { status: "ready"; user: User } | { status: "error"; message: string };
 
@@ -87,6 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <UserContext.Provider value={user}>
+      <SetUserContext.Provider value={(next) => setState({ status: "ready", user: next })}>
       <BreadcrumbContext.Provider value={setCrumbs}>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2">
         Skip to content
@@ -151,6 +152,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
       </BreadcrumbContext.Provider>
+      </SetUserContext.Provider>
     </UserContext.Provider>
   );
 }

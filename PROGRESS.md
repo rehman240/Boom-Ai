@@ -41,9 +41,22 @@
     deliberately not a made-up number.
   - `/projects/[id]/[stage]` is a shell with the breadcrumb, title and progress bar. Each
     stage's screen replaces the placeholder in its own task.
+- Week 1, task 7: settings.
+  - Workspace rename, email change and password change, plus a JSON export of everything in
+    the account and account deletion. Changing the email or password, or deleting the
+    account, needs the current password; those routes use the login rate limit.
+  - Changing the password signs out other devices. `users.session_version` is bumped and the
+    token carries the version it was issued with, so older tokens stop working. A counter,
+    not a timestamp: JWT stores `iat` in whole seconds, so a timestamp cutoff would either
+    refuse the new token or keep a token issued in the same second.
+  - Cookie handling moved to `app/session.py`, shared by the auth and account routes.
+  - The export never contains the password hash or internal owner ids.
+  - Settings screen: workspace, email, password, data export, a privacy summary of what is
+    stored today, a billing placeholder, and a delete-account confirmation.
+  - Project list now breaks ties on id, so campaigns edited at the same moment keep a stable
+    order between refreshes.
 
 ## Next (Week 1)
-7. Settings: account, privacy, export data, delete project/account, billing placeholder.
 8. Campaign Brief form with autosave.
 9. File upload (logo, reference files).
 10. AI adapter + brief summary job.

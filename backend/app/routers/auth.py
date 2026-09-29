@@ -9,24 +9,12 @@ from app.events import track
 from app.models import User
 from app.rate_limit import rate_limit
 from app.schemas.auth import LoginIn, SignupIn, UserOut
-from app.security import create_session_token, hash_password, verify_password
+from app.security import hash_password, verify_password
+from app.session import clear_session_cookie, set_session_cookie
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 auth_limit = Depends(rate_limit(get_settings().rate_limit_auth))
-
-
-def _set_session_cookie(response: Response, user: User) -> None:
-    settings = get_settings()
-    response.set_cookie(
-        settings.session_cookie_name,
-        create_session_token(user.id),
-        max_age=settings.session_days * 24 * 3600,
-        httponly=True,  # not readable from JavaScript
-        secure=settings.is_production,  # HTTPS only in production
-        samesite="lax",  # not sent on cross-site form posts
-        path="/",
-    )
 
 
 @router.post("/signup", response_model=UserOut, status_code=201, dependencies=[auth_limit])
@@ -40,7 +28,7 @@ def signup(body: SignupIn, response: Response, db: Session = Depends(get_db)) ->
     db.flush()
     track(db, "signup", user_id=user.id)
     db.commit()
-    _set_session_cookie(response, user)
+    set_session_cookie(response, user)
     return user
 
 
@@ -51,16 +39,13 @@ def login(body: LoginIn, response: Response, db: Session = Depends(get_db)) -> U
         raise HTTPException(status_code=401, detail="Email or password is incorrect.")
     track(db, "login", user_id=user.id)
     db.commit()
-    _set_session_cookie(response, user)
+    set_session_cookie(response, user)
     return user
 
 
 @router.post("/logout", status_code=204)
 def logout(response: Response) -> None:
-    settings = get_settings()
-    response.delete_cookie(
-        settings.session_cookie_name, path="/", httponly=True, secure=settings.is_production, samesite="lax"
-    )
+    clear_session_cookie(response)
 
 
 @router.get("/me", response_model=UserOut)

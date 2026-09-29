@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy import select
 
 from app.models import Brief, Event, Project, ProjectStatus, User
@@ -29,14 +31,19 @@ def test_create_lists_and_makes_an_empty_brief(client, db):
     assert listed["stats"] == {"active_campaigns": 1, "assets_drafted": 0, "ready_to_export": 0}
 
 
-def test_list_is_newest_edited_first(client):
+def test_list_is_newest_edited_first(client, db):
     signup(client)
     first = create(client, "First").json()
-    create(client, "Second")
-    client.patch(f"/projects/{first['id']}", json={"name": "First, edited"})
+    second = create(client, "Second").json()
+
+    # Postgres now() is the transaction start time, and the whole test is one
+    # transaction, so both rows share a timestamp. Set them apart to check the order.
+    db.get(Project, first["id"]).updated_at = datetime(2026, 9, 29, 12, 0, tzinfo=UTC)
+    db.get(Project, second["id"]).updated_at = datetime(2026, 9, 28, 12, 0, tzinfo=UTC)
+    db.flush()
 
     names = [p["name"] for p in client.get("/projects").json()["projects"]]
-    assert names == ["First, edited", "Second"]
+    assert names == ["First", "Second"]
 
 
 def test_name_is_required_and_trimmed(client):

@@ -51,8 +51,12 @@ def _stats(user: User, db: Session) -> WorkspaceStats:
 @router.get("", response_model=DashboardOut)
 def list_projects(user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> DashboardOut:
     """Everything the dashboard needs in one request: the project list and the stat cards."""
+    # id breaks ties, so two campaigns edited at the same moment keep a stable order
+    # instead of swapping places between refreshes.
     projects = db.scalars(
-        select(Project).where(Project.owner_id == user.id).order_by(Project.updated_at.desc())
+        select(Project)
+        .where(Project.owner_id == user.id)
+        .order_by(Project.updated_at.desc(), Project.id.desc())
     ).all()
     return DashboardOut(projects=[ProjectOut.model_validate(p) for p in projects], stats=_stats(user, db))
 
