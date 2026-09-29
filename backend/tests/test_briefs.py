@@ -1,0 +1,134 @@
+from sqlalchemy import select
+
+from app.models import Brief, Project, ProjectStatus
+from app.schemas.brief import REQUIRED_FIELDS
+
+FULL = {
+    "business_name": "NOVA",
+    "product_or_service": "Rechargeable desk lamp",
+    "description": "A portable lamp for people who work in more than one place.",
+    "differentiators": "Three light settings and a battery that lasts a week.",
+    "goal": "Preorders",
+    "target_location": "United States",
+    "budget_amount": "12000.00",
+}
+
+
+def signup(client, email="owner@example.com"):
+    return client.post("/auth/signup", json={"email": email, "password": "good-password"})
+
+
+def start(client, name="NOVA Desk Lamp"):
+    signup(client)
+    return client.post("/projects", json={"name": name}).json()["id"]
+
+
+def test_new_brief_is_empty_and_lists_everything_as_missing(client):
+    project_id = start(client)
+    r = client.get(f"/projects/{project_id}/brief")
+    assert r.status_code == 200
+    assert r.json()["brief"]["business_name"] is None
+    assert r.json()["brief"]["currency"] == "USD"
+    assert r.json()["brief"]["language"] == "English"
+    assert set(r.json()["missing_required"]) == set(REQUIRED_FIELDS)
+
+
+def test_autosave_only_touches_the_fields_it_sends(client):
+    project_id = start(client)
+    client.patch(f"/projects/{project_id}/brief", json={"business_name": "NOVA"})
+    r = client.patch(f"/projects/{project_id}/brief", json={"goal": "Preorders"})
+
+    # The earlier field is still there: a partial save must not erase existing work.
+    assert r.json()["brief"]["business_name"] == "NOVA"
+    assert r.json()["brief"]["goal"] == "Preorders"
+
+
+def test_filling_everything_clears_the_missing_list(client):
+    project_id = start(client)
+    r = client.patch(f"/projects/{project_id}/brief", json=FULL)
+    assert r.status_code == 200
+    assert r.json()["missing_required"] == []
+    assert r.json()["brief"]["budget_amount"] == "12000.00"
+
+
+def test_clearing_a_field_makes_it_missing_again(client):
+    project_id = start(client)
+    client.patch(f"/projects/{project_id}/brief", json=FULL)
+    r = client.patch(f"/projects/{project_id}/brief", json={"business_name": "   "})
+
+    # Whitespace is stored as null, so "missing" means one thing everywhere.
+    assert r.json()["brief"]["business_name"] is None
+    assert r.json()["missing_required"] == ["business_name"]
+
+
+def test_text_is_trimmed_and_choices_are_deduplicated(client):
+    project_id = start(client)
+    r = client.patch(
+        f"/projects/{project_id}/brief",
+        json={"business_name": "  NOVA  ", "brand_voice": ["Clear", "Clear", " Modern "], "channels": []},
+    )
+    assert r.json()["brief"]["business_name"] == "NOVA"
+    assert r.json()["brief"]["brand_voice"] == ["Clear", "Modern"]
+    assert r.json()["brief"]["channels"] == []
+
+
+def test_rejects_bad_dates_urls_and_budgets(client):
+    project_id = start(client)
+    bad = [
+        {"start_date": "2026-11-30", "end_date": "2026-11-01"},
+        {"product_url": "nova.example.com"},
+        {"budget_amount": "-5"},
+        {"brand_voice": [f"voice-{i}" for i in range(9)]},  # distinct: duplicates collapse first
+        {"business_name": "x" * 201},
+    ]
+    for body in bad:
+        assert client.patch(f"/projects/{project_id}/brief", json=body).status_code == 422, body
+
+    # A save with no fields at all is a client bug, not an empty brief.
+    assert client.patch(f"/projects/{project_id}/brief", json={}).status_code == 400
+
+
+def test_saving_moves_the_campaign_out_of_draft_and_updates_last_edited(client, db):
+    project_id = start(client)
+    project = db.get(Project, project_id)
+    assert project.status == ProjectStatus.DRAFT
+    edited_before = project.updated_at
+
+    client.patch(f"/projects/{project_id}/brief", json={"business_name": "NOVA"})
+    db.expire_all()
+    project = db.get(Project, project_id)
+
+    assert project.status == ProjectStatus.IN_PROGRESS
+    assert project.updated_at >= edited_before
+
+
+def test_another_users_brief_is_not_reachable(client):
+    project_id = start(client)
+    client.cookies.clear()
+    signup(client, email="stranger@example.com")
+
+    assert client.get(f"/projects/{project_id}/brief").status_code == 404
+    assert client.patch(f"/projects/{project_id}/brief", json={"business_name": "Mine"}).status_code == 404
+
+
+def test_demo_brief_can_be_read_but_not_edited(client, db):
+    project_id = start(client, "Example campaign")
+    db.get(Project, project_id).is_demo = True
+    db.flush()
+
+    assert client.get(f"/projects/{project_id}/brief").status_code == 200
+    assert client.patch(f"/projects/{project_id}/brief", json={"business_name": "Mine"}).status_code == 403
+
+
+def test_brief_is_recreated_if_it_is_somehow_missing(client, db):
+    project_id = start(client)
+    db.delete(db.scalar(select(Brief).where(Brief.project_id == project_id)))
+    db.flush()
+
+    assert client.get(f"/projects/{project_id}/brief").status_code == 200
+
+
+def test_signed_out_user_cannot_read_a_brief(client):
+    project_id = start(client)
+    client.cookies.clear()
+    assert client.get(f"/projects/{project_id}/brief").status_code == 401

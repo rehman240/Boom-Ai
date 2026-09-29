@@ -1,11 +1,9 @@
-import uuid
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import func, inspect, select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.deps import get_current_user
+from app.deps import get_current_user, get_editable_project, get_owned_project
 from app.events import track
 from app.models import Brief, Project, ProjectStatus, User
 from app.schemas.project import DashboardOut, ProjectCreate, ProjectOut, ProjectRename, WorkspaceStats
@@ -15,20 +13,6 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 # Copied from the source brief when a campaign is duplicated. Listing the columns to
 # skip (instead of the ones to copy) means new brief fields are picked up automatically.
 BRIEF_SKIP_COLUMNS = {"id", "project_id", "created_at", "updated_at", "summary_confirmed_at"}
-
-
-def _owned(project_id: uuid.UUID, user: User, db: Session) -> Project:
-    """The user's project, or 404. Someone else's project is also 404, so ids don't leak."""
-    project = db.get(Project, project_id)
-    if project is None or project.owner_id != user.id:
-        raise HTTPException(status_code=404, detail="Campaign not found.")
-    return project
-
-
-def _editable(project: Project) -> Project:
-    if project.is_demo:
-        raise HTTPException(status_code=403, detail="The example campaign is read-only. Duplicate it to make changes.")
-    return project
 
 
 def _stats(user: User, db: Session) -> WorkspaceStats:
@@ -75,18 +59,16 @@ def create_project(body: ProjectCreate, user: User = Depends(get_current_user), 
 
 
 @router.get("/{project_id}", response_model=ProjectOut)
-def get_project(project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> Project:
-    return _owned(project_id, user, db)
+def get_project(project: Project = Depends(get_owned_project)) -> Project:
+    return project
 
 
 @router.patch("/{project_id}", response_model=ProjectOut)
 def rename_project(
-    project_id: uuid.UUID,
     body: ProjectRename,
-    user: User = Depends(get_current_user),
+    project: Project = Depends(get_editable_project),
     db: Session = Depends(get_db),
 ) -> Project:
-    project = _editable(_owned(project_id, user, db))
     project.name = body.name
     db.commit()
     db.refresh(project)
@@ -95,10 +77,11 @@ def rename_project(
 
 @router.post("/{project_id}/duplicate", response_model=ProjectOut, status_code=201)
 def duplicate_project(
-    project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)
+    source: Project = Depends(get_owned_project),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ) -> Project:
     """Copy a campaign and its brief. The copy is the user's own draft, never a demo."""
-    source = _owned(project_id, user, db)
     copy = Project(owner_id=user.id, name=f"{source.name} (copy)"[:200], stage=source.stage)
     db.add(copy)
     db.flush()
@@ -119,8 +102,11 @@ def duplicate_project(
 
 
 @router.delete("/{project_id}", status_code=204)
-def delete_project(project_id: uuid.UUID, user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> None:
-    project = _editable(_owned(project_id, user, db))
+def delete_project(
+    project: Project = Depends(get_editable_project),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
     # Brief, uploads and jobs go with it (ON DELETE CASCADE); events keep only a null id.
     db.delete(project)
     track(db, "project_deleted", user_id=user.id)

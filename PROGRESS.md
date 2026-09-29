@@ -55,9 +55,23 @@
     stored today, a billing placeholder, and a delete-account confirmation.
   - Project list now breaks ties on id, so campaigns edited at the same moment keep a stable
     order between refreshes.
+- Week 1, task 8: campaign brief with autosave.
+  - `GET/PATCH /projects/{id}/brief`. A PATCH carries only the fields that changed, so a
+    save can never blank out something the user typed elsewhere. Emptied text is stored as
+    NULL, so "missing" means one thing everywhere. Saving also moves the campaign from
+    draft to in progress and refreshes its last-edited time on the dashboard.
+  - `REQUIRED_FIELDS` lives on the server and drives both the checklist in the form and the
+    check the generate step will use, so the two can't drift apart.
+  - All the fields from section 4.3 of the client brief. Language and currency are fixed
+    (English, USD) for this release, so they are shown as text rather than asked for.
+  - `useAutosave` saves about a second after typing stops. A failed save keeps its fields
+    queued and shows a Retry, and pending changes are also flushed when the tab is hidden or
+    the page is left.
+  - Bad URLs and an end date before the start date are caught in the form. When a field is
+    fixed it is saved along with the next change, so nothing stays behind.
+  - The example campaign's brief is readable but not editable.
 
 ## Next (Week 1)
-8. Campaign Brief form with autosave.
 9. File upload (logo, reference files).
 10. AI adapter + brief summary job.
 11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
