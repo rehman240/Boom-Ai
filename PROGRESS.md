@@ -15,6 +15,13 @@
   - `output: "standalone"` and a frontend Dockerfile, so the app can move to AWS.
   - Checked in a real browser at desktop (1440px) and phone (390px) width: sign up, overview, menu, sign out.
 
+- 29 Sep: switched local development from the Docker Postgres to Ali's installed
+  PostgreSQL 17 on port 5432 (saves about a gigabyte of memory). Re-verified after the
+  switch: 14 backend tests pass, sign up / overview / menu / sign out work in a real
+  browser at 1440px and 390px, and `npm run build` produces the `standalone` output the
+  frontend Dockerfile copies. The circle in the phone screenshot's bottom-left corner is
+  the Next.js dev-mode indicator, not our UI.
+
 ## Next (Week 1)
 6. Dashboard: create, continue, duplicate, delete project; status and last edited.
 7. Settings: account, privacy, export data, delete project/account, billing placeholder.
