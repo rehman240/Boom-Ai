@@ -3,7 +3,7 @@
 ## Done
 - Week 1, task 1: repo setup (git, folder structure, `.gitignore`, `.env.example` files, docs renamed).
 - Week 1, task 2: backend base (FastAPI, env config, Postgres + Alembic, /health, CORS, rate limits, Dockerfile, tests).
-- Week 1, task 3: database tables (users, projects, briefs, uploads, ai_jobs, events) with first migration. Local DB runs in Docker on port 5434 (5432 and 5433 are used by other Postgres installs on this PC).
+- Week 1, task 3: database tables (users, projects, briefs, uploads, ai_jobs, events) with first migration. Local DB is Ali's installed PostgreSQL 17 on port 5432, database `boooom_more`, role `boooom` (switched from Docker on 29 Sep to save memory; Docker compose still there as a fallback on 5434).
 - Week 1, task 4: login API: `POST /auth/signup`, `/auth/login`, `/auth/logout`, `GET /auth/me`. Argon2 password hashes, signed session token in an httpOnly SameSite=Lax cookie (7 days), 10/minute limit on signup and login, same error for wrong password and unknown email.
 - Week 1, task 5: frontend base.
   - Dark theme tokens (AA contrast), Inter + Space Grotesk fonts, keyboard focus ring.

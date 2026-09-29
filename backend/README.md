@@ -4,20 +4,34 @@ FastAPI + Postgres (SQLAlchemy, Alembic migrations). Python 3.13.
 
 ## Local setup
 
-```bash
-# 1. Start the local database (from the repo root). Runs on port 5434.
-docker compose up -d db
+### 1. Database
 
-# 2. Create a virtual env and install packages
+Use any local Postgres 17. Create the role and database once:
+
+```bash
+psql -U postgres -c "CREATE ROLE boooom WITH LOGIN PASSWORD 'boooom';"
+psql -U postgres -c "CREATE DATABASE boooom_more OWNER boooom;"
+```
+
+Then set `DATABASE_URL` in `.env` to match your port (default `5432`).
+
+No local Postgres? `docker compose up -d db` from the repo root starts one on port 5434
+instead; change the port in `DATABASE_URL` to `5434`.
+
+### 2. The app
+
+```bash
+
+# Create a virtual env and install packages
 cd backend
 python -m venv .venv
 .venv/Scripts/pip install -r requirements-dev.txt   # Windows
 # .venv/bin/pip install -r requirements-dev.txt     # macOS / Linux
 
-# 3. Settings: copy the example and set SECRET_KEY
+# Settings: copy the example and set SECRET_KEY
 cp .env.example .env
 
-# 4. Run migrations and start the API
+# Run migrations and start the API
 .venv/Scripts/alembic upgrade head
 .venv/Scripts/uvicorn app.main:app --reload
 ```

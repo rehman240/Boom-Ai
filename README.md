@@ -10,7 +10,8 @@ See `PROGRESS.md` for status.
 
 ## Run locally
 
-1. Database: `docker compose up -d db` (Postgres on port 5434)
+1. Database: any local Postgres 17. See `backend/README.md` for the one-time setup.
+   (`docker compose up -d db` also works if you'd rather not install Postgres.)
 2. Backend: see `backend/README.md`, then run it on http://localhost:8000
 3. Frontend:
    ```bash

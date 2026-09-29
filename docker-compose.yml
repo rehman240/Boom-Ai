@@ -1,4 +1,7 @@
-# Local development database only. Production uses Supabase Postgres.
+# Optional local development database, for machines without Postgres installed.
+# The default setup uses a local Postgres 17 on port 5432 (see backend/README.md).
+# If you use this instead, set DATABASE_URL to port 5434.
+# Production uses Supabase Postgres.
 services:
   db:
     image: postgres:17
