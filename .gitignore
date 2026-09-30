@@ -23,3 +23,6 @@ backend/uploads/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local UI screenshots from testing (not part of the app)
+.screenshots/
