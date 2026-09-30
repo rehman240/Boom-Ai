@@ -136,6 +136,12 @@
 - Design should be modern. Reference screens are the base, not a pixel copy.
 
 ## Notes for deploy
+- Hosting plans (agreed with Ali, 30 Sep): Vercel, Render and Supabase all start on their
+  free plans, with the client's login shared securely. For now the MVP may only be used
+  by the client. Before real users are invited, check two things:
+  - Vercel's Hobby plan is for personal, non-commercial use only (their fair use rules),
+    so move to Pro ($20/month per developer seat) before a public launch.
+  - Render's free server sleeps when idle (about 50 seconds on the first visit).
 - Rate limits use the client IP from `X-Forwarded-For`. Once deployed, check that the real
   visitor IP reaches the backend through Vercel's `/api` forwarding. If it doesn't, all users
   would share one limit.
