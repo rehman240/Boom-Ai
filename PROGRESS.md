@@ -148,8 +148,13 @@
 - `BACKEND_URL` is read when the frontend is built (rewrites are baked in).
 
 ## Open questions
-- AI provider and API key (who pays).
 - Logo files and permission to use them.
 - Who pays for hosting if free plans are not enough.
 - Data retention and AI provider data handling.
-- Supabase, Render, Vercel accounts (Ali to create).
+- Hosting accounts (30 Sep): the client says Vercel and Render are created. Supabase and the
+  Anthropic API key were requested. No logins have been shared with us yet.
+- AI provider: Anthropic (Claude), chosen 30 Sep. The client buys prepaid credits and sets a
+  spend limit.
+- Name: the client wants BOOOM with three O's everywhere. Renaming the repo (now "Boom-Ai")
+  is up to Rehman.
+- Domain: the client owns booom.com. Plan: a subdomain such as app.booom.com at launch.
