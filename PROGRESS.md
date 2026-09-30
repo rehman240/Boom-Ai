@@ -112,6 +112,8 @@
   - Not yet tried against a real Anthropic or OpenAI key (none yet). Needs one quick run
     once the key arrives.
 
+- 30 Sep: pushed all work to the client repo, https://github.com/rehman240/Boom-Ai (private), branch `main`.
+
 ## Next (Week 1)
 11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
 12. Test and wrap up.
@@ -140,7 +142,6 @@
 - `BACKEND_URL` is read when the frontend is built (rewrites are baked in).
 
 ## Open questions
-- Client repo: Ali accepted the invite on 30 Sep; remote to be added and pushed.
 - AI provider and API key (who pays).
 - Logo files and permission to use them.
 - Who pays for hosting if free plans are not enough.
