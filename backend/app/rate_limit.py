@@ -46,3 +46,9 @@ def rate_limit(limit: str):
             raise HTTPException(status_code=429, detail="Too many attempts. Please wait a moment.")
 
     return check
+
+
+def check_user_limit(limit: str, scope: str, user_id: str) -> None:
+    """A limit per signed-in user rather than per IP, e.g. for costly AI generations."""
+    if not _limiter.hit(parse(limit), scope, user_id):
+        raise HTTPException(status_code=429, detail="You've reached the generation limit for now. Please try again later.")

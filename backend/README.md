@@ -45,6 +45,22 @@ cp .env.example .env
 All settings come from environment variables. See `.env.example`.
 `postgres://` URLs from Supabase or Render are converted to the psycopg driver automatically.
 
+## AI
+
+Every model call goes through `app/ai/provider.py`. `AI_PROVIDER` picks who answers:
+
+- `mock` (default): builds answers from the brief itself. No key, no cost. Use it for
+  development and tests. Summaries made this way say "test mode" in the app.
+- `anthropic`: needs `ANTHROPIC_API_KEY`. `AI_MODEL` defaults to `claude-opus-5-5`.
+- `openai`: needs `OPENAI_API_KEY` and `AI_MODEL`. Requests are sent with `store=false`.
+
+`AI_ENABLED=false` pauses all generation (the app says so; nothing else breaks).
+Generations run as background jobs in the `ai_jobs` table, and the page polls
+`GET /projects/{id}/jobs/{job_id}`. A job still running after `AI_JOB_STALE_MINUTES` is
+marked failed so the user can retry. Each answer is validated against its Pydantic schema,
+and `app/ai/safety.py` flags health, finance and performance claims and figures the user
+never gave, whichever provider wrote it.
+
 ## Docker
 
 ```bash

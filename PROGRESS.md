@@ -84,8 +84,35 @@
   - Brand assets panel on the brief screen: logo slot, reference list with previews,
     drag and drop, remove, and the size and type rules stated up front.
 
+- Week 1, task 10: AI adapter and brief summary (30 Sep).
+  - `app/ai/provider.py` is the only place that calls a model. Anthropic (official SDK,
+    structured JSON output, server-side refusal fallback, low effort), OpenAI (Responses
+    API, strict JSON schema, `store=false`) and an offline mock that answers from the
+    brief itself. `AI_PROVIDER` chooses; a missing key fails with a plain message.
+  - Errors reaching the user never contain prompts, brief text or keys, and say whether
+    a retry can help.
+  - Background jobs in `ai_jobs` (`app/jobs.py`): one automatic retry for a transient
+    error or a malformed answer, a job stuck for 5 minutes is marked failed, a second
+    click rejoins the running job, and results are written only on success, so a failed
+    run never erases the previous summary. 30 generations per user per hour.
+  - Summary (`app/ai/brief_summary.py`, prompt `brief_summary.v1`): overview, offer,
+    conversion goal, audience limits, facts each "based on" a brief field, assumptions,
+    questions for missing facts, and claims that need human review. Stored with
+    provider, model, prompt version and time.
+  - `app/ai/safety.py` runs on every answer from any provider: flags health, finance and
+    performance claims in the brief, and any figure in the summary the user never gave.
+  - The summary knows which brief it was made from. Editing the brief afterwards marks it
+    "Outdated", and only a current summary can be confirmed. Confirming moves the
+    campaign on to Identify Target.
+  - Brief screen: "Review brief" saves pending edits and starts the job; progress,
+    failure with "Try again", ready, confirmed and outdated states; the summary panel
+    below the form with Regenerate and Confirm facts. The job survives a page refresh.
+  - Tests: 86 backend tests, including the real provider adapters against a fake HTTP
+    server. Checked in a real browser at 1440px and 390px, including the failure state.
+  - Not yet tried against a real Anthropic or OpenAI key (none yet). Needs one quick run
+    once the key arrives.
+
 ## Next (Week 1)
-10. AI adapter + brief summary job.
 11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
 12. Test and wrap up.
 
@@ -113,7 +140,7 @@
 - `BACKEND_URL` is read when the frontend is built (rewrites are baked in).
 
 ## Open questions
-- Client repo link / invite (we work in local git until then, then add remote and push).
+- Client repo: Ali accepted the invite on 30 Sep; remote to be added and pushed.
 - AI provider and API key (who pays).
 - Logo files and permission to use them.
 - Who pays for hosting if free plans are not enough.

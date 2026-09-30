@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     rate_limit_default: str = "120/minute"
     rate_limit_auth: str = "10/minute"  # sign up and login, per IP
+    rate_limit_ai: str = "30/hour"  # AI generations, per user across all campaigns
 
     # Login session (signed token in an httpOnly cookie)
     session_cookie_name: str = "boooom_session"
@@ -38,6 +39,8 @@ class Settings(BaseSettings):
     ai_model: str = ""
     anthropic_api_key: str = ""
     openai_api_key: str = ""
+    ai_mock_delay_seconds: float = 2.0  # mock only: long enough to see the progress state
+    ai_job_stale_minutes: int = 5  # a job active for longer than this is marked failed
 
     @field_validator("database_url")
     @classmethod

@@ -1,13 +1,18 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.rate_limit import GlobalRateLimitMiddleware
-from app.routers import account, auth, briefs, health, projects, uploads
+from app.routers import account, auth, briefs, health, jobs, projects, uploads
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    # App logs (job failures and the like) go to stdout next to uvicorn's, where the host
+    # collects them. Log lines carry ids and error types only, never campaign text.
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s: %(message)s")
     app = FastAPI(
         title="BOOOM More API",
         # Hide interactive docs in production.
@@ -32,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(account.router)
     app.include_router(briefs.router)
     app.include_router(uploads.router)
+    app.include_router(jobs.router)
     return app
 
 

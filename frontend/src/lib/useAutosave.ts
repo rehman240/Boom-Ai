@@ -63,6 +63,14 @@ export function useAutosave<T extends object>(save: (changes: Partial<T>) => Pro
     [flush],
   );
 
+  /** Save anything queued right away. Resolves true once nothing is left unsaved. */
+  const saveNow = useCallback(async () => {
+    if (timer.current) clearTimeout(timer.current);
+    while (inFlight.current) await new Promise((r) => setTimeout(r, 50));
+    await flush();
+    return Object.keys(pending.current).length === 0;
+  }, [flush]);
+
   useEffect(() => {
     // Leaving the tab is a likely moment to close it, so save now rather than in a second.
     const onHide = () => {
@@ -79,5 +87,5 @@ export function useAutosave<T extends object>(save: (changes: Partial<T>) => Pro
     };
   }, [flush]);
 
-  return { status, error, queue, retry: flush };
+  return { status, error, queue, retry: flush, saveNow };
 }

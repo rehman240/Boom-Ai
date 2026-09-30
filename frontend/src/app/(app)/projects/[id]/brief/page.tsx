@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowRight, Check, CloudOff, Loader2, Lock } from "lucide-react";
+import { Check, CloudOff, Loader2, Lock } from "lucide-react";
 import { BrandAssets } from "@/components/app/BrandAssets";
+import { SummaryAction, SummaryPanel, useBriefSummary } from "@/components/app/BriefSummary";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useUser } from "@/components/app/UserContext";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { ChipGroup, Select, Textarea } from "@/components/ui/Inputs";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -64,9 +65,14 @@ export default function BriefPage() {
   const [missing, setMissing] = useState<string[]>(Object.keys(REQUIRED_LABELS));
   const [errors, setErrors] = useState<Errors>({});
 
+  const summary = useBriefSummary(id);
+  const syncSummary = summary.sync;
+
   const autosave = useAutosave<BriefDraft>(async (changes) => {
     const state = await saveBrief(id, toApi(changes));
     setMissing(state.missing_required);
+    // The server says whether the summary still matches the brief after this edit.
+    syncSummary(state);
   });
 
   useEffect(() => {
@@ -76,6 +82,7 @@ export default function BriefPage() {
         if (cancelled) return;
         setDraft(toDraft(state.brief));
         setMissing(state.missing_required);
+        syncSummary(state);
         setLoad({ status: "ready", project });
       },
       (e: unknown) => {
@@ -90,7 +97,10 @@ export default function BriefPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, syncSummary]);
+
+  // Starting the summary saves any pending edits first.
+  const summaryUi = { ...summary, start: () => summary.start(autosave.saveNow) };
 
   const readOnly = load.status === "ready" && load.project.is_demo;
 
@@ -352,26 +362,19 @@ export default function BriefPage() {
             </ul>
           </section>
 
-          <div className="rounded-3xl border border-border bg-surface p-6">
-            <Button
-              className="w-full"
-              disabled
-              title={
-                ready
-                  ? "The AI summary of your brief opens here in the next step"
-                  : "Fill in the required fields first"
-              }
-            >
-              Review brief <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Button>
-            <p className="mt-3 text-xs text-subtle">
-              {ready
-                ? "Everything needed is filled in. The AI summary of your brief is the next step to be built."
-                : `${missing.length} required ${missing.length === 1 ? "field" : "fields"} still to fill in.`}
-            </p>
-          </div>
+          {load.status === "ready" ? (
+            <SummaryAction
+              s={summaryUi}
+              projectId={id}
+              ready={ready && autosave.status !== "error"}
+              missingCount={missing.length}
+              readOnly={readOnly}
+            />
+          ) : null}
         </div>
       </div>
+
+      <SummaryPanel s={summaryUi} projectId={id} readOnly={readOnly} />
     </>
   );
 }

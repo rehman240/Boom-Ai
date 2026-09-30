@@ -22,7 +22,12 @@ export type Brief = {
   updated_at: string;
 };
 
-export type BriefState = { brief: Brief; missing_required: string[] };
+export type BriefState = {
+  brief: Brief;
+  missing_required: string[];
+  summary: Summary | null;
+  summary_job: Job | null;
+};
 
 /**
  * Only the fields a person edits; language and currency are fixed for this release.
@@ -131,3 +136,68 @@ export function toDraft(brief: Brief): BriefDraft {
     budget_amount: brief.budget_amount ? String(Number(brief.budget_amount)) : "",
   };
 }
+
+// --- AI summary --------------------------------------------------------------------------
+
+export type Job = {
+  id: string;
+  kind: string;
+  status: "queued" | "running" | "succeeded" | "failed";
+  error: string | null;
+  attempts: number;
+  created_at: string;
+  started_at: string | null;
+  finished_at: string | null;
+};
+
+export type SummaryFact = { label: string; value: string; source: string };
+export type ReviewFlag = { claim: string; category: string; reason: string };
+
+export type SummaryData = {
+  overview: string;
+  offer: string;
+  conversion_goal: string;
+  audience_constraints: string[];
+  facts: SummaryFact[];
+  assumptions: string[];
+  missing_info: string[];
+  review_flags: ReviewFlag[];
+};
+
+export type Summary = {
+  data: SummaryData;
+  status: "ready" | "confirmed" | "outdated";
+  generated_at: string;
+  provider: string;
+  model: string;
+  prompt_version: string;
+};
+
+export const startSummary = (projectId: string) =>
+  api<Job>(`/projects/${projectId}/brief/summary`, { method: "POST" });
+
+export const confirmSummary = (projectId: string) =>
+  api<BriefState>(`/projects/${projectId}/brief/summary/confirm`, { method: "POST" });
+
+export const getJob = (projectId: string, jobId: string) => api<Job>(`/projects/${projectId}/jobs/${jobId}`);
+
+export const isActive = (job: Job | null | undefined) => job?.status === "queued" || job?.status === "running";
+
+/** Where a summary fact came from, in the words the form uses. */
+export const SOURCE_LABELS: Record<string, string> = {
+  business_name: "Business name",
+  product_or_service: "Product or service",
+  product_url: "Product link",
+  description: "Description",
+  differentiators: "What makes it different",
+  goal: "Campaign goal",
+  offer_terms: "Price or offer terms",
+  target_location: "Target location",
+  language: "Language",
+  brand_voice: "Brand voice",
+  exclusions: "Anything to avoid",
+  channels: "Channels of interest",
+  start_date: "Start date",
+  end_date: "End date",
+  budget: "Media budget",
+};

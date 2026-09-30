@@ -2,7 +2,12 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, field_validator, model_validator
+
+from app.ai.brief_summary import BriefSummary
+from app.schemas.job import JobOut
 
 # Everything the AI needs before it can produce anything useful. Checked here and shown
 # in the form, so "required" means the same thing on both sides.
@@ -116,7 +121,21 @@ class BriefOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class SummaryOut(BaseModel):
+    data: BriefSummary
+    # ready: waiting for the user to check it. confirmed: the user approved these facts.
+    # outdated: the brief changed after it was made, so it must be regenerated first.
+    status: Literal["ready", "confirmed", "outdated"]
+    generated_at: datetime
+    provider: str
+    model: str
+    prompt_version: str
+
+
 class BriefState(BaseModel):
     brief: BriefOut
     # Which required fields are still empty. The form and the generate step read the same list.
     missing_required: list[str]
+    summary: SummaryOut | None = None
+    # The latest summary generation, so a refreshed page can pick up a running job or its error.
+    summary_job: JobOut | None = None
