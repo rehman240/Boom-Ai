@@ -113,6 +113,11 @@
     once the key arrives.
 
 - 30 Sep: pushed all work to the client repo, https://github.com/rehman240/Boom-Ai (private), branch `main`.
+- 1 Oct: the client's Anthropic key arrived (in Ali's local `backend/.env` only). Ran one
+  real brief summary on `claude-opus-5-5` with a NOVA Desk Lamp brief: valid structured
+  answer in 15.6 s, schema check and safety pass both fine, no invented prices or numbers,
+  and it flagged "Charges your phone while you work" for review. Usage was 1,677 input and
+  964 output tokens, about $0.026 per summary at $4 / $20 per million tokens.
 
 ## Next (Week 1)
 11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
@@ -155,6 +160,16 @@
   Anthropic API key were requested. No logins have been shared with us yet.
 - AI provider: Anthropic (Claude), chosen 30 Sep. The client buys prepaid credits and sets a
   spend limit.
+- Brand (1 Oct): the brand is only "BOOOM". "More" is a working product name that may be
+  replaced later, so it should be easy to change in one place.
+- Pricing idea (1 Oct, from the client): start very cheap and charge progressively more.
+  Billing stays a placeholder in this MVP; the idea can be shown on the landing pricing
+  placeholder.
+- Brand art (1 Oct): the client sent the BOOOM logo, BOOOM + More logo and two binary tunnel
+  backgrounds as WhatsApp JPEGs. These are too compressed for the app and have no
+  transparent background. Ali is asking Rehman for the original files.
+- Colour trial (1 Oct): a royal blue version of the theme, closer to the logo, was tried
+  locally and is waiting on Ali's decision. It is not committed.
 - Name: the client wants BOOOM with three O's everywhere. Renaming the repo (now "Boom-Ai")
   is up to Rehman.
 - Domain: the client owns booom.com. Plan: a subdomain such as app.booom.com at launch.
