@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
+import { APP_NAME } from "@/lib/brand";
 
 const CAPABILITIES = [
   { n: "01", title: "Generate Campaign", text: "Make the idea concrete", dot: "bg-accent-blue" },
@@ -22,8 +23,8 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
             maskImage: "radial-gradient(circle, black 30%, transparent 70%)",
           }}
         />
-        <Link href="/" aria-label="BOOOM More home">
-          <Logo withMore />
+        <Link href="/" aria-label={`${APP_NAME} home`}>
+          <Logo withProduct />
         </Link>
 
         <div className="relative max-w-md">
@@ -53,8 +54,8 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
 
       {/* Form */}
       <main className="flex flex-col px-4 py-8 sm:px-8">
-        <Link href="/" className="lg:hidden" aria-label="BOOOM More home">
-          <Logo withMore />
+        <Link href="/" className="lg:hidden" aria-label={`${APP_NAME} home`}>
+          <Logo withProduct />
         </Link>
         <div className="m-auto w-full max-w-sm py-10">{children}</div>
         <p className="text-center text-xs text-subtle">AI suggests. You decide. Nothing is published or spent for you.</p>

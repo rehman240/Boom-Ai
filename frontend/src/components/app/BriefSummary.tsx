@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { AlertTriangle, ArrowRight, Check, CircleHelp, RefreshCw, Sparkles } from "lucide-react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ApiError } from "@/lib/api";
+import { APP_NAME } from "@/lib/brand";
 import {
   SOURCE_LABELS,
   confirmSummary,
@@ -167,7 +168,7 @@ export function SummaryAction({
         </Button>
         <p className="mt-3 text-xs text-subtle">
           {ready
-            ? "BOOOM More summarises your brief so you can check the facts before any ideas are generated."
+            ? `${APP_NAME} summarises your brief so you can check the facts before any ideas are generated.`
             : `${missingCount} required ${missingCount === 1 ? "field" : "fields"} still to fill in.`}
         </p>
       </>

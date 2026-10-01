@@ -13,6 +13,7 @@ import { ChipGroup, Select, Textarea } from "@/components/ui/Inputs";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { api, ApiError } from "@/lib/api";
+import { APP_NAME } from "@/lib/brand";
 import {
   BRAND_VOICES,
   CHANNELS,
@@ -146,7 +147,7 @@ export default function BriefPage() {
       <PageHeader
         eyebrow="01 / Campaign brief"
         title="Tell us what you are building"
-        subtitle="Start with the facts. BOOOM More turns them into an editable campaign brief, and only uses what you enter here."
+        subtitle={`Start with the facts. ${APP_NAME} turns them into an editable campaign brief, and only uses what you enter here.`}
       />
 
       <div className="mt-8">

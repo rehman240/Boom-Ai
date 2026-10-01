@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col px-4 sm:px-8">
       <header className="flex h-20 items-center justify-between">
-        <Logo withMore />
+        <Logo withProduct />
         <ButtonLink href="/login" variant="ghost">
           Sign in
         </ButtonLink>

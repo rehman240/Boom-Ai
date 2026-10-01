@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Gem, LayoutGrid, Settings, Sparkles, Target, Wallet, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { APP_NAME } from "@/lib/brand";
 
 type NavItem = { label: string; href?: string; icon: LucideIcon };
 
@@ -39,7 +40,7 @@ export function Sidebar({ workspaceName, onNavigate }: { workspaceName: string; 
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 pt-6 pb-8">
-        <Link href="/overview" onClick={onNavigate} aria-label="BOOOM More home">
+        <Link href="/overview" onClick={onNavigate} aria-label={`${APP_NAME} home`}>
           <Logo />
         </Link>
       </div>

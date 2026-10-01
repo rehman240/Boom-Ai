@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { APP_NAME } from "@/lib/brand";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const spaceGrotesk = Space_Grotesk({ variable: "--font-space-grotesk", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "BOOOM More", template: "%s | BOOOM More" },
+  title: { default: APP_NAME, template: `%s | ${APP_NAME}` },
   description: "AI campaign workspace: from business idea to a ready campaign package.",
 };
 

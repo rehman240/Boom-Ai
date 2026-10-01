@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ArrowRight } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
+import { APP_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 
@@ -15,7 +16,7 @@ const COPY = {
     title: "Welcome back",
     subtitle: "Sign in to continue your campaigns.",
     submit: "Sign in",
-    switchText: "New to BOOOM More?",
+    switchText: `New to ${APP_NAME}?`,
     switchLink: "Create an account",
     switchHref: "/signup",
   },

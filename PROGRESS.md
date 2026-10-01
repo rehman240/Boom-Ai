@@ -168,8 +168,12 @@
 - Brand art (1 Oct): the client sent the BOOOM logo, BOOOM + More logo and two binary tunnel
   backgrounds as WhatsApp JPEGs. These are too compressed for the app and have no
   transparent background. Ali is asking Rehman for the original files.
-- Colour trial (1 Oct): a royal blue version of the theme, closer to the logo, was tried
-  locally and is waiting on Ali's decision. It is not committed.
+- Colours (1 Oct): the theme now uses the royal blue, cyan and red of the logo (Ali approved).
+  Text still passes WCAG AA.
+- Name (1 Oct): the product name is in one place, `frontend/src/lib/brand.ts` and
+  `backend/app/brand.py` (BRAND = "BOOOM", PRODUCT = "More"). To rename it, change PRODUCT
+  in both files, or set it to "" to show just BOOOM. The tagline "Make more from your idea"
+  is ordinary copy, so it stays as it is.
 - Name: the client wants BOOOM with three O's everywhere. Renaming the repo (now "Boom-Ai")
   is up to Rehman.
 - Domain: the client owns booom.com. Plan: a subdomain such as app.booom.com at launch.

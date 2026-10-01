@@ -6,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import inspect, select
 from sqlalchemy.orm import Session
 
+from app.brand import APP_SLUG
 from app.config import get_settings
 from app.db import get_db
 from app.deps import get_current_user
@@ -112,7 +113,7 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
     track(db, "data_exported", user_id=user.id)
     db.commit()
 
-    filename = f"booom-more-export-{datetime.now(UTC):%Y-%m-%d}.json"
+    filename = f"{APP_SLUG}-export-{datetime.now(UTC):%Y-%m-%d}.json"
     return Response(
         content=json.dumps(jsonable_encoder(payload), indent=2),
         media_type="application/json",

@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.brand import APP_NAME
 from app.config import get_settings
 from app.rate_limit import GlobalRateLimitMiddleware
 from app.routers import account, auth, briefs, health, jobs, projects, uploads
@@ -14,7 +15,7 @@ def create_app() -> FastAPI:
     # collects them. Log lines carry ids and error types only, never campaign text.
     logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s: %(message)s")
     app = FastAPI(
-        title="BOOOM More API",
+        title=f"{APP_NAME} API",
         # Hide interactive docs in production.
         docs_url=None if settings.is_production else "/docs",
         redoc_url=None,
