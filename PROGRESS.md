@@ -120,7 +120,11 @@
   964 output tokens, about $0.026 per summary at $4 / $20 per million tokens.
 
 ## Next (Week 1)
-11. Deploy (needs Supabase, Render, Vercel accounts from Ali).
+11. Deploy (needs Supabase, Render, Vercel accounts from Ali). As of the evening of 1 Oct,
+    no logins have arrived and the client hasn't replied.
+    - Fallback if they don't arrive: record a 3 to 4 minute Week 1 demo video on the local
+      app with the real Claude summary on, and share it with the client. Prepare a demo
+      script and a ready sample brief first.
 12. Test and wrap up.
 
 ## Decisions agreed with Ali (28 Sep 2026)
