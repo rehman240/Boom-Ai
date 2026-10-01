@@ -6,27 +6,27 @@
  * Text colours are chosen for WCAG AA contrast on the surfaces they sit on.
  */
 :root {
-  --bg: #060b16;
-  --surface: #0b1527;
-  --surface-2: #101d34;
-  --surface-3: #162946;
-  --border: #1b2c48;
-  --border-strong: #2a4167;
+  --bg: #040a1e;
+  --surface: #08132f;
+  --surface-2: #0c1b3d;
+  --surface-3: #12264f;
+  --border: #172a58;
+  --border-strong: #26407e;
 
   --text: #eaf1fb;
-  --text-muted: #9fb0c8;
-  --text-subtle: #7a8ca8;
+  --text-muted: #a3b3d1;
+  --text-subtle: #7f91b5;
 
-  --primary: #1a6ee0;
-  --primary-hover: #2a7ff2;
-  --cyan: #5ad1ff;
+  --primary: #2456f0;
+  --primary-hover: #3466ff;
+  --cyan: #2ec8ff;
   --success: #3ddc97;
   --warning: #f5c451;
   --danger: #ff7a7a;
 
-  --accent-red: #ff4d6d;
-  --accent-green: #2ee59d;
-  --accent-blue: #3aa0ff;
+  --accent-red: #ff4d55;
+  --accent-green: #2fe07a;
+  --accent-blue: #3f8cff;
 
   color-scheme: dark;
 }

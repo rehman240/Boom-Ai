@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
           className="pointer-events-none absolute top-1/2 -right-40 h-[560px] w-[560px] -translate-y-1/2 rounded-full"
           style={{
             background:
-              "repeating-radial-gradient(circle, rgba(90,209,255,0.10) 0 1px, transparent 1px 22px)",
+              "repeating-radial-gradient(circle, rgba(46,200,255,0.10) 0 1px, transparent 1px 22px)",
             maskImage: "radial-gradient(circle, black 30%, transparent 70%)",
           }}
         />

@@ -9,7 +9,7 @@ const base =
   "disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-white hover:bg-primary-hover shadow-[0_8px_24px_-12px_rgba(26,110,224,0.8)]",
+  primary: "bg-primary text-white hover:bg-primary-hover shadow-[0_8px_24px_-12px_rgba(36,86,240,0.8)]",
   secondary: "bg-surface-2 text-text border border-border-strong hover:bg-surface-3",
   ghost: "text-muted hover:text-text hover:bg-surface-2",
   // Destructive actions. A background colour passed in className cannot override the

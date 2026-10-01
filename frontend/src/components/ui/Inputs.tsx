@@ -8,7 +8,7 @@ const labelClass = "mb-2 block text-xs font-semibold uppercase tracking-wider te
 const controlClass = (error?: string) =>
   "w-full rounded-xl border bg-bg/60 px-4 text-[15px] text-text placeholder:text-subtle " +
   "transition-colors focus:outline-none focus-visible:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/25 " +
-  (error ? "border-danger" : "border-border-strong hover:border-[#35507c]");
+  (error ? "border-danger" : "border-border-strong hover:border-[#33529a]");
 
 function Shell({
   id,
@@ -147,7 +147,7 @@ export function ChipGroup({
                 "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors " +
                 (on
                   ? "border-primary bg-primary/20 text-cyan"
-                  : "border-border-strong text-muted hover:border-[#35507c] hover:text-text")
+                  : "border-border-strong text-muted hover:border-[#33529a] hover:text-text")
               }
             >
               {option}

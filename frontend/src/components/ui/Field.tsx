@@ -30,7 +30,7 @@ export function Field({ label, hint, error, required, className = "", ...rest }:
         className={
           "h-12 w-full rounded-xl border bg-bg/60 px-4 text-[15px] text-text placeholder:text-subtle " +
           "transition-colors focus:outline-none focus-visible:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/25 " +
-          (error ? "border-danger" : "border-border-strong hover:border-[#35507c]")
+          (error ? "border-danger" : "border-border-strong hover:border-[#33529a]")
         }
         {...rest}
       />

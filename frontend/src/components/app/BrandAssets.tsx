@@ -108,7 +108,7 @@ export function BrandAssets({ projectId, readOnly }: { projectId: string; readOn
                 type="button"
                 onClick={() => logoInput.current?.click()}
                 disabled={busy}
-                className="flex w-full items-center gap-2 rounded-2xl border border-dashed border-border-strong px-4 py-3 text-sm text-muted hover:border-[#35507c] hover:text-text disabled:opacity-50"
+                className="flex w-full items-center gap-2 rounded-2xl border border-dashed border-border-strong px-4 py-3 text-sm text-muted hover:border-[#33529a] hover:text-text disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" /> Add a logo
               </button>

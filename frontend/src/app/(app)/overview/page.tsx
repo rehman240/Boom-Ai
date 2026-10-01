@@ -304,7 +304,7 @@ function Rings() {
       aria-hidden="true"
       className="pointer-events-none absolute top-1/2 -right-32 h-[420px] w-[420px] -translate-y-1/2 rounded-full"
       style={{
-        background: "repeating-radial-gradient(circle, rgba(90,209,255,0.12) 0 1px, transparent 1px 20px)",
+        background: "repeating-radial-gradient(circle, rgba(46,200,255,0.12) 0 1px, transparent 1px 20px)",
         maskImage: "radial-gradient(circle, black 25%, transparent 70%)",
       }}
     />
