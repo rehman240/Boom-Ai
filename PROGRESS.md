@@ -118,14 +118,19 @@
   answer in 15.6 s, schema check and safety pass both fine, no invented prices or numbers,
   and it flagged "Charges your phone while you work" for review. Usage was 1,677 input and
   964 output tokens, about $0.026 per summary at $4 / $20 per million tokens.
+- 2 Oct: Week 1 report with 7 screenshots, and a 3 min 41 s demo video with no voice and
+  on-screen step captions (in `Week-1-Report/`, not committed). The video covers sign up,
+  dashboard actions, the brief, uploads, a real Claude summary, settings and the phone view.
+  It used one real AI call; practice runs used the mock provider. Ali sent it to Rehman for
+  client review.
+- 2 Oct: fixed the brief sidebar on short laptop screens. After uploads it was taller than a
+  900px screen, so "Review brief" only showed at the very bottom of the page. It is now capped
+  at the screen height and scrolls inside. Checked at 1440x900, 1280x720, 1440x1200 and 390px.
 
 ## Next (Week 1)
-11. Deploy (needs Supabase, Render, Vercel accounts from Ali). As of the evening of 1 Oct,
-    no logins have arrived and the client hasn't replied.
-    - Fallback if they don't arrive: record a 3 to 4 minute Week 1 demo video on the local
-      app with the real Claude summary on, and share it with the client. Prepare a demo
-      script and a ready sample brief first.
-12. Test and wrap up.
+11. Deploy (needs Supabase, Render, Vercel accounts). Still no logins as of 2 Oct.
+12. Test and wrap up, then propose the Week 2 task list.
+- Waiting on client feedback on the demo video.
 
 ## Decisions agreed with Ali (28 Sep 2026)
 - Brief includes all client-brief fields; currency fixed to USD.
