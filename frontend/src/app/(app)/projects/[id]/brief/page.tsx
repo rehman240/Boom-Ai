@@ -333,8 +333,9 @@ export default function BriefPage() {
         </div>
 
         {/* Sticky on wide screens, so the required-fields checklist stays in view while
-            the form is filled in. */}
-        <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+            the form is filled in. Capped at the screen height and scrollable, or on a short
+            laptop screen the button at the bottom would sit out of reach. */}
+        <div className="space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-6rem)] lg:self-start lg:overflow-y-auto">
           {load.status === "ready" ? <BrandAssets projectId={id} readOnly={readOnly} /> : null}
 
           <section className="rounded-3xl border border-border bg-surface p-6">
