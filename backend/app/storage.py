@@ -5,6 +5,7 @@ S3-compatible bucket (Supabase Storage now, S3 later) for deployment. Nothing ou
 this module knows which one is in use.
 """
 
+import logging
 from functools import lru_cache
 from pathlib import Path
 from typing import Protocol
@@ -12,6 +13,9 @@ from typing import Protocol
 from fastapi import HTTPException
 
 from app.config import get_settings
+
+
+log = logging.getLogger(__name__)
 
 
 class StorageError(Exception):
@@ -104,3 +108,13 @@ def get_storage() -> Storage:
 def storage_error() -> HTTPException:
     """One message for the user; the cause stays in the server logs."""
     return HTTPException(status_code=502, detail="File storage is unavailable. Please try again.")
+
+
+def delete_quietly(storage: Storage, keys: list[str]) -> None:
+    """Remove stored files whose rows are already gone. A failure is logged, not raised:
+    the user's delete has happened, and an error page would suggest it hadn't."""
+    for key in keys:
+        try:
+            storage.delete(key)
+        except StorageError:
+            log.warning("Could not delete stored file %s", key)

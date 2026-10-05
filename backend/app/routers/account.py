@@ -17,6 +17,7 @@ from app.schemas.account import AccountDelete, EmailChange, PasswordChange, Work
 from app.schemas.auth import UserOut
 from app.security import hash_password, verify_password
 from app.session import clear_session_cookie, set_session_cookie
+from app.storage import Storage, delete_quietly, get_storage
 
 router = APIRouter(prefix="/account", tags=["account"])
 
@@ -128,11 +129,21 @@ def delete_account(
     response: Response,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    storage: Storage = Depends(get_storage),
 ) -> None:
     if not verify_password(body.password, user.password_hash):
         raise WRONG_PASSWORD
-    # Campaigns, briefs, uploads and jobs go with the account (ON DELETE CASCADE).
+    # Campaigns, briefs, uploads and jobs go with the account (ON DELETE CASCADE). The
+    # files are not rows, so they are removed from storage once the delete is saved.
+    keys = list(
+        db.scalars(
+            select(Upload.storage_key)
+            .join(Project, Upload.project_id == Project.id)
+            .where(Project.owner_id == user.id)
+        )
+    )
     db.delete(user)
     track(db, "account_deleted")
     db.commit()
+    delete_quietly(storage, keys)
     clear_session_cookie(response)

@@ -174,3 +174,30 @@ def test_signed_out_user_cannot_upload(client):
     project_id = start(client)
     client.cookies.clear()
     assert upload(client, project_id).status_code == 401
+
+
+def _gone(storage, key):
+    try:
+        storage.read(key)
+    except Exception:
+        return True
+    return False
+
+
+def test_deleting_a_campaign_removes_its_files_from_storage(client, storage, db):
+    project_id = start(client)
+    item = upload(client, project_id).json()
+    key = db.get(Upload, item["id"]).storage_key
+
+    assert client.delete(f"/projects/{project_id}").status_code == 204
+    assert _gone(storage, key)
+
+
+def test_deleting_the_account_removes_every_file_from_storage(client, storage, db):
+    project_id = start(client)
+    keys = [db.get(Upload, upload(client, project_id).json()["id"]).storage_key for _ in range(2)]
+    other = client.post("/projects", json={"name": "Second"}).json()["id"]
+    keys.append(db.get(Upload, upload(client, other).json()["id"]).storage_key)
+
+    assert client.post("/account/delete", json={"password": "good-password"}).status_code == 204
+    assert all(_gone(storage, k) for k in keys)

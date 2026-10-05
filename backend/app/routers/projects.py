@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.deps import get_current_user, get_editable_project, get_owned_project
 from app.events import track
-from app.models import Brief, Project, ProjectStatus, User
+from app.models import Brief, Project, ProjectStatus, Upload, User
 from app.schemas.project import DashboardOut, ProjectCreate, ProjectOut, ProjectRename, WorkspaceStats
+from app.storage import Storage, delete_quietly, get_storage
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -106,8 +107,12 @@ def delete_project(
     project: Project = Depends(get_editable_project),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
+    storage: Storage = Depends(get_storage),
 ) -> None:
     # Brief, uploads and jobs go with it (ON DELETE CASCADE); events keep only a null id.
+    # The files themselves are not rows, so they are removed from storage separately.
+    keys = list(db.scalars(select(Upload.storage_key).where(Upload.project_id == project.id)))
     db.delete(project)
     track(db, "project_deleted", user_id=user.id)
     db.commit()
+    delete_quietly(storage, keys)

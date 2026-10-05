@@ -24,9 +24,9 @@ export function StepsDiagram() {
         const Icon = step.icon;
         const last = i === STEPS.length - 1;
         return (
-          <li key={step.word} className="flex flex-col items-center">
+          <li key={step.word} className="flex flex-col items-center lg:items-stretch">
             <div
-              className={`steps-box flex w-full items-center gap-4 px-6 py-5 text-left text-white lg:min-h-44 lg:flex-col lg:justify-center lg:gap-3 lg:text-center ${
+              className={`steps-box flex w-full items-center gap-4 px-6 py-5 text-left text-white lg:min-h-44 lg:flex-1 lg:flex-col lg:justify-center lg:gap-3 lg:text-center ${
                 i === 0 ? "steps-first" : ""
               } ${last ? "steps-last" : ""}`}
               style={{ backgroundColor: step.color, animationDelay: `${i * 2}s` }}

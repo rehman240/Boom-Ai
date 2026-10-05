@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Check, Download } from "lucide-react";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useSetUser, useUser } from "@/components/app/UserContext";
@@ -78,16 +79,16 @@ export default function SettingsPage() {
           </a>
         </Section>
 
-        <Section title="Privacy" description="What this app stores today.">
+        <Section title="Privacy" description="What this app stores, and your rights under GDPR and PIPL.">
           <ul className="list-disc space-y-2 pl-5 text-sm text-muted marker:text-subtle">
             <li>Your campaigns are private to this account. No one else can open them.</li>
             <li>Passwords are stored as Argon2 hashes. We never store the password itself.</li>
             <li>Usage events record an event name and ids only, never your campaign text.</li>
             <li>Uploaded files are kept in private storage, and are deleted with their campaign.</li>
-            <li className="text-subtle">
-              Data retention and AI provider handling are still being confirmed and will be stated here before launch.
-            </li>
           </ul>
+          <Link href="/privacy" className="mt-4 inline-block text-base font-semibold text-cyan underline underline-offset-4">
+            Read the full privacy page
+          </Link>
         </Section>
 
         <Section title="Billing" description="Not part of this release.">

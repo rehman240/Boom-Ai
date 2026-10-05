@@ -122,6 +122,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {mode === "signup" ? (
+          <p className="text-sm text-muted">
+            We keep only what you enter, behind your password. Read{" "}
+            <Link href="/privacy" className="font-semibold text-cyan underline underline-offset-2">
+              how we handle your data
+            </Link>
+            .
+          </p>
+        ) : null}
+
         <Button type="submit" loading={loading} className="w-full">
           {copy.submit}
           {loading ? null : <ArrowRight className="h-4 w-4" aria-hidden="true" />}

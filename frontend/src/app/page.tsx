@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { getImageProps } from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
@@ -74,7 +74,38 @@ export default function Home() {
             </Link>
           </p>
         </section>
+
+        <section
+          aria-labelledby="privacy-title"
+          className="flex w-full max-w-4xl flex-col items-center gap-4 rounded-3xl border border-border bg-surface p-8 sm:flex-row sm:text-left"
+        >
+          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-primary/20 text-cyan">
+            <ShieldCheck className="h-9 w-9" aria-hidden="true" />
+          </span>
+          <div className="flex-1">
+            <h2 id="privacy-title" className="font-display text-2xl font-bold sm:text-3xl">
+              Your data stays yours.
+            </h2>
+            <p className="mt-2 text-lg text-muted">
+              Built to the principles of Europe&apos;s GDPR and China&apos;s PIPL. We keep only what you enter, behind
+              your password.
+            </p>
+          </div>
+          <Link
+            href="/privacy"
+            className="text-lg font-semibold whitespace-nowrap text-cyan underline underline-offset-4"
+          >
+            How we handle data
+          </Link>
+        </section>
       </main>
+
+      <footer className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 border-t border-border py-8 text-base text-muted sm:flex-row sm:justify-between">
+        <span>#yourworldforyou · WWW.BOOOM.COM™</span>
+        <Link href="/privacy" className="font-semibold hover:text-text">
+          Privacy and your data
+        </Link>
+      </footer>
     </div>
   );
 }
