@@ -46,7 +46,7 @@ export function Sidebar({ workspaceName, onNavigate }: { workspaceName: string; 
       </div>
 
       <nav aria-label="Workspace" className="flex-1 px-3">
-        <p className="px-3 pb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-subtle">Workspace</p>
+        <p className="px-3 pb-3 text-sm font-semibold uppercase tracking-[0.14em] text-subtle">Workspace</p>
         <ul className="space-y-1">
           {NAV.map(({ label, href, icon: Icon }) => {
             const active = href ? pathname.startsWith(href) : false;
@@ -75,7 +75,7 @@ export function Sidebar({ workspaceName, onNavigate }: { workspaceName: string; 
           Settings
         </Link>
         <div className="mt-3 flex items-center gap-3 px-3">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-surface-3 text-xs font-bold text-cyan" aria-hidden="true">
+          <span className="grid h-8 w-8 place-items-center rounded-lg bg-surface-3 text-sm font-bold text-cyan" aria-hidden="true">
             {initials(workspaceName) || "W"}
           </span>
           <span className="truncate text-sm text-muted">{workspaceName}</span>

@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-xl px-4 h-11 text-sm font-semibold transition-colors " +
+  "inline-flex items-center justify-center gap-2 rounded-xl px-5 h-12 text-base font-semibold transition-colors " +
   "disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50";
 
 const variants: Record<Variant, string> = {

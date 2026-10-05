@@ -28,14 +28,14 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         </Link>
 
         <div className="relative max-w-md">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan">AI campaign workspace</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-cyan">AI campaign workspace</p>
           <h2 className="mt-4 font-display text-5xl leading-[1.05] font-bold tracking-tight">
             Make more
             <br />
             <span className="bg-linear-to-r from-cyan to-accent-blue bg-clip-text text-transparent">from your idea.</span>
           </h2>
           <p className="mt-5 text-lg text-muted">
-            Find your audience. Shape the campaign. Create the assets. Plan the budget.
+            Find your audience. Shape the campaign. Create the assets (ads, emails, posts). Plan the budget.
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
           <Logo withProduct />
         </Link>
         <div className="m-auto w-full max-w-sm py-10">{children}</div>
-        <p className="text-center text-xs text-subtle">AI suggests. You decide. Nothing is published or spent for you.</p>
+        <p className="text-center text-sm text-subtle">AI suggests. You decide. Nothing is published or spent for you.</p>
       </main>
     </div>
   );

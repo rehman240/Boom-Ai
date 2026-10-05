@@ -89,16 +89,18 @@ export function BrandAssets({ projectId, readOnly }: { projectId: string; readOn
 
   return (
     <section className="rounded-3xl border border-border bg-surface p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">Brand assets</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-subtle">Brand assets</p>
       <h2 className="mt-2 font-display text-xl font-bold">Bring your brand in</h2>
-      <p className="mt-2 text-sm text-muted">Add a logo or reference files. You can do this later.</p>
+      <p className="mt-2 text-sm text-muted">
+        Your logo, plus anything that shows your style: product photos, old ads, a brand guide. You can do this later.
+      </p>
 
       {files === null ? (
         <div className="mt-5 h-28 animate-pulse rounded-2xl bg-surface-2" role="status" aria-label="Loading files" />
       ) : (
         <>
           <div className="mt-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Logo</p>
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted">Logo</p>
             {logo ? (
               <FileRow upload={logo} projectId={projectId} readOnly={readOnly} busy={busy} onRemove={remove} />
             ) : readOnly ? (
@@ -116,7 +118,7 @@ export function BrandAssets({ projectId, readOnly }: { projectId: string; readOn
           </div>
 
           <div className="mt-5">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Reference files</p>
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted">Reference files</p>
             {references.length > 0 ? (
               <ul className="mb-3 space-y-2">
                 {references.map((f) => (
@@ -157,17 +159,17 @@ export function BrandAssets({ projectId, readOnly }: { projectId: string; readOn
                       <UploadIcon className="h-4 w-4" aria-hidden="true" />
                       {full ? `Limit of ${MAX_FILES} files reached` : "Upload files"}
                     </button>
-                    {full ? null : <p className="mt-1 text-xs text-subtle">or drop them here</p>}
+                    {full ? null : <p className="mt-1 text-sm text-subtle">or drop them here</p>}
                   </>
                 )}
               </div>
             )}
           </div>
 
-          <p className="mt-3 text-xs text-subtle">PNG, JPEG, WebP or PDF, up to {MAX_MB} MB each.</p>
+          <p className="mt-3 text-sm text-subtle">PNG, JPEG, WebP or PDF, up to {MAX_MB} MB each.</p>
 
           {error ? (
-            <p className="mt-3 text-xs text-danger" role="alert">
+            <p className="mt-3 text-sm text-danger" role="alert">
               {error}
             </p>
           ) : null}
@@ -234,7 +236,7 @@ function FileRow({
       </a>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{upload.original_filename}</p>
-        <p className="text-xs text-subtle">{formatSize(upload.size_bytes)}</p>
+        <p className="text-sm text-subtle">{formatSize(upload.size_bytes)}</p>
       </div>
       {readOnly ? null : (
         <button

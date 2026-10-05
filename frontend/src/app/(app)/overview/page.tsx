@@ -123,7 +123,7 @@ export default function OverviewPage() {
               <Stat
                 label="Assets drafted"
                 value={load.data.stats.assets_drafted}
-                note="Creative assets appear here once you generate them."
+                note="Assets are what you publish: ad text, emails, social posts. They show here once made."
               />
               <Stat label="Ready to export" value={load.data.stats.ready_to_export} />
             </div>
@@ -154,7 +154,7 @@ export default function OverviewPage() {
                     </div>
                     {/* Status stays visible on a phone: the brief asks for status at a glance. */}
                     <span
-                      className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold sm:px-3 ${statusStyle(p.status)}`}
+                      className={`shrink-0 rounded-full border px-2.5 py-1 text-sm font-semibold sm:px-3 ${statusStyle(p.status)}`}
                     >
                       {statusLabel(p.status)}
                     </span>
@@ -239,7 +239,7 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-surface-3 text-cyan">
         <Sparkles className="h-5 w-5" aria-hidden="true" />
       </span>
-      <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-subtle">New campaign</p>
+      <p className="mt-6 text-sm font-semibold uppercase tracking-[0.14em] text-subtle">New campaign</p>
       <h2 className="mt-2 font-display text-2xl font-bold">Start with the idea.</h2>
       <p className="mt-2 max-w-md text-muted">
         A few details about your offer become a working campaign brief. You stay in control of every step.
@@ -255,7 +255,7 @@ function ContinueCard({ project }: { project: Project }) {
   return (
     <section className="relative overflow-hidden rounded-3xl border border-border bg-surface p-6 sm:p-8 lg:col-span-2">
       <Rings />
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">Continue working</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-subtle">Continue working</p>
       <h2 className="mt-2 font-display text-2xl font-bold">
         <span className="line-clamp-2">{project.name}</span>
       </h2>
@@ -263,7 +263,7 @@ function ContinueCard({ project }: { project: Project }) {
         Next step: {stageLabel(project.stage)}. Edited {editedWhen(project.updated_at)}.
       </p>
       <div className="mt-6 flex flex-wrap items-center gap-3">
-        <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle(project.status)}`}>
+        <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${statusStyle(project.status)}`}>
           {statusLabel(project.status)}
         </span>
         <ButtonLink href={projectHref(project)} className="ml-auto">
@@ -277,7 +277,7 @@ function ContinueCard({ project }: { project: Project }) {
 function NewCampaignCard({ onCreate }: { onCreate: () => void }) {
   return (
     <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">New campaign</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-subtle">New campaign</p>
       <h2 className="mt-2 font-display text-2xl font-bold">Start with the idea.</h2>
       <p className="mt-2 text-muted">A few details about your offer become a working campaign brief.</p>
       <Button className="mt-6" onClick={onCreate}>
@@ -290,9 +290,9 @@ function NewCampaignCard({ onCreate }: { onCreate: () => void }) {
 function Stat({ label, value, note }: { label: string; value: number; note?: string }) {
   return (
     <div className="rounded-3xl border border-border bg-surface p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">{label}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-subtle">{label}</p>
       <p className="mt-2 font-display text-4xl font-bold tabular-nums">{value}</p>
-      {note && value === 0 ? <p className="mt-2 text-xs text-subtle">{note}</p> : null}
+      {note && value === 0 ? <p className="mt-2 text-sm text-subtle">{note}</p> : null}
     </div>
   );
 }

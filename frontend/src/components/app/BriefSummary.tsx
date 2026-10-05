@@ -124,7 +124,7 @@ export function SummaryAction({
         <Button className="w-full" loading disabled>
           Reading your brief…
         </Button>
-        <p className="mt-3 text-xs text-subtle" role="status">
+        <p className="mt-3 text-sm text-subtle" role="status">
           This usually takes under a minute. It keeps going if you leave or refresh the page.
         </p>
       </>
@@ -166,7 +166,7 @@ export function SummaryAction({
           {outdated ? "Refresh summary" : failed ? "Try again" : "Review brief"}
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
-        <p className="mt-3 text-xs text-subtle">
+        <p className="mt-3 text-sm text-subtle">
           {ready
             ? `${APP_NAME} summarises your brief so you can check the facts before any ideas are generated.`
             : `${missingCount} required ${missingCount === 1 ? "field" : "fields"} still to fill in.`}
@@ -233,18 +233,18 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
     <section ref={sectionRef} id="brief-summary" className="mt-4 scroll-mt-20 rounded-3xl border border-border bg-surface p-6 sm:p-8" aria-labelledby="brief-summary-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-cyan">
+          <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-cyan">
             <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> AI summary
           </p>
           <h2 id="brief-summary-title" ref={headingRef} tabIndex={-1} className="mt-2 font-display text-xl font-bold outline-none">
             Check the facts before generating
           </h2>
-          <p className="mt-1 text-xs text-subtle">
+          <p className="mt-1 text-sm text-subtle">
             Made {formatDate(summary.generated_at)} · {summary.provider === "mock" ? "test mode (no AI model)" : summary.model} ·{" "}
             {summary.prompt_version}
           </p>
         </div>
-        <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${badge.className}`}>
+        <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold ${badge.className}`}>
           <badge.Icon className="h-3.5 w-3.5" aria-hidden="true" /> {badge.text}
         </span>
       </div>
@@ -278,7 +278,7 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
                 <dt className="text-sm text-subtle">{f.label}</dt>
                 <dd className="text-sm text-text">
                   {f.value}
-                  <span className="mt-1 block text-xs text-subtle">Based on: {SOURCE_LABELS[f.source] ?? f.source}</span>
+                  <span className="mt-1 block text-sm text-subtle">Based on: {SOURCE_LABELS[f.source] ?? f.source}</span>
                 </dd>
               </div>
             ))}
@@ -294,7 +294,7 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
               <ul className="mt-3 space-y-3">
                 {data.review_flags.map((f, i) => (
                   <li key={i} className="rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-warning">{FLAG_LABELS[f.category] ?? f.category}</p>
+                    <p className="text-sm font-semibold uppercase tracking-wide text-warning">{FLAG_LABELS[f.category] ?? f.category}</p>
                     <p className="mt-1 text-text">&ldquo;{f.claim}&rdquo;</p>
                     <p className="mt-1 text-muted">{f.reason}</p>
                   </li>
@@ -349,7 +349,7 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
 function KeyCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="rounded-2xl border border-border bg-surface-2 p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-subtle">{title}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.12em] text-subtle">{title}</p>
       <div className="mt-2 text-sm text-text">{children}</div>
     </div>
   );
@@ -359,7 +359,7 @@ function ListBlock({ title, note, empty, items }: { title: string; note?: string
   return (
     <div>
       <h3 className="text-sm font-semibold text-text">{title}</h3>
-      {note ? <p className="text-xs text-subtle">{note}</p> : null}
+      {note ? <p className="text-sm text-subtle">{note}</p> : null}
       {items.length ? (
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-muted">
           {items.map((item) => (

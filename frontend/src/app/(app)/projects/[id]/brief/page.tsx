@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Check, CloudOff, Loader2, Lock } from "lucide-react";
 import { BrandAssets } from "@/components/app/BrandAssets";
+import { BriefGuide, goToField, missingFields } from "@/components/app/BriefGuide";
 import { SummaryAction, SummaryPanel, useBriefSummary } from "@/components/app/BriefSummary";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useUser } from "@/components/app/UserContext";
@@ -165,7 +166,7 @@ export default function BriefPage() {
         <div className="space-y-4 lg:col-span-2">
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-display text-xl font-bold">Your offer</h2>
+              <SectionTitle step={1} title="Your offer" />
               <SaveIndicator {...autosave} readOnly={readOnly} />
             </div>
 
@@ -231,7 +232,7 @@ export default function BriefPage() {
           </section>
 
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <h2 className="font-display text-xl font-bold">The campaign</h2>
+            <SectionTitle step={2} title="The campaign" />
             <div className="mt-6 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <Select
@@ -301,7 +302,7 @@ export default function BriefPage() {
           </section>
 
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <h2 className="font-display text-xl font-bold">Voice and limits</h2>
+            <SectionTitle step={3} title="Voice and limits" />
             <div className="mt-6 space-y-5">
               <ChipGroup
                 label="Brand voice"
@@ -339,25 +340,31 @@ export default function BriefPage() {
           {load.status === "ready" ? <BrandAssets projectId={id} readOnly={readOnly} /> : null}
 
           <section className="rounded-3xl border border-border bg-surface p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-subtle">Before generation</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-subtle">Before generation</p>
             <p className="mt-2 text-sm text-muted">
-              Review the brief and confirm the extracted facts before generating ideas.
+              Fill in these fields, then review the brief. Tap one to jump to it.
             </p>
             <ul className="mt-5 space-y-2">
               {Object.entries(REQUIRED_LABELS).map(([key, label]) => {
                 const done = !missing.includes(key);
                 return (
-                  <li key={key} className="flex items-center gap-2.5 text-sm">
-                    <span
-                      className={
-                        "grid h-5 w-5 shrink-0 place-items-center rounded-full border " +
-                        (done ? "border-success/50 bg-success/15 text-success" : "border-border-strong text-subtle")
-                      }
+                  <li key={key}>
+                    <button
+                      type="button"
+                      onClick={() => goToField(key)}
+                      className="flex w-full items-center gap-2.5 rounded-lg py-1 text-left text-base hover:text-text"
                     >
-                      {done ? <Check className="h-3 w-3" aria-hidden="true" /> : null}
-                    </span>
-                    <span className={done ? "text-muted" : "text-subtle"}>{label}</span>
-                    <span className="sr-only">{done ? "filled in" : "still needed"}</span>
+                      <span
+                        className={
+                          "grid h-6 w-6 shrink-0 place-items-center rounded-full border " +
+                          (done ? "border-success/50 bg-success/15 text-success" : "border-border-strong text-subtle")
+                        }
+                      >
+                        {done ? <Check className="h-4 w-4" aria-hidden="true" /> : null}
+                      </span>
+                      <span className={done ? "text-muted" : "text-text"}>{label}</span>
+                      <span className="sr-only">{done ? "filled in" : "still needed"}</span>
+                    </button>
                   </li>
                 );
               })}
@@ -365,19 +372,41 @@ export default function BriefPage() {
           </section>
 
           {load.status === "ready" ? (
-            <SummaryAction
-              s={summaryUi}
-              projectId={id}
-              ready={ready && autosave.status !== "error"}
-              missingCount={missing.length}
-              readOnly={readOnly}
-            />
+            <div id="review-brief">
+              <SummaryAction
+                s={summaryUi}
+                projectId={id}
+                ready={ready && autosave.status !== "error"}
+                missingCount={missing.length}
+                readOnly={readOnly}
+              />
+            </div>
           ) : null}
         </div>
       </div>
 
       <SummaryPanel s={summaryUi} projectId={id} readOnly={readOnly} />
+
+      {disabled ? null : (
+        <>
+          {/* Room for the guide bar, so it never covers the end of the page. */}
+          <div className="h-24 lg:hidden" aria-hidden="true" />
+          <BriefGuide missing={missingFields(draft)} reviewId="review-brief" />
+        </>
+      )}
     </>
+  );
+}
+
+function SectionTitle({ step, title }: { step: number; title: string }) {
+  return (
+    <h2 className="font-display text-2xl font-bold">
+      <span className="mr-3 inline-grid h-9 w-9 place-items-center rounded-full bg-primary/20 align-middle text-lg text-cyan">
+        {step}
+      </span>
+      {title}
+      <span className="sr-only"> (part {step} of 3)</span>
+    </h2>
   );
 }
 

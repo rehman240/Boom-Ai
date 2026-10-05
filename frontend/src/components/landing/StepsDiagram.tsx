@@ -1,13 +1,14 @@
 import { ChevronDown, Images, Lightbulb, Target, Wallet, type LucideIcon } from "lucide-react";
 
-type Step = { lead: string; word: string; icon: LucideIcon; color: string };
+type Step = { lead: string; word: string; icon: LucideIcon; color: string; example?: string };
 
 // The four steps of the product, in the order the user meets them. Each colour keeps white
 // text at AA contrast for large bold type.
 const STEPS: Step[] = [
   { lead: "Find your", word: "Audience", icon: Target, color: "#2456f0" },
   { lead: "Shape the", word: "Campaign", icon: Lightbulb, color: "#0e7490" },
-  { lead: "Create the", word: "Assets", icon: Images, color: "#15803d" },
+  // "Assets" is advertising language, so it gets plain examples.
+  { lead: "Create the", word: "Assets", icon: Images, color: "#15803d", example: "ads, emails, posts" },
   { lead: "Plan the", word: "Budget", icon: Wallet, color: "#c2410c" },
 ];
 
@@ -39,6 +40,7 @@ export function StepsDiagram() {
                   {step.lead}
                 </span>
                 <span className="block font-display text-3xl font-bold">{step.word}</span>
+                {step.example ? <span className="mt-1 block text-lg font-medium text-white/90">{step.example}</span> : null}
               </span>
             </div>
             {last ? null : (

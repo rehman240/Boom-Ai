@@ -29,7 +29,7 @@ export function ProgressBar({ stage }: { stage: StageKey }) {
           return (
             <li key={s.key}>
               <div className={`h-1.5 rounded-full ${filled ? "bg-linear-to-r from-primary to-cyan" : "bg-surface-3"}`} />
-              <span className={`mt-2 hidden text-[11px] font-medium md:block ${filled ? "text-muted" : "text-subtle"}`}>
+              <span className={`mt-2 hidden text-sm font-medium md:block ${filled ? "text-muted" : "text-subtle"}`}>
                 {s.label}
               </span>
             </li>

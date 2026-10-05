@@ -23,7 +23,7 @@ function HeroArt() {
       <source media="(min-width: 640px)" srcSet={wide} />
       <source srcSet={tall} />
       {/* eslint-disable-next-line jsx-a11y/alt-text -- alt comes from getImageProps */}
-      <img {...rest} className="mx-auto h-auto max-h-[60vh] w-auto rounded-3xl object-cover sm:max-h-[28rem]" />
+      <img {...rest} className="mx-auto h-auto max-h-[42vh] w-auto rounded-3xl object-cover sm:max-h-[28rem]" />
     </picture>
   );
 }
