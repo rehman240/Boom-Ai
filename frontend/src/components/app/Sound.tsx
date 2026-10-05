@@ -126,17 +126,17 @@ export function AudioGuide({ section }: { section: string }) {
   }
 
   return (
-    // Bottom right. On the brief it sits above the guide bar that phones show there.
+    // A round headphones button, bottom right, so it never covers the form. On the brief it
+    // sits above the guide bar that phones show there.
     <button
       onClick={toggle}
-      aria-pressed={playing}
-      className={`fixed right-4 z-30 ${section === "brief" ? "bottom-28" : "bottom-6"} lg:bottom-8 flex h-14 items-center gap-2 rounded-full border border-cyan/50 bg-surface-2 px-5 text-base font-semibold text-cyan shadow-[0_8px_30px_-8px_rgba(46,200,255,0.45)] hover:bg-surface-3 lg:right-8`}
+      aria-label={`${playing ? "Stop audio guide" : "Play audio guide"}: ${guide.title}`}
+      title={playing ? "Stop audio guide" : "Audio guide"}
+      className={`fixed right-4 z-30 grid h-14 w-14 place-items-center rounded-full border border-cyan/50 bg-surface-2 text-cyan shadow-[0_8px_30px_-8px_rgba(46,200,255,0.45)] hover:bg-surface-3 lg:right-6 ${
+        section === "brief" ? "bottom-28 lg:bottom-6" : "bottom-6"
+      }`}
     >
-      {playing ? <Pause className="h-6 w-6" aria-hidden="true" /> : <Headphones className="h-6 w-6" aria-hidden="true" />}
-      <span>
-        {playing ? "Stop guide" : "Audio guide"}
-        <span className="sr-only">: {guide.title}</span>
-      </span>
+      {playing ? <Pause className="h-7 w-7" aria-hidden="true" /> : <Headphones className="h-7 w-7" aria-hidden="true" />}
     </button>
   );
 }
