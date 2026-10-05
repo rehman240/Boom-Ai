@@ -2,7 +2,7 @@ import { api } from "@/lib/api";
 
 export type Brief = {
   project_id: string;
-  user_role: UserRole | null;
+  campaign_type: CampaignType | null;
   ai_engine: AiEngine;
   business_name: string | null;
   product_or_service: string | null;
@@ -36,7 +36,7 @@ export type BriefState = {
  * Empty is "" rather than null, so every input stays controlled.
  */
 export type BriefDraft = {
-  user_role: UserRole | "";
+  campaign_type: CampaignType | "";
   ai_engine: AiEngine;
   business_name: string;
   product_or_service: string;
@@ -54,13 +54,13 @@ export type BriefDraft = {
   budget_amount: string;
 };
 
-/** Who is making the campaign. Same keys as USER_ROLES on the server. */
-export const USER_ROLES = [
-  { value: "business_owner", label: "Entrepreneur", detail: "I run an existing business" },
-  { value: "agency", label: "Agency", detail: "Marketing or advertising agency" },
-  { value: "research", label: "Research", detail: "General R&D or testing an idea" },
+/** What the campaign is for, asked per campaign. Same keys as CAMPAIGN_TYPES on the server. */
+export const CAMPAIGN_TYPES = [
+  { value: "own_business", label: "For my own business", detail: "A business I already run" },
+  { value: "client", label: "For a client", detail: "Agency or marketing work" },
+  { value: "research", label: "For research", detail: "Testing an idea or R&D" },
 ] as const;
-export type UserRole = (typeof USER_ROLES)[number]["value"];
+export type CampaignType = (typeof CAMPAIGN_TYPES)[number]["value"];
 
 /** AI engines. Only Claude is live; the others are shown so the choice is visible. */
 export const AI_ENGINES = [
@@ -112,7 +112,7 @@ export const CHANNELS = [
 
 /** Matches REQUIRED_FIELDS on the server, for the checklist in the sidebar. */
 export const REQUIRED_LABELS: Record<string, string> = {
-  user_role: "Who you are",
+  campaign_type: "What the campaign is for",
   business_name: "Business name",
   product_or_service: "Product or service",
   description: "One sentence description",
@@ -126,7 +126,7 @@ export const REQUIRED_LABELS: Record<string, string> = {
 export const COMING_SOON_CHANNELS = ["BOOOM"] as const;
 
 export const EMPTY_DRAFT: BriefDraft = {
-  user_role: "",
+  campaign_type: "",
   ai_engine: "claude",
   business_name: "",
   product_or_service: "",
@@ -147,7 +147,7 @@ export const EMPTY_DRAFT: BriefDraft = {
 /** The API uses null for empty; the form uses "" so inputs stay controlled. */
 export function toDraft(brief: Brief): BriefDraft {
   return {
-    user_role: brief.user_role ?? "",
+    campaign_type: brief.campaign_type ?? "",
     ai_engine: brief.ai_engine,
     business_name: brief.business_name ?? "",
     product_or_service: brief.product_or_service ?? "",

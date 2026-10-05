@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { Check, CloudOff, Loader2, Lock } from "lucide-react";
 import { BrandAssets } from "@/components/app/BrandAssets";
 import { BriefGuide, goToField, missingFields } from "@/components/app/BriefGuide";
-import { EngineBadge, EnginePicker, RolePicker } from "@/components/app/CampaignSetup";
+import { EngineBadge, EnginePicker, CampaignTypePicker } from "@/components/app/CampaignSetup";
 import { SummaryAction, SummaryPanel, useBriefSummary } from "@/components/app/BriefSummary";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useUser } from "@/components/app/UserContext";
@@ -41,7 +41,7 @@ type Errors = Partial<Record<keyof BriefDraft, string>>;
 /** Dates and money are empty strings in the form but null in the API. */
 function toApi(changes: Partial<BriefDraft>): Partial<BriefDraft> {
   const out: Record<string, unknown> = { ...changes };
-  for (const key of ["user_role", "budget_amount", "start_date", "end_date"]) {
+  for (const key of ["campaign_type", "budget_amount", "start_date", "end_date"]) {
     if (out[key] === "") out[key] = null;
   }
   return out as Partial<BriefDraft>;
@@ -178,7 +178,7 @@ export default function BriefPage() {
               <SaveIndicator {...autosave} readOnly={readOnly} />
             </div>
             <div className="mt-6 space-y-6">
-              <RolePicker value={draft.user_role} onChange={(v) => set("user_role", v)} disabled={disabled} />
+              <CampaignTypePicker value={draft.campaign_type} onChange={(v) => set("campaign_type", v)} disabled={disabled} />
               <EnginePicker value={draft.ai_engine} onChange={(v) => set("ai_engine", v)} disabled={disabled} />
             </div>
           </section>

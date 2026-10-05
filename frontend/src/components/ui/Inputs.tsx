@@ -3,10 +3,10 @@
 import { useId, useState, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
 
-const labelClass = "mb-2 block text-base font-semibold text-text";
+const labelClass = "mb-2 block text-lg font-semibold text-text";
 
 const controlClass = (error?: string) =>
-  "w-full rounded-xl border bg-bg/60 px-4 text-base text-text placeholder:text-subtle " +
+  "w-full rounded-xl border bg-bg/60 px-4 text-lg text-text placeholder:text-subtle " +
   "transition-colors focus:outline-none focus-visible:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/25 " +
   (error ? "border-danger" : "border-border-strong hover:border-[#33529a]");
 
@@ -37,12 +37,12 @@ function Shell({
       </label>
       {children}
       {hint && !error ? (
-        <p id={`${id}-hint`} className="mt-1.5 text-sm text-muted">
+        <p id={`${id}-hint`} className="mt-1.5 text-base text-muted">
           {hint}
         </p>
       ) : null}
       {error ? (
-        <p id={`${id}-error`} className="mt-1.5 text-sm text-danger">
+        <p id={`${id}-error`} className="mt-1.5 text-base text-danger">
           {error}
         </p>
       ) : null}
@@ -95,7 +95,7 @@ export function Select({ label, hint, error, required, options, placeholder, ...
           aria-describedby={[hint && !error ? `${id}-hint` : null, error ? `${id}-error` : null]
             .filter(Boolean)
             .join(" ") || undefined}
-          className={`${controlClass(error)} h-14 appearance-none pr-10`}
+          className={`${controlClass(error)} h-16 appearance-none pr-10`}
           {...rest}
         >
           <option value="">{placeholder ?? "Choose one"}</option>
@@ -176,7 +176,7 @@ export function ChipGroup({
           {soon}
         </p>
       ) : null}
-      {hint ? <p className="mt-2 text-sm text-muted">{hint}</p> : null}
+      {hint ? <p className="mt-2 text-base text-muted">{hint}</p> : null}
     </fieldset>
   );
 }

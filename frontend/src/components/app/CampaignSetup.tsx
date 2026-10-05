@@ -2,28 +2,28 @@
 
 import { useId, useState } from "react";
 import { Briefcase, Building2, Check, Cpu, FlaskConical, type LucideIcon } from "lucide-react";
-import { AI_ENGINES, USER_ROLES, engineLabel, type AiEngine, type UserRole } from "@/lib/brief";
+import { AI_ENGINES, CAMPAIGN_TYPES, engineLabel, type AiEngine, type CampaignType } from "@/lib/brief";
 
-const ROLE_ICONS: Record<UserRole, LucideIcon> = {
-  business_owner: Briefcase,
-  agency: Building2,
+const TYPE_ICONS: Record<CampaignType, LucideIcon> = {
+  own_business: Briefcase,
+  client: Building2,
   research: FlaskConical,
 };
 
 const legendClass = "mb-3 block text-base font-semibold text-text";
 
 /**
- * "Who are you?" as three large radio cards. Real radio inputs named "user_role", so the
+ * "Is this campaign…" as three large radio cards. Real radio inputs named "campaign_type", so the
  * keyboard works as usual and the brief guide can jump to the group.
  */
-export function RolePicker({
+export function CampaignTypePicker({
   value,
   onChange,
   disabled = false,
   compact = false,
 }: {
-  value: UserRole | "";
-  onChange: (next: UserRole) => void;
+  value: CampaignType | "";
+  onChange: (next: CampaignType) => void;
   disabled?: boolean;
   compact?: boolean;
 }) {
@@ -31,31 +31,31 @@ export function RolePicker({
   return (
     <fieldset disabled={disabled}>
       <legend className={legendClass}>
-        Who are you?
+        Is this campaign…
         <span className="ml-1 text-cyan" aria-hidden="true">
           *
         </span>
       </legend>
       <div className={`grid gap-3 ${compact ? "" : "sm:grid-cols-3"}`}>
-        {USER_ROLES.map((role) => {
-          const Icon = ROLE_ICONS[role.value];
-          const on = value === role.value;
+        {CAMPAIGN_TYPES.map((type) => {
+          const Icon = TYPE_ICONS[type.value];
+          const on = value === type.value;
           return (
             <label
-              key={role.value}
-              htmlFor={`${id}-${role.value}`}
+              key={type.value}
+              htmlFor={`${id}-${type.value}`}
               className={
                 "relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 p-4 sm:flex-col sm:items-start transition-colors has-focus-visible:outline-2 has-focus-visible:outline-cyan " +
                 (on ? "border-cyan bg-primary/15" : "border-border-strong hover:border-[#33529a]")
               }
             >
               <input
-                id={`${id}-${role.value}`}
+                id={`${id}-${type.value}`}
                 type="radio"
-                name="user_role"
-                value={role.value}
+                name="campaign_type"
+                value={type.value}
                 checked={on}
-                onChange={() => onChange(role.value)}
+                onChange={() => onChange(type.value)}
                 className="sr-only"
               />
               <span
@@ -64,8 +64,8 @@ export function RolePicker({
                 {on ? <Check className="h-6 w-6" aria-hidden="true" /> : <Icon className="h-6 w-6" aria-hidden="true" />}
               </span>
               <span className="leading-tight">
-                <span className="block text-lg font-semibold text-text">{role.label}</span>
-                <span className="mt-0.5 block text-sm text-muted">{role.detail}</span>
+                <span className="block text-lg font-semibold text-text">{type.label}</span>
+                <span className="mt-0.5 block text-sm text-muted">{type.detail}</span>
               </span>
             </label>
           );

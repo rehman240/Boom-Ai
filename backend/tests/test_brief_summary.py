@@ -8,7 +8,7 @@ from app.jobs import STALE_MESSAGE
 from app.models import AiJob, JobKind, JobStatus, Project, ProjectStage
 
 FULL = {
-    "user_role": "business_owner",
+    "campaign_type": "own_business",
     "business_name": "NOVA",
     "product_or_service": "Rechargeable desk lamp",
     "description": "A portable lamp for people who work in more than one place.",
@@ -320,13 +320,13 @@ def test_a_provider_without_a_key_fails_safely(monkeypatch):
         raise AssertionError("expected an AiError")
 
 
-def test_the_ai_is_told_who_is_making_the_campaign_and_to_answer_in_the_brief_language():
+def test_the_ai_is_told_what_the_campaign_is_for_and_to_answer_in_the_brief_language():
     from app.ai import brief_summary
     from app.models import Brief
 
-    brief = Brief(user_role="agency", business_name="NOVA", language="English", brand_voice=[], channels=[])
+    brief = Brief(campaign_type="client", business_name="NOVA", language="English", brand_voice=[], channels=[])
     facts = brief_summary.brief_facts(brief)
-    assert facts["user_role"] == "Marketing or advertising agency"
+    assert facts["campaign_type"] == "For a client (agency or marketing work)"
     # The interface language is not a fact about the campaign; the brief's own language is used.
     assert "language" not in facts
     task = brief_summary.build_task(facts)

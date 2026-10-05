@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Plus, Sparkles } from "lucide-react";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
-import { EnginePicker, RolePicker } from "@/components/app/CampaignSetup";
+import { EnginePicker, CampaignTypePicker } from "@/components/app/CampaignSetup";
 import { ProjectMenu } from "@/components/app/ProjectMenu";
 import { useUser } from "@/components/app/UserContext";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
 import { PageHeader } from "@/components/ui/PageHeader";
-import type { AiEngine, UserRole } from "@/lib/brief";
+import type { AiEngine, CampaignType } from "@/lib/brief";
 import {
   createProject,
   deleteProject,
@@ -178,8 +178,8 @@ export default function OverviewPage() {
       {modal?.kind === "create" ? (
         <CreateDialog
           onClose={() => setModal(null)}
-          onSubmit={async (name, role, engine) => {
-            const project = await createProject(name, role, engine);
+          onSubmit={async (name, campaignType, engine) => {
+            const project = await createProject(name, campaignType, engine);
             router.push(projectHref(project));
           }}
         />
@@ -310,16 +310,16 @@ function Rings() {
   );
 }
 
-/** New campaign: its name, who is making it and which AI engine it runs on, asked up front. */
+/** New campaign: its name, what it is for and which AI engine it runs on, asked up front. */
 function CreateDialog({
   onClose,
   onSubmit,
 }: {
   onClose: () => void;
-  onSubmit: (name: string, role: UserRole, engine: AiEngine) => Promise<void>;
+  onSubmit: (name: string, campaignType: CampaignType, engine: AiEngine) => Promise<void>;
 }) {
   const [name, setName] = useState("");
-  const [role, setRole] = useState<UserRole | "">("");
+  const [campaignType, setCampaignType] = useState<CampaignType | "">("");
   const [engine, setEngine] = useState<AiEngine>("claude");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -327,11 +327,11 @@ function CreateDialog({
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (!name.trim()) return setError("Please enter a campaign name.");
-    if (!role) return setError("Please choose who you are.");
+    if (!campaignType) return setError("Please choose what this campaign is for.");
     setError("");
     setSaving(true);
     try {
-      await onSubmit(name.trim(), role, engine);
+      await onSubmit(name.trim(), campaignType, engine);
     } catch (err) {
       setError(message(err));
       setSaving(false);
@@ -355,7 +355,7 @@ function CreateDialog({
           placeholder="NOVA Desk Lamp launch"
           required
         />
-        <RolePicker value={role} onChange={setRole} />
+        <CampaignTypePicker value={campaignType} onChange={setCampaignType} />
         <EnginePicker value={engine} onChange={setEngine} />
         {error ? (
           <p className="text-base text-danger" role="alert">

@@ -10,11 +10,12 @@ from app.db import Base
 from app.models.common import IdMixin, TimestampMixin
 
 
-# Who is making the campaign. The client wants to know this early, for every campaign.
-USER_ROLES = {
-    "business_owner": "Entrepreneur with an existing business",
-    "agency": "Marketing or advertising agency",
-    "research": "General research and development",
+# What the campaign is for. Asked per campaign, not per person: one account can run campaigns
+# for its own business, for clients and for research.
+CAMPAIGN_TYPES = {
+    "own_business": "For the user's own existing business",
+    "client": "For a client (agency or marketing work)",
+    "research": "For research: testing an idea or R&D",
 }
 
 
@@ -29,9 +30,8 @@ class Brief(IdMixin, TimestampMixin, Base):
 
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), unique=True)
 
-    # Who is making this campaign (see USER_ROLES) and which AI engine the user chose for it.
-    # Both are asked per campaign, so one account can work as an agency and a business.
-    user_role: Mapped[str | None] = mapped_column(String(32))
+    # What this campaign is for (see CAMPAIGN_TYPES) and which AI engine the user chose for it.
+    campaign_type: Mapped[str | None] = mapped_column(String(32))
     ai_engine: Mapped[str] = mapped_column(String(32), default="claude", server_default="claude")
 
     business_name: Mapped[str | None] = mapped_column(String(200))

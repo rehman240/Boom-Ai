@@ -55,11 +55,11 @@
   --font-display: var(--font-space-grotesk);
 }
 
-/* 18px base instead of 16px: the client's users are often older, on a phone, with glasses.
+/* 20px base instead of 16px: the client's users are often older, on a phone, with glasses.
    Everything sized in rem grows with it. */
 html {
   background: var(--bg);
-  font-size: 112.5%;
+  font-size: 125%;
 }
 
 body {

@@ -39,7 +39,7 @@ export function StepsDiagram() {
                   <span className="sr-only">Step {i + 1}: </span>
                   {step.lead}
                 </span>
-                <span className="block font-display text-3xl font-bold">{step.word}</span>
+                <span className="block font-display text-3xl font-bold lg:text-2xl xl:text-3xl">{step.word}</span>
                 {step.example ? <span className="mt-1 block text-lg font-medium text-white/90">{step.example}</span> : null}
               </span>
             </div>

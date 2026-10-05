@@ -4,7 +4,7 @@ from app.models import Brief, Project, ProjectStatus
 from app.schemas.brief import REQUIRED_FIELDS
 
 FULL = {
-    "user_role": "business_owner",
+    "campaign_type": "own_business",
     "business_name": "NOVA",
     "product_or_service": "Rechargeable desk lamp",
     "description": "A portable lamp for people who work in more than one place.",
@@ -135,22 +135,22 @@ def test_signed_out_user_cannot_read_a_brief(client):
     assert client.get(f"/projects/{project_id}/brief").status_code == 401
 
 
-def test_role_and_engine_chosen_when_creating_a_campaign_are_kept_on_the_brief(client):
+def test_type_and_engine_chosen_when_creating_a_campaign_are_kept_on_the_brief(client):
     signup(client)
     project_id = client.post(
-        "/projects", json={"name": "Agency job", "user_role": "agency", "ai_engine": "claude"}
+        "/projects", json={"name": "Client job", "campaign_type": "client", "ai_engine": "claude"}
     ).json()["id"]
     brief = client.get(f"/projects/{project_id}/brief").json()
-    assert brief["brief"]["user_role"] == "agency"
+    assert brief["brief"]["campaign_type"] == "client"
     assert brief["brief"]["ai_engine"] == "claude"
-    assert "user_role" not in brief["missing_required"]
+    assert "campaign_type" not in brief["missing_required"]
 
 
-def test_a_new_campaign_runs_on_claude_and_asks_who_is_making_it(client):
+def test_a_new_campaign_runs_on_claude_and_asks_what_it_is_for(client):
     project_id = start(client)
     brief = client.get(f"/projects/{project_id}/brief").json()
     assert brief["brief"]["ai_engine"] == "claude"
-    assert "user_role" in brief["missing_required"]
+    assert "campaign_type" in brief["missing_required"]
 
 
 def test_engines_that_are_coming_soon_are_refused(client):
@@ -158,14 +158,14 @@ def test_engines_that_are_coming_soon_are_refused(client):
     assert client.post("/projects", json={"name": "X", "ai_engine": "chatgpt"}).status_code == 422
     project_id = client.post("/projects", json={"name": "Y"}).json()["id"]
     assert client.patch(f"/projects/{project_id}/brief", json={"ai_engine": "booom"}).status_code == 422
-    assert client.patch(f"/projects/{project_id}/brief", json={"user_role": "spy"}).status_code == 422
+    assert client.patch(f"/projects/{project_id}/brief", json={"campaign_type": "spy"}).status_code == 422
     # Sending no engine leaves the current one in place.
     r = client.patch(f"/projects/{project_id}/brief", json={"ai_engine": None, "goal": "Leads"})
     assert r.json()["brief"]["ai_engine"] == "claude"
 
 
-def test_duplicating_keeps_the_role_and_engine(client):
+def test_duplicating_keeps_the_type_and_engine(client):
     signup(client)
-    source = client.post("/projects", json={"name": "S", "user_role": "research"}).json()["id"]
+    source = client.post("/projects", json={"name": "S", "campaign_type": "research"}).json()["id"]
     copy = client.post(f"/projects/{source}/duplicate").json()["id"]
-    assert client.get(f"/projects/{copy}/brief").json()["brief"]["user_role"] == "research"
+    assert client.get(f"/projects/{copy}/brief").json()["brief"]["campaign_type"] == "research"
