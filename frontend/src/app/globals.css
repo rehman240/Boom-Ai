@@ -76,6 +76,36 @@ body {
   background: color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
+/* Landing page steps diagram: rounded boxes on phones, arrow shapes in a row on wide screens. */
+.steps-box {
+  border-radius: 1rem;
+  animation: steps-glow 8s ease-in-out infinite;
+}
+
+@media (min-width: 64rem) {
+  .steps-box {
+    border-radius: 0;
+    padding-left: 2.75rem;
+    clip-path: polygon(0 0, calc(100% - 1.75rem) 0, 100% 50%, calc(100% - 1.75rem) 100%, 0 100%, 1.75rem 50%);
+  }
+  .steps-first {
+    padding-left: 1.5rem;
+    border-radius: 1rem 0 0 1rem;
+    clip-path: polygon(0 0, calc(100% - 1.75rem) 0, 100% 50%, calc(100% - 1.75rem) 100%, 0 100%);
+  }
+}
+
+@keyframes steps-glow {
+  0%,
+  30%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+  12% {
+    filter: brightness(1.18) saturate(1.15);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
