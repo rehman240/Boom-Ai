@@ -3,14 +3,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
+import { EngineBadge } from "@/components/app/CampaignSetup";
 import { useUser } from "@/components/app/UserContext";
 import { ButtonLink } from "@/components/ui/Button";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ProgressBar, type StageKey } from "@/components/ui/ProgressBar";
 import { api, ApiError } from "@/lib/api";
+import { getBrief } from "@/lib/brief";
 import { isStage, stageLabel, type Project } from "@/lib/projects";
 
-type Load = { status: "loading" } | { status: "ready"; project: Project } | { status: "error"; message: string };
+type Load =
+  | { status: "loading" }
+  | { status: "ready"; project: Project; engine: string }
+  | { status: "error"; message: string };
 
 /**
  * Campaign stage shell: breadcrumb, title and progress bar. Each stage's own screen is
@@ -23,8 +28,8 @@ export default function StagePage() {
 
   useEffect(() => {
     let cancelled = false;
-    api<Project>(`/projects/${id}`)
-      .then((project) => !cancelled && setLoad({ status: "ready", project }))
+    Promise.all([api<Project>(`/projects/${id}`), getBrief(id)])
+      .then(([project, state]) => !cancelled && setLoad({ status: "ready", project, engine: state.brief.ai_engine }))
       .catch((e: unknown) => {
         if (cancelled) return;
         const notFound = e instanceof ApiError && e.status === 404;
@@ -60,6 +65,11 @@ export default function StagePage() {
         items={[{ label: user.workspace_name }, { label: "Campaigns", href: "/overview" }, { label: name }]}
       />
       <PageHeader eyebrow={name} title={stageLabel(stage)} />
+      {load.status === "ready" ? (
+        <div className="mt-5">
+          <EngineBadge engine={load.engine} />
+        </div>
+      ) : null}
 
       <div className="mt-8">
         <ProgressBar stage={stage as StageKey} />

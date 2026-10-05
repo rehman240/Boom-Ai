@@ -8,6 +8,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { BreadcrumbContext, BreadcrumbTrail, type Crumb } from "./Breadcrumbs";
 import { Sidebar } from "./Sidebar";
+import { AudioGuide, SectionGong, SoundToggle, sectionOf, useSoundSetting } from "./Sound";
 import { SetUserContext, UserContext } from "./UserContext";
 
 type State = { status: "loading" } | { status: "ready"; user: User } | { status: "error"; message: string };
@@ -19,6 +20,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [crumbs, setCrumbs] = useState<Crumb[]>([]);
+  const sound = useSoundSetting();
+  const section = sectionOf(pathname);
 
   useEffect(() => {
     let cancelled = false;
@@ -134,6 +137,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <BreadcrumbTrail items={crumbs} />
             </div>
             <div className="ml-auto flex items-center gap-2">
+              <SoundToggle muted={sound.muted} onToggle={sound.toggle} />
               <span className="hidden max-w-[220px] truncate text-sm text-subtle sm:block">{user.email}</span>
               <button
                 onClick={signOut}
@@ -149,6 +153,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <main id="main" className="flex-1 px-4 py-8 sm:px-6 lg:px-10 lg:py-10">
             <div className="mx-auto w-full max-w-6xl">{children}</div>
           </main>
+          <SectionGong section={section} muted={sound.muted} />
+          <AudioGuide section={section} />
         </div>
       </div>
       </BreadcrumbContext.Provider>
