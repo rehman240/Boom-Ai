@@ -127,10 +127,43 @@
   900px screen, so "Review brief" only showed at the very bottom of the page. It is now capped
   at the screen height and scrolls inside. Checked at 1440x900, 1280x720, 1440x1200 and 390px.
 
-## Next (Week 1)
-11. Deploy (needs Supabase, Render, Vercel accounts). Still no logins as of 2 Oct.
+- 5 Oct: client feedback on the video (via Rehman, 4 Oct): "technically excellent", now
+  tune for extreme ease of use and enjoyment, older users with glasses on phones, a calm
+  UI, "every screen is a scene". Built in five commits:
+  - Landing: logo hero from the new art (`docs/reference-screens/new/11.png` phone,
+    `22.png` wide, as WebP in `frontend/public/brand/`), `#yourworldforyou` and
+    `WWW.BOOOM.COM™` under the headline, the first sentence as four colour arrow boxes
+    (style of `55.jpeg`; a stack on phones), very large "Build a campaign" and "Sign up".
+  - 18px base type, sentence-case labels, larger inputs, chips and buttons. Brief form in
+    numbered parts, a bottom bar on phones with "x of 8 done" and "Next: <field>" that
+    jumps to the next empty required field; the checklist items jump too. Plain examples
+    for "assets" (ads, emails, posts).
+  - Per campaign: "Who are you?" (entrepreneur, agency, research; required, sent to the AI)
+    and the AI engine (Claude live; ChatGPT and BOOOM "Coming soon", refused by the API).
+    Asked in the new campaign dialog, editable in part 1 of the brief, shown as an
+    "AI engine" badge on every stage. Stored on `briefs` (migration a65e19b29ef8).
+    BOOOM chip in channels of interest says "Coming soon".
+  - Language: the AI writes in the language of the brief (prompt `brief_summary.v2`). The
+    UI stays English; full translation is Phase 2 if the client asks again. Because the
+    prompt changed, existing summaries show as "Outdated" until regenerated.
+  - Sound: soft synthesised bell on moving to another section, floating "Audio guide"
+    button per section (placeholder voice line, `frontend/public/audio/guide/`), speaker
+    button in the top bar to switch section sounds off.
+  - Public `/privacy` page built to GDPR and PIPL principles with official links (says it
+    is not legal advice), linked from landing, sign-up and Settings.
+  - Fix found while writing it: deleting a campaign or the account left uploaded files in
+    storage. Now removed too. 93 backend tests pass; lint, types and `npm run build` pass.
+
+## Next
+11. Deploy. Vercel already serves the frontend from the repo, but with no backend
+    (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
+    the repo is Rehman's: he must give the Render GitHub app access to `rehman240/Boom-Ai`.
+    Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
+    `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up, then propose the Week 2 task list.
-- Waiting on client feedback on the demo video.
+- Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
+  sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
+- Change the Render password once deploy is done (it was shared in chat).
 
 ## Decisions agreed with Ali (28 Sep 2026)
 - Brief includes all client-brief fields; currency fixed to USD.
@@ -164,7 +197,10 @@
 ## Open questions
 - Logo files and permission to use them.
 - Who pays for hosting if free plans are not enough.
-- Data retention and AI provider data handling.
+- Data retention and AI provider data handling. The privacy page states what the code
+  does today; a retention period still needs the client's answer.
+- Privacy contact email for the privacy page (none yet).
+- Server region for the privacy page (check Supabase and Render regions when deploying).
 - Hosting accounts (30 Sep): the client says Vercel and Render are created. Supabase and the
   Anthropic API key were requested. No logins have been shared with us yet.
 - AI provider: Anthropic (Claude), chosen 30 Sep. The client buys prepaid credits and sets a
