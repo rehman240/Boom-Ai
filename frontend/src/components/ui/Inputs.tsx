@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
+import { useId, useState, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 import { ChevronDown } from "lucide-react";
 
 const labelClass = "mb-2 block text-base font-semibold text-text";
@@ -114,20 +114,26 @@ export function Select({ label, hint, error, required, options, placeholder, ...
   );
 }
 
-/** Multi-select as toggle chips, like the brand voice row in the reference screens. */
+/**
+ * Multi-select as toggle chips, like the brand voice row in the reference screens.
+ * `comingSoon` options are shown in the row but only say so when pressed.
+ */
 export function ChipGroup({
   label,
   hint,
   options,
+  comingSoon = [],
   value,
   onChange,
 }: {
   label: string;
   hint?: string;
   options: readonly string[];
+  comingSoon?: readonly string[];
   value: string[];
   onChange: (next: string[]) => void;
 }) {
+  const [soon, setSoon] = useState("");
   const toggle = (option: string) =>
     onChange(value.includes(option) ? value.filter((v) => v !== option) : [...value, option]);
 
@@ -154,7 +160,22 @@ export function ChipGroup({
             </button>
           );
         })}
+        {comingSoon.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => setSoon(`${option} is coming soon.`)}
+            className="min-h-12 rounded-full border border-dashed border-cyan/60 px-5 py-2 text-base font-semibold text-cyan transition-colors hover:bg-primary/15"
+          >
+            {option} <span className="ml-1 text-sm font-medium text-muted">Coming soon</span>
+          </button>
+        ))}
       </div>
+      {comingSoon.length ? (
+        <p className="mt-2 min-h-6 text-sm text-warning" role="status">
+          {soon}
+        </p>
+      ) : null}
       {hint ? <p className="mt-2 text-sm text-muted">{hint}</p> : null}
     </fieldset>
   );

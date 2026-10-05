@@ -11,11 +11,13 @@ export function Dialog({
   title,
   description,
   onClose,
+  wide = false,
   children,
 }: {
   title: string;
   description?: string;
   onClose: () => void;
+  wide?: boolean;
   children: ReactNode;
 }) {
   const panel = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export function Dialog({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative w-full max-w-md rounded-3xl border border-border bg-surface p-6 shadow-2xl"
+        className={`relative max-h-[90dvh] w-full overflow-y-auto rounded-3xl border border-border bg-surface p-6 shadow-2xl ${wide ? "max-w-2xl" : "max-w-md"}`}
       >
         <button
           onClick={onClose}

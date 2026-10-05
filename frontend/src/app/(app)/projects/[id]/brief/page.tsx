@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Check, CloudOff, Loader2, Lock } from "lucide-react";
 import { BrandAssets } from "@/components/app/BrandAssets";
 import { BriefGuide, goToField, missingFields } from "@/components/app/BriefGuide";
+import { EngineBadge, EnginePicker, RolePicker } from "@/components/app/CampaignSetup";
 import { SummaryAction, SummaryPanel, useBriefSummary } from "@/components/app/BriefSummary";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useUser } from "@/components/app/UserContext";
@@ -18,6 +19,7 @@ import { APP_NAME } from "@/lib/brand";
 import {
   BRAND_VOICES,
   CHANNELS,
+  COMING_SOON_CHANNELS,
   EMPTY_DRAFT,
   GOALS,
   REQUIRED_LABELS,
@@ -39,7 +41,7 @@ type Errors = Partial<Record<keyof BriefDraft, string>>;
 /** Dates and money are empty strings in the form but null in the API. */
 function toApi(changes: Partial<BriefDraft>): Partial<BriefDraft> {
   const out: Record<string, unknown> = { ...changes };
-  for (const key of ["budget_amount", "start_date", "end_date"]) {
+  for (const key of ["user_role", "budget_amount", "start_date", "end_date"]) {
     if (out[key] === "") out[key] = null;
   }
   return out as Partial<BriefDraft>;
@@ -151,6 +153,12 @@ export default function BriefPage() {
         subtitle={`Start with the facts. ${APP_NAME} turns them into an editable campaign brief, and only uses what you enter here.`}
       />
 
+      {load.status === "ready" ? (
+        <div className="mt-5">
+          <EngineBadge engine={draft.ai_engine} />
+        </div>
+      ) : null}
+
       <div className="mt-8">
         <ProgressBar stage="brief" />
       </div>
@@ -166,9 +174,17 @@ export default function BriefPage() {
         <div className="space-y-4 lg:col-span-2">
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <SectionTitle step={1} title="Your offer" />
+              <SectionTitle step={1} title="About this campaign" />
               <SaveIndicator {...autosave} readOnly={readOnly} />
             </div>
+            <div className="mt-6 space-y-6">
+              <RolePicker value={draft.user_role} onChange={(v) => set("user_role", v)} disabled={disabled} />
+              <EnginePicker value={draft.ai_engine} onChange={(v) => set("ai_engine", v)} disabled={disabled} />
+            </div>
+          </section>
+
+          <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
+            <SectionTitle step={2} title="Your offer" />
 
             <div className="mt-6 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
@@ -232,7 +248,7 @@ export default function BriefPage() {
           </section>
 
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <SectionTitle step={2} title="The campaign" />
+            <SectionTitle step={3} title="The campaign" />
             <div className="mt-6 space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
                 <Select
@@ -253,7 +269,7 @@ export default function BriefPage() {
                   maxLength={200}
                   disabled={disabled}
                   placeholder="United States"
-                  hint="This release plans campaigns in English for the US."
+                  hint="Campaigns are planned for the US. Write the brief in any language: the AI answers in the same one."
                   required
                 />
               </div>
@@ -294,6 +310,7 @@ export default function BriefPage() {
               <ChipGroup
                 label="Channels of interest"
                 options={CHANNELS}
+                comingSoon={COMING_SOON_CHANNELS}
                 value={draft.channels}
                 onChange={(next) => set("channels", next)}
                 hint="Optional. Leave this empty and the budget step will suggest channels for you."
@@ -302,7 +319,7 @@ export default function BriefPage() {
           </section>
 
           <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <SectionTitle step={3} title="Voice and limits" />
+            <SectionTitle step={4} title="Voice and limits" />
             <div className="mt-6 space-y-5">
               <ChipGroup
                 label="Brand voice"
@@ -405,7 +422,7 @@ function SectionTitle({ step, title }: { step: number; title: string }) {
         {step}
       </span>
       {title}
-      <span className="sr-only"> (part {step} of 3)</span>
+      <span className="sr-only"> (part {step} of 4)</span>
     </h2>
   );
 }

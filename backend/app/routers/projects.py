@@ -51,7 +51,7 @@ def create_project(body: ProjectCreate, user: User = Depends(get_current_user), 
     db.add(project)
     db.flush()
     # The brief row exists from the start, so autosave has somewhere to write immediately.
-    db.add(Brief(project_id=project.id))
+    db.add(Brief(project_id=project.id, user_role=body.user_role, ai_engine=body.ai_engine))
     track(db, "project_created", user_id=user.id, project_id=project.id)
     db.commit()
     db.refresh(project)

@@ -2,6 +2,8 @@ import { api } from "@/lib/api";
 
 export type Brief = {
   project_id: string;
+  user_role: UserRole | null;
+  ai_engine: AiEngine;
   business_name: string | null;
   product_or_service: string | null;
   product_url: string | null;
@@ -34,6 +36,8 @@ export type BriefState = {
  * Empty is "" rather than null, so every input stays controlled.
  */
 export type BriefDraft = {
+  user_role: UserRole | "";
+  ai_engine: AiEngine;
   business_name: string;
   product_or_service: string;
   product_url: string;
@@ -49,6 +53,24 @@ export type BriefDraft = {
   end_date: string;
   budget_amount: string;
 };
+
+/** Who is making the campaign. Same keys as USER_ROLES on the server. */
+export const USER_ROLES = [
+  { value: "business_owner", label: "Entrepreneur", detail: "I run an existing business" },
+  { value: "agency", label: "Agency", detail: "Marketing or advertising agency" },
+  { value: "research", label: "Research", detail: "General R&D or testing an idea" },
+] as const;
+export type UserRole = (typeof USER_ROLES)[number]["value"];
+
+/** AI engines. Only Claude is live; the others are shown so the choice is visible. */
+export const AI_ENGINES = [
+  { value: "claude", label: "Claude", maker: "Anthropic", live: true },
+  { value: "chatgpt", label: "ChatGPT", maker: "OpenAI", live: false },
+  { value: "booom", label: "BOOOM", maker: "Our own engine", live: false },
+] as const;
+export type AiEngine = "claude";
+
+export const engineLabel = (engine: string) => AI_ENGINES.find((e) => e.value === engine)?.label ?? engine;
 
 export const getBrief = (projectId: string) => api<BriefState>(`/projects/${projectId}/brief`);
 
@@ -90,6 +112,7 @@ export const CHANNELS = [
 
 /** Matches REQUIRED_FIELDS on the server, for the checklist in the sidebar. */
 export const REQUIRED_LABELS: Record<string, string> = {
+  user_role: "Who you are",
   business_name: "Business name",
   product_or_service: "Product or service",
   description: "One sentence description",
@@ -99,7 +122,12 @@ export const REQUIRED_LABELS: Record<string, string> = {
   budget_amount: "Indicative media budget",
 };
 
+/** Channels we plan to offer later. Shown next to the real ones, marked "Coming soon". */
+export const COMING_SOON_CHANNELS = ["BOOOM"] as const;
+
 export const EMPTY_DRAFT: BriefDraft = {
+  user_role: "",
+  ai_engine: "claude",
   business_name: "",
   product_or_service: "",
   product_url: "",
@@ -119,6 +147,8 @@ export const EMPTY_DRAFT: BriefDraft = {
 /** The API uses null for empty; the form uses "" so inputs stay controlled. */
 export function toDraft(brief: Brief): BriefDraft {
   return {
+    user_role: brief.user_role ?? "",
+    ai_engine: brief.ai_engine,
     business_name: brief.business_name ?? "",
     product_or_service: brief.product_or_service ?? "",
     product_url: brief.product_url ?? "",

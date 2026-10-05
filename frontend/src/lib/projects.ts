@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import type { AiEngine, UserRole } from "@/lib/brief";
 
 export type ProjectStatus = "draft" | "in_progress" | "ready";
 
@@ -18,7 +19,8 @@ export type Dashboard = {
 };
 
 export const getDashboard = () => api<Dashboard>("/projects");
-export const createProject = (name: string) => api<Project>("/projects", { method: "POST", json: { name } });
+export const createProject = (name: string, user_role: UserRole, ai_engine: AiEngine) =>
+  api<Project>("/projects", { method: "POST", json: { name, user_role, ai_engine } });
 export const renameProject = (id: string, name: string) =>
   api<Project>(`/projects/${id}`, { method: "PATCH", json: { name } });
 export const duplicateProject = (id: string) => api<Project>(`/projects/${id}/duplicate`, { method: "POST" });

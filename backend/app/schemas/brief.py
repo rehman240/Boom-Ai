@@ -12,6 +12,7 @@ from app.schemas.job import JobOut
 # Everything the AI needs before it can produce anything useful. Checked here and shown
 # in the form, so "required" means the same thing on both sides.
 REQUIRED_FIELDS = (
+    "user_role",
     "business_name",
     "product_or_service",
     "description",
@@ -22,6 +23,13 @@ REQUIRED_FIELDS = (
 )
 
 MAX_CHOICES = 8
+
+# Keys of USER_ROLES in app/models/brief.py.
+UserRole = Literal["business_owner", "agency", "research"]
+
+# AI engines a campaign can run on. Only Claude is live; the others are shown as "Coming soon"
+# in the app and are refused here until their adapter is switched on.
+AiEngine = Literal["claude"]
 
 
 def _blank_to_none(v: str | None) -> str | None:
@@ -35,6 +43,8 @@ def _blank_to_none(v: str | None) -> str | None:
 class BriefUpdate(BaseModel):
     """Autosave sends only the fields that changed, so every field is optional here."""
 
+    user_role: UserRole | None = None
+    ai_engine: AiEngine | None = None
     business_name: str | None = Field(default=None, max_length=200)
     product_or_service: str | None = Field(default=None, max_length=300)
     product_url: str | None = Field(default=None, max_length=500)
@@ -99,6 +109,8 @@ class BriefUpdate(BaseModel):
 
 class BriefOut(BaseModel):
     project_id: uuid.UUID
+    user_role: str | None
+    ai_engine: str
     business_name: str | None
     product_or_service: str | None
     product_url: str | None

@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Plus, Sparkles } from "lucide-react";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
+import { EnginePicker, RolePicker } from "@/components/app/CampaignSetup";
 import { ProjectMenu } from "@/components/app/ProjectMenu";
 import { useUser } from "@/components/app/UserContext";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
 import { PageHeader } from "@/components/ui/PageHeader";
+import type { AiEngine, UserRole } from "@/lib/brief";
 import {
   createProject,
   deleteProject,
@@ -174,13 +176,10 @@ export default function OverviewPage() {
       ) : null}
 
       {modal?.kind === "create" ? (
-        <NameDialog
-          title="Name your campaign"
-          description="You can change this later. Next you'll fill in the campaign brief."
-          submitLabel="Create campaign"
+        <CreateDialog
           onClose={() => setModal(null)}
-          onSubmit={async (name) => {
-            const project = await createProject(name);
+          onSubmit={async (name, role, engine) => {
+            const project = await createProject(name, role, engine);
             router.push(projectHref(project));
           }}
         />
@@ -308,6 +307,71 @@ function Rings() {
         maskImage: "radial-gradient(circle, black 25%, transparent 70%)",
       }}
     />
+  );
+}
+
+/** New campaign: its name, who is making it and which AI engine it runs on, asked up front. */
+function CreateDialog({
+  onClose,
+  onSubmit,
+}: {
+  onClose: () => void;
+  onSubmit: (name: string, role: UserRole, engine: AiEngine) => Promise<void>;
+}) {
+  const [name, setName] = useState("");
+  const [role, setRole] = useState<UserRole | "">("");
+  const [engine, setEngine] = useState<AiEngine>("claude");
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!name.trim()) return setError("Please enter a campaign name.");
+    if (!role) return setError("Please choose who you are.");
+    setError("");
+    setSaving(true);
+    try {
+      await onSubmit(name.trim(), role, engine);
+    } catch (err) {
+      setError(message(err));
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog
+      title="Start a new campaign"
+      description="Three quick choices. You can change them later in the brief."
+      onClose={onClose}
+      wide
+    >
+      <form onSubmit={submit} noValidate className="space-y-6">
+        <Field
+          label="Campaign name"
+          name="name"
+          value={name}
+          maxLength={200}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="NOVA Desk Lamp launch"
+          required
+        />
+        <RolePicker value={role} onChange={setRole} />
+        <EnginePicker value={engine} onChange={setEngine} />
+        {error ? (
+          <p className="text-base text-danger" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
+          <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
+            Cancel
+          </Button>
+          <Button type="submit" loading={saving}>
+            Create campaign
+          </Button>
+        </div>
+      </form>
+    </Dialog>
   );
 }
 

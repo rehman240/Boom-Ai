@@ -89,6 +89,9 @@ def update_brief(
 ) -> BriefState:
     """Autosave. Only the fields actually sent are touched, so nothing else is overwritten."""
     changes = body.model_dump(exclude_unset=True)
+    # A campaign always has an engine; sending none leaves the current one.
+    if "ai_engine" in changes and changes["ai_engine"] is None:
+        del changes["ai_engine"]
     if not changes:
         raise HTTPException(status_code=400, detail="Nothing to save.")
 
