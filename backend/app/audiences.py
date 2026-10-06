@@ -20,13 +20,7 @@ pipeline.ITEM_SCHEMAS[ItemKind.AUDIENCE] = lambda item: audience.AudienceCard
 
 def is_kept(db: Session, item: CampaignItem) -> bool:
     """A card the user has put something into, so a new generation must leave it alone."""
-    return (
-        item.selected
-        or item.approved_at is not None
-        or item.origin == ItemOrigin.USER
-        or item.version > 1
-        or items.has_unsaved_changes(db, item)
-    )
+    return items.user_touched(db, item)
 
 
 def job_input(db: Session, project: Project) -> dict[str, Any]:

@@ -82,6 +82,19 @@ def history(db: Session, item: CampaignItem, limit: int = HISTORY_LIMIT) -> list
     )
 
 
+# Revisions that the AI or a copy wrote, as opposed to the user's own saves and restores.
+_MACHINE_SOURCES = {RevisionSource.GENERATED, RevisionSource.FIELD_REGENERATED, RevisionSource.COPIED}
+
+
+def user_touched(db: Session, item: CampaignItem) -> bool:
+    """The user has put something of their own into this item: chosen, approved, written,
+    edited, saved or restored it. A regeneration of a whole step must leave such items alone."""
+    if item.selected or item.approved_at is not None or item.origin == ItemOrigin.USER:
+        return True
+    latest = latest_revision(db, item)
+    return latest is None or latest.source not in _MACHINE_SOURCES or latest.data != item.data
+
+
 def has_unsaved_changes(db: Session, item: CampaignItem) -> bool:
     """True when the working copy differs from the latest revision."""
     latest = latest_revision(db, item)
@@ -150,7 +163,9 @@ def add_item(
 ) -> CampaignItem:
     """A new item with its first revision."""
     item = CampaignItem(
-        project_id=project_id, kind=kind, key=key, position=position, data=dict(data), origin=origin, version=0
+        project_id=project_id, kind=kind, key=key, position=position, data=dict(data), origin=origin, version=0,
+        # The clock time, not the transaction's start, so items added together keep their order.
+        created_at=datetime.now(UTC),
     )
     db.add(item)
     db.flush()

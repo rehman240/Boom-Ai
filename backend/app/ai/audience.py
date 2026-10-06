@@ -111,32 +111,9 @@ def _card_text(card: dict[str, Any]) -> str:
     return " ".join([*parts, *card.get("assumptions", [])])
 
 
-def source_text(brief: dict[str, Any], exclusions: list[str]) -> str:
-    """The user's own words: their brief facts, and the exclusions they wrote."""
-    words = [" ".join(v) if isinstance(v, list) else str(v) for v in brief.values()]
-    return " ".join([*words, *exclusions])
-
-
 def review_flags(card: dict[str, Any], *, by_ai: bool, user_text: str) -> list[dict[str, str]]:
-    """Claims a person should check before this audience is used.
-
-    Recomputed whenever a card is read, so it covers the user's edits too. The sensitive
-    trait and figure checks apply to the AI's cards only: the rule is that the AI must not
-    infer them, and a user describing their own audience is stating, not inferring.
-    """
-    text = _card_text(card)
-    flags = safety.risky_claims(text)
-    if by_ai:
-        for term in safety.sensitive_traits(text, user_text):
-            flags.append({"claim": term, "category": "sensitive", "reason": safety.SENSITIVE_REASON})
-        invented = safety.unsupported_numbers(text, user_text)
-        if invented:
-            flags.append({
-                "claim": "Figures not in your brief: " + ", ".join(invented[:8]),
-                "category": "other",
-                "reason": "These numbers do not appear in what you wrote. Remove them or add them to the brief.",
-            })
-    return flags
+    """Recomputed whenever a card is read, so it covers the user's edits too."""
+    return safety.review_flags(_card_text(card), by_ai=by_ai, user_text=user_text)
 
 
 # --- Mock answer: built only from the user's own words -------------------------------------

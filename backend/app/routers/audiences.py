@@ -11,7 +11,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app import audiences, items, jobs, pipeline
-from app.ai import audience, brief_summary
+from app.ai import audience, brief_summary, safety
 from app.ai.provider import AiProvider, get_ai_provider
 from app.db import get_db
 from app.deps import get_current_user, get_editable_project, get_owned_project
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/projects/{project_id}/audiences", tags=["audiences"]
 def _user_text(db: Session, project: Project) -> str:
     brief = db.scalar(select(Brief).where(Brief.project_id == project.id))
     facts = brief_summary.brief_facts(brief) if brief else {}
-    return audience.source_text(facts, list(project.audience_exclusions or []))
+    return safety.user_words(facts, list(project.audience_exclusions or []))
 
 
 def _stage(db: Session, project: Project) -> AudienceStage:

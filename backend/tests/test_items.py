@@ -430,15 +430,16 @@ def test_approving_while_the_ai_writes_wins_and_says_so(client, db, monkeypatch)
     assert item.approved_at is not None
 
 
-def test_one_click_rejoins_and_two_jobs_never_write_to_the_same_step(client, db):
+def test_one_click_rejoins_and_two_jobs_never_write_to_the_same_work(client, db):
     project_id = ready_project(client)
     first, _ = start(db, project_id, target="1")
     again, _ = start(db, project_id, target="1")
     assert again.id == first.id
 
-    with pytest.raises(HTTPException) as other_direction:
-        start(db, project_id, target="2")
-    assert other_direction.value.status_code == 409
+    # Another direction writes to other work, so it may run alongside.
+    other, _ = start(db, project_id, target="2")
+    assert other.id != first.id
+    # The whole step overlaps both, so it waits.
     with pytest.raises(HTTPException) as whole_step:
         start(db, project_id)
     assert whole_step.value.status_code == 409
@@ -446,6 +447,14 @@ def test_one_click_rejoins_and_two_jobs_never_write_to_the_same_step(client, db)
     # A different step is free to run.
     audience, _ = start(db, project_id, kind=JobKind.AUDIENCE)
     assert audience.kind == JobKind.AUDIENCE
+
+
+def test_a_single_direction_waits_for_a_whole_run(client, db):
+    project_id = ready_project(client)
+    start(db, project_id)
+    with pytest.raises(HTTPException) as e:
+        start(db, project_id, target="2")
+    assert e.value.status_code == 409
 
 
 def test_a_field_regeneration_waits_for_a_whole_assets_run(client, db):
@@ -462,6 +471,6 @@ def test_a_stale_job_does_not_block_the_step(client, db):
                   started_at=datetime(2026, 1, 1, tzinfo=UTC))
     db.add(stuck)
     db.flush()
-    job, _ = start(db, project_id, target="2")
+    job, _ = start(db, project_id)  # the whole step, which a live job on "1" would block
     assert job.id != stuck.id
     assert db.get(AiJob, stuck.id).status == JobStatus.FAILED

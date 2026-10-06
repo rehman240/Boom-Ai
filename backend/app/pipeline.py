@@ -7,6 +7,8 @@ its output is stored as campaign items (see app/items.py). This module answers t
 questions for every stage: may it run yet, and what does the AI get to work from.
 """
 
+import hashlib
+import json
 from collections.abc import Callable
 from typing import Any
 
@@ -73,6 +75,13 @@ def context(db: Session, project: Project) -> dict[str, Any]:
     if direction is not None:
         ctx["direction"] = direction.data
     return ctx
+
+
+def context_hash(ctx: dict[str, Any], *, leave_out: tuple[str, ...] = ()) -> str:
+    """Fingerprint of what a stage was built from. When it no longer matches the current
+    context, the screen can say the work is based on an older brief or choice."""
+    kept = {k: v for k, v in ctx.items() if k not in leave_out}
+    return hashlib.sha256(json.dumps(kept, sort_keys=True, default=str).encode()).hexdigest()
 
 
 # Choosing in one stage opens the next one.

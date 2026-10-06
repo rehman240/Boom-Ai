@@ -242,6 +242,32 @@ Deploy runs alongside, once Render access arrives.
     exclusion, history, write own, new ideas): no console errors, no sideways scroll.
     Typecheck, lint and `npm run build` pass.
 
+- Week 2, task 4: Generate Campaign backend (6 Oct). Screen comes in task 5.
+  - `app/ai/directions.py` (prompt `directions.v1`): name, central promise, sample headline,
+    key message, creative concept, channels and why they fit, risks, rationale, "based on"
+    and assumptions (brief 4.5). The prompt asks for substantively different directions for
+    the chosen audience, different also from those that stay and those being replaced, and
+    forbids invented facts, figures and unsupported headline claims.
+  - Three slots, Direction A, B and C. A slot keeps one item for good, so every direction it
+    held stays in its history (the "short history") and can be restored.
+  - `POST /projects/{id}/directions/generate` fills only slots the user hasn't chosen,
+    approved or edited (409 with a plain message if all three are kept).
+    `POST .../directions/{slot}/regenerate` replaces one direction and nothing else; a chosen
+    or edited one may be replaced on purpose (its old text is kept as a revision), an approved
+    one never (409, and a job that finds it approved mid-way fails with "left unchanged").
+  - `GET .../directions`: the directions with review flags and an "outdated" mark (the brief,
+    audience or exclusions changed since the AI last wrote it), the latest whole job, the
+    latest job per slot, and why it is blocked (needs a primary audience). Choosing a
+    direction moves the campaign to the Creative Workspace.
+  - Jobs on different targets may now run side by side (two directions at once); a whole-step
+    job still waits for, and blocks, its step. `items.user_touched` is shared by audiences and
+    directions. Fixed a flaky order: items added in one transaction now keep clock order.
+  - Review flags: claims are checked in what the audience would read (name, promise, headline,
+    message, concept), not in the AI's reasoning; figures and sensitive traits everywhere.
+  - Real Claude run (claude-opus-5-5, NOVA, "Traveling professionals"): 3 clearly different
+    directions in 23 s, no invented figures, honest risks (e.g. "check the week-long battery
+    claim against real use"). 152 backend tests pass (18 new).
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -249,7 +275,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 4: Generate Campaign backend (3 directions, regenerate one, short history).
+- Week 2, task 5: Generate Campaign screen.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).

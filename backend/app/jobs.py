@@ -22,8 +22,9 @@ from sqlalchemy.orm import Session
 
 from fastapi import BackgroundTasks, HTTPException
 
-from app import audiences
+from app import audiences, directions
 from app.ai import audience, brief_summary
+from app.ai import directions as directions_ai
 from app.ai.provider import AiError, AiProvider
 from app.config import get_settings
 from app.db import SessionLocal
@@ -74,6 +75,7 @@ def _apply_brief_summary(db: Session, job: AiJob, result: dict[str, Any], provid
 HANDLERS: dict[str, JobHandler] = {
     JobKind.BRIEF_SUMMARY: JobHandler(_run_brief_summary, _apply_brief_summary, brief_summary.PROMPT_VERSION),
     JobKind.AUDIENCE: JobHandler(audiences.run, audiences.apply, audience.PROMPT_VERSION),
+    JobKind.DIRECTIONS: JobHandler(directions.run, directions.apply, directions_ai.PROMPT_VERSION),
 }
 
 
@@ -188,7 +190,10 @@ def start_job(
     if running is not None:
         db.commit()
         return running
-    if active_jobs(db, project.id, _SAME_ITEMS.get(kind, {kind})):
+    # Jobs on different targets (two directions, two fields) write to different work and
+    # may run side by side. A whole-step job overlaps everything in its step.
+    others = active_jobs(db, project.id, _SAME_ITEMS.get(kind, {kind}))
+    if any(j.target is None or target is None or j.target == target for j in others):
         db.commit()
         raise HTTPException(status_code=409, detail=BUSY_MESSAGE)
 
