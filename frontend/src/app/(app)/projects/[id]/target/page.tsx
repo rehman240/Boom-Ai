@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useParams } from "next/navigation";
-import { AlertTriangle, ArrowRight, Loader2, Plus, RefreshCw, Sparkles, UserPlus, X } from "lucide-react";
+import { ArrowRight, Loader2, Plus, RefreshCw, Sparkles, UserPlus, X } from "lucide-react";
 import { AudienceCardView, AudienceForm, letter, validateAudience } from "@/components/app/AudienceCard";
 import { CampaignUnavailable, StageHeader, useCampaign } from "@/components/app/StageHeader";
 import { VersionHistory } from "@/components/app/VersionHistory";
+import { Alert } from "@/components/ui/Alert";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { ApiError } from "@/lib/api";
@@ -198,16 +199,19 @@ export default function TargetPage() {
             // never covers it.
             <div className="mt-8 mb-24 rounded-2xl border border-border bg-bg/95 px-4 py-4 lg:sticky lg:bottom-0 lg:z-10 lg:mb-0 lg:pr-24 lg:backdrop-blur">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-muted" role="status">
-                  {primary ? (
-                    <>
-                      Primary audience: <span className="font-semibold text-text">{primary.data.name}</span>
-                    </>
-                  ) : (
-                    "Choose one primary audience to continue."
-                  )}
-                </p>
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div>
+                  <p className="text-sm text-muted" role="status">
+                    {primary ? (
+                      <>
+                        Primary audience: <span className="font-semibold text-text">{primary.data.name}</span>
+                      </>
+                    ) : (
+                      "Choose one primary audience to continue."
+                    )}
+                  </p>
+                  <p className="mt-1 text-sm text-subtle">New ideas keep the cards you chose, edited or wrote.</p>
+                </div>
+                <div className="flex flex-col gap-3 whitespace-nowrap sm:shrink-0 sm:flex-row">
                   <Button
                     variant="secondary"
                     onClick={generate}
@@ -228,7 +232,6 @@ export default function TargetPage() {
                   )}
                 </div>
               </div>
-              <p className="mt-2 text-sm text-subtle">New ideas keep the cards you chose, edited or wrote.</p>
             </div>
           ) : null}
         </>
@@ -286,14 +289,6 @@ export default function TargetPage() {
   );
 }
 
-function Alert({ children }: { children: ReactNode }) {
-  return (
-    <div className="mt-8 flex gap-3 rounded-2xl border border-danger/40 bg-danger/10 px-4 py-3 text-base text-danger" role="alert">
-      <AlertTriangle className="mt-1 h-5 w-5 shrink-0" aria-hidden="true" />
-      <div>{children}</div>
-    </div>
-  );
-}
 
 function Generating({ hasCards }: { hasCards: boolean }) {
   return (

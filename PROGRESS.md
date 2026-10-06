@@ -268,6 +268,26 @@ Deploy runs alongside, once Render access arrives.
     directions in 23 s, no invented figures, honest risks (e.g. "check the week-long battery
     claim against real use"). 152 backend tests pass (18 new).
 
+- Week 2, task 5: Generate Campaign screen (6 Oct), `/projects/{id}/campaign`.
+  - Three cards after the reference screen: coloured band "Direction A/B/C" with rings, name,
+    promise (cyan), concept, example headline, channels. "Show full details" opens key
+    message, why these channels, why it could work, risks, "Based on your brief" and
+    assumptions on all three at once, so they compare row by row. Badges: chosen, approved,
+    "Made for an earlier audience or brief". Review flags always show.
+  - Per card: Choose direction, Edit (all fields, risks one per line), Undo edits, "New idea"
+    (just that direction, with its own progress on the card; a confirm first if it is the
+    chosen or an edited one, saying its text stays in history), History with Restore.
+    A failed single run shows on its card ("This direction is unchanged").
+  - States: blocked (links to Identify Target), first run, whole run in progress, failed
+    with Try again. Several runs can be in progress; the page polls while any is.
+  - Bottom bar: chosen name, "New directions", "Build assets" (to the Creative Workspace,
+    enabled once one is chosen). Bars on both stages made more compact, buttons on one line.
+  - Shared `Alert` component.
+  - Checked in Chrome at 1440, 768 and 390px with the mock AI: no console errors, no
+    sideways scroll. Typecheck, lint and build pass. Note: running three browser checks
+    back to back from one machine hit the 120 requests/minute per-IP limit; one user's
+    polling is about 24 a minute.
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -275,7 +295,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 5: Generate Campaign screen.
+- Week 2, task 6: Creative assets backend (7 assets from the chosen direction).
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).
