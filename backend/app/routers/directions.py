@@ -51,7 +51,7 @@ def _stage(db: Session, project: Project) -> DirectionStage:
                 **item_out(db, item).model_dump(),
                 slot=slot,
                 review_flags=directions.review_flags(item.data, by_ai=item.origin == ItemOrigin.AI, user_text=user_text),
-                outdated=stage.is_outdated(db, project, item, now),
+                outdated=pipeline.is_outdated(db, item, now),
             )
         )
     return DirectionStage(

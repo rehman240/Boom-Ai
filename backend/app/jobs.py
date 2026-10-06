@@ -22,8 +22,8 @@ from sqlalchemy.orm import Session
 
 from fastapi import BackgroundTasks, HTTPException
 
-from app import audiences, directions
-from app.ai import audience, brief_summary
+from app import audiences, creative, directions
+from app.ai import assets, audience, brief_summary
 from app.ai import directions as directions_ai
 from app.ai.provider import AiError, AiProvider
 from app.config import get_settings
@@ -76,6 +76,8 @@ HANDLERS: dict[str, JobHandler] = {
     JobKind.BRIEF_SUMMARY: JobHandler(_run_brief_summary, _apply_brief_summary, brief_summary.PROMPT_VERSION),
     JobKind.AUDIENCE: JobHandler(audiences.run, audiences.apply, audience.PROMPT_VERSION),
     JobKind.DIRECTIONS: JobHandler(directions.run, directions.apply, directions_ai.PROMPT_VERSION),
+    JobKind.ASSETS: JobHandler(creative.run, creative.apply, assets.PROMPT_VERSION),
+    JobKind.FIELD: JobHandler(creative.run_field, creative.apply_field, assets.FIELD_PROMPT_VERSION),
 }
 
 
@@ -133,6 +135,22 @@ def latest_job(db: Session, project_id: uuid.UUID, kind: str, target: str | None
 def active_job(db: Session, project_id: uuid.UUID, kind: str, target: str | None = None) -> AiJob | None:
     job = latest_job(db, project_id, kind, target)
     return job if job is not None and job.status in ACTIVE else None
+
+
+def latest_by_target(db: Session, project_id: uuid.UUID, kind: str, recent: int = 50) -> dict[str, AiJob]:
+    """The latest job for each target of this kind, among the most recent ones."""
+    rows = db.scalars(
+        select(AiJob)
+        .where(AiJob.project_id == project_id, AiJob.kind == kind, AiJob.target.is_not(None))
+        .order_by(AiJob.created_at.desc(), AiJob.id.desc())
+        .limit(recent)
+    ).all()
+    latest: dict[str, AiJob] = {}
+    for job in rows:
+        if job.target not in latest:
+            expire_if_stale(db, job)
+            latest[job.target] = job
+    return latest
 
 
 def active_jobs(db: Session, project_id: uuid.UUID, kinds: set[str]) -> list[AiJob]:

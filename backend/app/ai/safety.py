@@ -80,10 +80,17 @@ def numbers_in(text: str) -> set[str]:
     return {_normalise(n) for n in _NUMBER.findall(text or "")}
 
 
+# Numbers that are layout, not claims: "1." or "2)" at the start of a line in an outline,
+# and image sizes such as 1080x1920 in a visual brief.
+_LIST_MARKER = re.compile(r"^\s*\d{1,2}[.)]\s", re.MULTILINE)
+_IMAGE_SIZE = re.compile(r"\b\d{2,5}\s?[x×]\s?\d{2,5}(?:\s?px)?\b", re.IGNORECASE)
+
+
 def unsupported_numbers(answer_text: str, source_text: str) -> list[str]:
     """Figures in the answer that appear nowhere in what the user wrote."""
     allowed = numbers_in(source_text)
-    return sorted(n for n in numbers_in(answer_text) if n not in allowed)
+    text = _IMAGE_SIZE.sub(" ", _LIST_MARKER.sub(" ", answer_text or ""))
+    return sorted(n for n in numbers_in(text) if n not in allowed)
 
 
 _SENSITIVE = re.compile(r"(?<!\w)(" + "|".join(re.escape(t) for t in SENSITIVE_TERMS) + r")(?!\w)", re.IGNORECASE)

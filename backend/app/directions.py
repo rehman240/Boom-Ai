@@ -10,13 +10,12 @@ approved one.
 import uuid
 from typing import Any
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import items, pipeline
 from app.ai import directions
 from app.ai.provider import AiProvider
-from app.models import AiJob, CampaignItem, ItemKind, Project, Revision
+from app.models import AiJob, CampaignItem, ItemKind, Project
 
 pipeline.ITEM_SCHEMAS[ItemKind.DIRECTION] = lambda item: directions.Direction
 
@@ -86,19 +85,6 @@ def apply(db: Session, job: AiJob, result: dict[str, Any], provider: AiProvider)
     # edited while the model was writing is left alone.
     for slot, data in zip(open_slots(db, job.project_id), answers):
         _write(db, job.project_id, slot, data, provenance)
-
-
-def is_outdated(db: Session, project: Project, item: CampaignItem, current_hash: str) -> bool:
-    """The brief, audience or exclusions changed since the AI last wrote this direction."""
-    job_id = db.scalar(
-        select(Revision.job_id)
-        .where(Revision.item_id == item.id, Revision.job_id.is_not(None))
-        .order_by(Revision.number.desc())
-        .limit(1)
-    )
-    job = db.get(AiJob, job_id) if job_id else None
-    made_from = (job.input or {}).get("context_hash") if job else None
-    return made_from is not None and made_from != current_hash
 
 
 def current_hash(db: Session, project: Project) -> str:

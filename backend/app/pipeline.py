@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 
 from app import items
 from app.ai import brief_summary
-from app.models import Brief, CampaignItem, ItemKind, JobKind, Project, ProjectStage
+from app.models import AiJob, Brief, CampaignItem, ItemKind, JobKind, Project, ProjectStage, Revision, RevisionSource
 
 # What each stage needs before it can run, with the message shown when it is missing.
 _NEEDS_SUMMARY = "Confirm the brief summary first."
@@ -82,6 +82,23 @@ def context_hash(ctx: dict[str, Any], *, leave_out: tuple[str, ...] = ()) -> str
     context, the screen can say the work is based on an older brief or choice."""
     kept = {k: v for k, v in ctx.items() if k not in leave_out}
     return hashlib.sha256(json.dumps(kept, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def is_outdated(db: Session, item: CampaignItem, current_hash: str) -> bool:
+    """What this item was made from (by its latest whole AI generation) has changed since."""
+    job_id = db.scalar(
+        select(Revision.job_id)
+        .where(
+            Revision.item_id == item.id,
+            Revision.job_id.is_not(None),
+            Revision.source == RevisionSource.GENERATED,
+        )
+        .order_by(Revision.number.desc())
+        .limit(1)
+    )
+    job = db.get(AiJob, job_id) if job_id else None
+    made_from = (job.input or {}).get("context_hash") if job else None
+    return made_from is not None and made_from != current_hash
 
 
 # Choosing in one stage opens the next one.

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.brand import APP_NAME
 from app.config import get_settings
 from app.rate_limit import GlobalRateLimitMiddleware
-from app.routers import account, audiences, auth, briefs, directions, health, items, jobs, projects, uploads
+from app.routers import account, assets, audiences, auth, briefs, directions, health, items, jobs, projects, uploads
 
 
 def create_app() -> FastAPI:
@@ -42,6 +42,7 @@ def create_app() -> FastAPI:
     app.include_router(items.router)
     app.include_router(audiences.router)
     app.include_router(directions.router)
+    app.include_router(assets.router)
     return app
 
 

@@ -288,6 +288,28 @@ Deploy runs alongside, once Render access arrives.
     back to back from one machine hit the 120 requests/minute per-IP limit; one user's
     polling is about 24 a minute.
 
+- Week 2, task 6: Creative assets backend (6 Oct). Screen comes in task 8 (task 7, single-field
+  rewrite and versions, is built here too).
+  - `app/ai/assets.py` defines the seven assets of brief 4.6 in one place (overview, landing
+    page outline, short ad copy, long ad copy, email, social post, visual production brief),
+    each a set of text fields with character guidance (e.g. short ad primary text about 125)
+    and a hard limit. The model schema, the edit checks and the screen's labels
+    (`GET .../assets` returns `spec`) all come from it.
+  - `POST /projects/{id}/assets/generate` (prompt `assets.v1`) writes every asset in one call
+    from the chosen direction, audience, exclusions and brief; again later, only assets the user
+    hasn't edited, saved or approved are rewritten (same item, longer history; 409 if all kept).
+  - `POST .../assets/{item}/fields/{field}/regenerate` (prompt `asset_field.v1`): the model sees
+    the whole asset as it is now, but only that field changes; unsaved edits are kept as a
+    revision first; approved assets are refused, and approval during the run wins. Field jobs on
+    different fields run side by side; a whole run blocks them and is blocked by them.
+  - Assets say when the chosen direction (or anything before it) changed since they were written.
+    `pipeline.is_outdated` is now shared with directions; `jobs.latest_by_target` lists field jobs.
+  - Safety fix found in the real run: numbered outline lines ("1. The problem") and image sizes
+    (1080x1920, 1200x628px) are no longer flagged as invented figures.
+  - Real Claude run (claude-opus-5-5, NOVA, "One Thing to Pack"): all seven assets in 31 s, every
+    field within its guidance, no invented prices or claims, CTA "Preorder Now" from the goal.
+    A headline rewrite took 3.3 s (38 of 40 characters). 171 backend tests pass (19 new).
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -295,7 +317,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 6: Creative assets backend (7 assets from the chosen direction).
+- Week 2, task 8: Creative Workspace screen (task 7's backend is done in task 6).
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).
