@@ -194,6 +194,32 @@ Deploy runs alongside, once Render access arrives.
     dashboard's "assets drafted" card is now a real count.
   - Migration 36d38e5d4edf (checked down and up). 116 backend tests pass (23 new).
 
+- Week 2, task 2: Identify Target backend (6 Oct). Screen comes in task 3.
+  - `app/ai/audience.py` (prompt `audience.v1`): 2 to 4 cards, each with name, definition,
+    need, motivation, objection, message angle, channels (from the brief's 8, so Budget can
+    use them), "based on" brief fields, and assumptions (the inferred traits, shown as
+    hypotheses). The prompt forbids inferring protected or sensitive traits, invented
+    figures, and audiences the user excluded, and asks for cards unlike the ones that stay.
+  - Generating again keeps every card the user chose, approved, wrote or edited, decided
+    when the answer arrives (so a card chosen meanwhile is kept too); only untouched AI
+    cards are archived. New cards fill up to about four. Fewer than 2 cards is a failed,
+    retryable job and the existing cards stay.
+  - Routes: `GET /projects/{id}/audiences` (cards with review flags, exclusions, latest
+    job, and why it is blocked), `POST .../generate` (needs a confirmed, current summary),
+    `POST .../audiences` (the user's own card), `DELETE .../audiences/{item}` (archived),
+    `PUT .../exclusions` (up to 10, cleaned, de-duplicated; stored on `projects`,
+    migration 1a7579ff274a, sent to every later stage and copied on duplicate). Editing,
+    versions and choosing use the shared item routes. Choosing a primary audience moves
+    the campaign on to Generate Campaign (never backwards).
+  - Review flags are worked out on every read, so they follow edits: health, finance and
+    performance claims on any card; on AI cards also sensitive traits the brief doesn't
+    state and figures the user never gave (`safety.sensitive_traits`).
+  - Real Claude run (claude-opus-5-5, NOVA brief, one kept card, "Under 18s" excluded):
+    3 distinct, plain cards, every one "based on" real brief fields, assumptions listed,
+    no figures, no sensitive traits, the kept card not repeated. It took about 105 s, so
+    the screen needs a clear progress state.
+  - 133 backend tests pass (17 new).
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -201,7 +227,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 2: Identify Target backend.
+- Week 2, task 3: Identify Target screen.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).

@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from app import items
 from app.ai import brief_summary
-from app.models import Brief, CampaignItem, ItemKind, JobKind, Project
+from app.models import Brief, CampaignItem, ItemKind, JobKind, Project, ProjectStage
 
 # What each stage needs before it can run, with the message shown when it is missing.
 _NEEDS_SUMMARY = "Confirm the brief summary first."
@@ -64,6 +64,8 @@ def context(db: Session, project: Project) -> dict[str, Any]:
         ctx["brief"] = brief_summary.brief_facts(brief)
         if brief_summary.is_confirmed(brief):
             ctx["summary"] = brief.summary["data"]
+    if project.audience_exclusions:
+        ctx["exclusions"] = list(project.audience_exclusions)
     audience = items.selected_item(db, project.id, ItemKind.AUDIENCE)
     if audience is not None:
         ctx["audience"] = audience.data
@@ -71,6 +73,17 @@ def context(db: Session, project: Project) -> dict[str, Any]:
     if direction is not None:
         ctx["direction"] = direction.data
     return ctx
+
+
+# Choosing in one stage opens the next one.
+NEXT_STAGE_ON_SELECT = {ItemKind.AUDIENCE: ProjectStage.CAMPAIGN, ItemKind.DIRECTION: ProjectStage.CREATIVE}
+
+
+def advance(project: Project, stage: str) -> None:
+    """Move the campaign on to `stage`, never back: the progress bar shows how far it got."""
+    order = list(ProjectStage)
+    if order.index(ProjectStage(stage)) > order.index(ProjectStage(project.stage)):
+        project.stage = stage
 
 
 def validate_data(item: CampaignItem, data: dict[str, Any]) -> dict[str, Any]:

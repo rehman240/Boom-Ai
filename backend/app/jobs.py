@@ -22,7 +22,8 @@ from sqlalchemy.orm import Session
 
 from fastapi import BackgroundTasks, HTTPException
 
-from app.ai import brief_summary
+from app import audiences
+from app.ai import audience, brief_summary
 from app.ai.provider import AiError, AiProvider
 from app.config import get_settings
 from app.db import SessionLocal
@@ -72,6 +73,7 @@ def _apply_brief_summary(db: Session, job: AiJob, result: dict[str, Any], provid
 
 HANDLERS: dict[str, JobHandler] = {
     JobKind.BRIEF_SUMMARY: JobHandler(_run_brief_summary, _apply_brief_summary, brief_summary.PROMPT_VERSION),
+    JobKind.AUDIENCE: JobHandler(audiences.run, audiences.apply, audience.PROMPT_VERSION),
 }
 
 

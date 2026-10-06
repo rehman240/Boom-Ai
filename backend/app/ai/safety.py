@@ -25,6 +25,24 @@ RISKY_TERMS: dict[str, tuple[str, ...]] = {
     ),
 }
 
+# Protected or sensitive traits. The client brief says the AI must not infer these for
+# ad targeting, and US ad platforms restrict targeting on most of them.
+SENSITIVE_TERMS: tuple[str, ...] = (
+    "race", "racial", "ethnicity", "ethnic", "skin color", "nationality", "national origin",
+    "religion", "religious", "christian", "christians", "muslim", "muslims", "jewish", "hindu", "church",
+    "sexual orientation", "gay", "lesbian", "bisexual", "lgbt", "lgbtq", "transgender", "gender identity",
+    "disability", "disabled", "pregnant", "pregnancy", "medical condition", "diagnosed", "chronic illness",
+    "mental health", "diabetes", "diabetic", "cancer", "depression", "anxiety",
+    "political", "democrat", "democrats", "republican", "republicans",
+    "immigrant", "immigrants", "immigration status", "undocumented",
+    "bankrupt", "bankruptcy", "in debt", "low-income", "low income", "credit score",
+    "criminal record", "union member",
+)
+SENSITIVE_REASON = (
+    "This describes a protected or sensitive trait the brief doesn't mention. Ads must not be "
+    "targeted on traits like this; reword it or confirm it is about the product, not the person."
+)
+
 _CATEGORY_REASONS = {
     "health": "Health claims need evidence and may be regulated. A person should check this before it runs.",
     "finance": "Financial claims can be regulated. A person should check this before it runs.",
@@ -66,3 +84,17 @@ def unsupported_numbers(answer_text: str, source_text: str) -> list[str]:
     """Figures in the answer that appear nowhere in what the user wrote."""
     allowed = numbers_in(source_text)
     return sorted(n for n in numbers_in(answer_text) if n not in allowed)
+
+
+_SENSITIVE = re.compile(r"(?<!\w)(" + "|".join(re.escape(t) for t in SENSITIVE_TERMS) + r")(?!\w)", re.IGNORECASE)
+
+
+def sensitive_traits(text: str, source_text: str) -> list[str]:
+    """Sensitive-trait terms in `text` that the user's own words (`source_text`) don't use."""
+    given = {m.lower() for m in _SENSITIVE.findall(source_text or "")}
+    found: list[str] = []
+    for match in _SENSITIVE.findall(text or ""):
+        term = match.lower()
+        if term not in given and term not in found:
+            found.append(term)
+    return found

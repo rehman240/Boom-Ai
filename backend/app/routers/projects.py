@@ -92,7 +92,12 @@ def duplicate_project(
     db: Session = Depends(get_db),
 ) -> Project:
     """Copy a campaign, its brief and its work. The copy is the user's own draft, never a demo."""
-    copy = Project(owner_id=user.id, name=f"{source.name} (copy)"[:200], stage=source.stage)
+    copy = Project(
+        owner_id=user.id,
+        name=f"{source.name} (copy)"[:200],
+        stage=source.stage,
+        audience_exclusions=list(source.audience_exclusions or []),
+    )
     db.add(copy)
     db.flush()
 

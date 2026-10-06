@@ -142,5 +142,7 @@ def select_item(item_id: uuid.UUID, project: Project = Depends(get_editable_proj
     if item.kind not in SELECTABLE:
         raise HTTPException(status_code=422, detail="Only an audience or a direction can be chosen.")
     items.select_item(db, item)
+    if item.kind in pipeline.NEXT_STAGE_ON_SELECT:
+        pipeline.advance(project, pipeline.NEXT_STAGE_ON_SELECT[item.kind])
     track(db, f"{item.kind}_selected", user_id=project.owner_id, project_id=project.id)
     return _changed(db, project, item)
