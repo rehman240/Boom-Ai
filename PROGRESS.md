@@ -340,6 +340,11 @@ Deploy runs alongside, once Render access arrives.
   real visitor IP reaches the API (so rate limits are per person), and a file upload and
   download through Supabase storage works (the temporary test account was deleted after).
   Secrets are only in Render's environment variables.
+- 6 Oct, deploy (part 2): the frontend is live at https://boom-ai-six.vercel.app (Rehman set
+  `BACKEND_URL`, turned off Deployment Protection and re-created the project). Checked through
+  Vercel: pages load without a share link over HTTPS, `/api/health` reaches the backend, sign up
+  and the session cookie work, a brief saves, and a real Claude summary came back in 12 s.
+  Still to do: Render `CORS_ORIGINS` to the new address, change the Render password.
 - 6 Oct: the client asked for a light/dark switch. Agreed with Ali: build it at the end of
   Week 3, once every screen is finished.
 
