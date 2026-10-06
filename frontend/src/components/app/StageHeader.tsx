@@ -14,7 +14,7 @@ import type { Project } from "@/lib/projects";
 
 export type CampaignLoad =
   | { status: "loading" }
-  | { status: "ready"; project: Project; engine: string }
+  | { status: "ready"; project: Project; engine: string; businessName: string }
   | { status: "error"; message: string };
 
 /** The campaign and its AI engine, which every stage page shows at the top. */
@@ -24,7 +24,11 @@ export function useCampaign(projectId: string) {
   useEffect(() => {
     let cancelled = false;
     Promise.all([api<Project>(`/projects/${projectId}`), getBrief(projectId)])
-      .then(([project, state]) => !cancelled && setLoad({ status: "ready", project, engine: state.brief.ai_engine }))
+      .then(
+        ([project, state]) =>
+          !cancelled &&
+          setLoad({ status: "ready", project, engine: state.brief.ai_engine, businessName: state.brief.business_name ?? "" }),
+      )
       .catch((e: unknown) => {
         if (cancelled) return;
         const notFound = e instanceof ApiError && e.status === 404;

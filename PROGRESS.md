@@ -310,6 +310,28 @@ Deploy runs alongside, once Render access arrives.
     field within its guidance, no invented prices or claims, CTA "Preorder Now" from the goal.
     A headline rewrite took 3.3 s (38 of 40 characters). 171 backend tests pass (19 new).
 
+- Week 2, tasks 7 and 8: Creative Workspace screen (6 Oct), `/projects/{id}/creative`.
+  - After the reference screen: the seven assets on the left with their status (Draft, Edited,
+    Outdated, Approved) and "x of 7 approved"; a dropdown on phones. The open asset is kept in
+    the address (`#email`), so a refresh comes back to it.
+  - Editor: every field from the server's asset definition, with a "123 / 125 characters" count
+    that warns past the guidance, Copy and Regenerate per field. Typing autosaves (Saved, Saving,
+    Retry). A field being rewritten is locked and says so; its failure shows under it ("This field
+    is unchanged"). Every field wraps, so a long headline reads in full on a phone; single-line
+    fields take no line breaks.
+  - Per asset: Copy asset (plain text), Versions (history, Restore), Save version (optional name),
+    Approve asset; an approved asset is read-only until "Unapprove to edit". Pending typing is saved
+    before any of these, so the server always acts on what is on screen. Outdated banner and review
+    flags at the top. A simple preview for short and long ad, email and social post (no images).
+  - Page states: blocked (links to Generate Campaign), first run, whole run in progress, failed with
+    Try again; polling while any run is going. Bottom bar: "x of 7 approved", "Write again",
+    "Continue to budget" (the Week 3 placeholder for now).
+  - Fixed on the way: the asset grid was 153px wider than a phone (grid items now `min-w-0`).
+  - Checked in Chrome at 1440 and 390px with the mock AI: edit with over-length warning, autosave,
+    field rewrite that keeps the other fields and the user's edits, named version, history, copy,
+    approve lock, refresh keeps the open asset. No console errors, no sideways scroll. Typecheck,
+    lint and build pass.
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -317,7 +339,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 8: Creative Workspace screen (task 7's backend is done in task 6).
+- Week 2, task 9: AI safety check across every stage (prompt review, injection test, "AI suggestions need review" note, error messages).
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).
