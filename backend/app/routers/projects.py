@@ -2,10 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import func, inspect, select
 from sqlalchemy.orm import Session
 
+from app import items
 from app.db import get_db
 from app.deps import get_current_user, get_editable_project, get_owned_project
 from app.events import track
-from app.models import Brief, Project, ProjectStatus, Upload, User
+from app.models import Brief, CampaignItem, ItemKind, Project, ProjectStatus, Upload, User
 from app.schemas.project import DashboardOut, ProjectCreate, ProjectOut, ProjectRename, WorkspaceStats
 from app.storage import Storage, delete_quietly, get_storage
 
@@ -26,9 +27,17 @@ def _stats(user: User, db: Session) -> WorkspaceStats:
     )
     return WorkspaceStats(
         active_campaigns=counts.get(ProjectStatus.DRAFT, 0) + counts.get(ProjectStatus.IN_PROGRESS, 0),
-        # Real count, so the card never shows an invented number. Creative assets arrive in
-        # week 2; until the assets table exists there is genuinely nothing drafted.
-        assets_drafted=0,
+        # Real count, so the card never shows an invented number.
+        assets_drafted=db.scalar(
+            select(func.count())
+            .select_from(CampaignItem)
+            .join(Project, Project.id == CampaignItem.project_id)
+            .where(
+                Project.owner_id == user.id,
+                CampaignItem.kind == ItemKind.ASSET,
+                CampaignItem.archived_at.is_(None),
+            )
+        ),
         ready_to_export=counts.get(ProjectStatus.READY, 0),
     )
 
@@ -82,7 +91,7 @@ def duplicate_project(
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> Project:
-    """Copy a campaign and its brief. The copy is the user's own draft, never a demo."""
+    """Copy a campaign, its brief and its work. The copy is the user's own draft, never a demo."""
     copy = Project(owner_id=user.id, name=f"{source.name} (copy)"[:200], stage=source.stage)
     db.add(copy)
     db.flush()
@@ -95,6 +104,8 @@ def duplicate_project(
         db.add(Brief(project_id=copy.id, **fields))
     else:
         db.add(Brief(project_id=copy.id))
+
+    items.copy_items(db, source.id, copy.id)
 
     track(db, "project_duplicated", user_id=user.id, project_id=copy.id)
     db.commit()

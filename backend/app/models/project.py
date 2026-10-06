@@ -1,7 +1,7 @@
 import enum
 import uuid
 
-from sqlalchemy import Boolean, ForeignKey, String
+from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -35,3 +35,6 @@ class Project(IdMixin, TimestampMixin, Base):
     stage: Mapped[str] = mapped_column(String(32), default=ProjectStage.BRIEF)
     # Read-only sample campaign opened from the landing page.
     is_demo: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Goes up by one with every saved revision of any item, so each version of the
+    # campaign has a number that generations and exports can be labelled with.
+    version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

@@ -9,12 +9,10 @@ from sqlalchemy.orm import Session
 from app import jobs
 from app.ai import brief_summary
 from app.ai.provider import AiProvider, get_ai_provider
-from app.config import get_settings
 from app.db import get_db
 from app.deps import get_current_user, get_editable_project, get_owned_project
 from app.events import track
 from app.models import Brief, JobKind, Project, ProjectStage, ProjectStatus, User
-from app.rate_limit import check_user_limit
 from app.schemas.brief import REQUIRED_FIELDS, BriefOut, BriefState, BriefUpdate, SummaryOut
 from app.schemas.job import JobOut
 
@@ -121,26 +119,19 @@ def start_summary(
     session_factory: jobs.SessionFactory = Depends(jobs.get_session_factory),
 ):
     """Start (or rejoin) the summary job. The page polls GET /projects/{id}/jobs/{job_id}."""
-    settings = get_settings()
-    if not settings.ai_enabled:
-        raise HTTPException(status_code=503, detail="AI generation is paused right now. Your brief is saved; please try again later.")
-
     brief = _brief_for(project, db)
-    missing = _missing_required(brief)
-    if missing:
+    if _missing_required(brief):
         raise HTTPException(status_code=409, detail="Fill in the required fields before reviewing the brief.")
-
-    # A second click while one is running rejoins it, rather than paying for two.
-    running = jobs.active_job(db, project.id, JobKind.BRIEF_SUMMARY)
-    if running is not None:
-        db.commit()
-        return running
-
-    check_user_limit(settings.rate_limit_ai, "ai", str(user.id))
-    job = jobs.create_job(db, project, JobKind.BRIEF_SUMMARY, {"facts": brief_summary.brief_facts(brief)})
-    db.commit()
-    background.add_task(jobs.run_job, job.id, session_factory, provider)
-    return job
+    return jobs.start_job(
+        db,
+        background,
+        project,
+        user,
+        JobKind.BRIEF_SUMMARY,
+        {"facts": brief_summary.brief_facts(brief)},
+        provider=provider,
+        session_factory=session_factory,
+    )
 
 
 @router.post("/summary/confirm", response_model=BriefState)

@@ -154,13 +154,54 @@
   - Fix found while writing it: deleting a campaign or the account left uploaded files in
     storage. Now removed too. 93 backend tests pass; lint, types and `npm run build` pass.
 
+- 6 Oct: the 5 Oct meeting moved to 6 Oct. The client's booom.com is a static site on their own
+  paid Netlify account (they want to keep its files). BOOOM More will run on `app.booom.com`
+  instead, so nothing of theirs is overwritten. Ali asked Rehman to give the Render GitHub app
+  access to the repo; if he can't, the fallback is a private copy on Ali's GitHub as a second remote.
+
+### Week 2 (agreed 6 Oct)
+1. Stage pipeline and versions (done) 2. Audience backend 3. Audience screen
+4. Directions backend 5. Directions screen 6. Assets backend 7. Single-field regenerate and
+versions on assets 8. Creative Workspace screen 9. AI safety on every stage
+10. Testing, a real Claude run of the full flow, PROGRESS, a vertical update video.
+Deploy runs alongside, once Render access arrives.
+
+- Week 2, task 1: stage pipeline and versions (6 Oct). Backend only; the screens come in tasks 3, 5 and 8.
+  - `campaign_items`: every audience card, direction and asset is one item with a working
+    copy (`data`, autosaved), `selected` (primary audience or chosen direction, one per kind),
+    `approved_at` and `archived_at` (a replaced set is kept, never deleted).
+  - `revisions`: never-changed copies per item, numbered 1, 2, 3, each with its source
+    (generated, field regenerated, saved, kept edits, restored, created, copied), the
+    campaign version, job, provider, model, prompt version and time, as brief section 6
+    asks. `projects.version` goes up with every revision (for export labels in Week 3).
+  - Rules in `app/items.py`, used by every stage: the AI never changes approved work (a
+    job that finds its item approved fails with a plain "left unchanged" message); a
+    person's edit clears approval; unsaved edits are kept as a revision before an AI
+    rewrite or a restore; a field regeneration changes that one field only; restoring
+    adds a new revision, so history only grows. Rows are locked while they change.
+  - `app/pipeline.py`: each stage waits for the one before it (confirmed and current
+    summary, then a primary audience, then a chosen direction), and builds the context
+    the AI works from (brief facts, confirmed summary, chosen audience and direction).
+    Each kind registers a schema, so edits can't rename, drop or mistype a field.
+  - Jobs: `ai_jobs.target` for work narrower than a whole step (one direction, one
+    field). `jobs.start_job` is shared by every stage, including the brief summary now:
+    pause switch, per-user limit, a second click rejoins, and two jobs never write to
+    the same step at once (409).
+  - Shared routes under `/projects/{id}/items`: list by kind, get, edit (only sent fields),
+    save version (with an optional name; no duplicate if nothing changed), history, restore,
+    approve and unapprove, choose. Private per owner (404), demo is read-only.
+  - Duplicating a campaign now copies its items and choices, but not approvals. The
+    dashboard's "assets drafted" card is now a real count.
+  - Migration 36d38e5d4edf (checked down and up). 116 backend tests pass (23 new).
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
     the repo is Rehman's: he must give the Render GitHub app access to `rehman240/Boom-Ai`.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
-12. Test and wrap up, then propose the Week 2 task list.
+12. Test and wrap up (with the deploy).
+- Week 2, task 2: Identify Target backend.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).

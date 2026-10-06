@@ -127,6 +127,16 @@ def facts_hash(facts: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(facts, sort_keys=True).encode()).hexdigest()
 
 
+def is_confirmed(brief: Brief) -> bool:
+    """The user confirmed a summary of the brief as it is now, so later stages can build on it."""
+    stored = brief.summary
+    return (
+        brief.summary_confirmed_at is not None
+        and isinstance(stored, dict)
+        and stored.get("input_hash") == facts_hash(brief_facts(brief))
+    )
+
+
 def build_task(facts: dict[str, Any]) -> AiTask:
     prompt = (
         "Summarise this campaign brief. The brief is JSON between the <brief> tags.\n\n"

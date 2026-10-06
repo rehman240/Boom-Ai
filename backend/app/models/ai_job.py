@@ -32,6 +32,9 @@ class AiJob(IdMixin, TimestampMixin, Base):
 
     project_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"), index=True)
     kind: Mapped[str] = mapped_column(String(32))
+    # What a job works on when it is narrower than its whole step: one direction, or one
+    # field of one asset ("<item id>:<field>"). None means the whole step.
+    target: Mapped[str | None] = mapped_column(String(100))
     status: Mapped[str] = mapped_column(String(16), default=JobStatus.QUEUED, index=True)
     input: Mapped[dict] = mapped_column(JSONB, default=dict)
     result: Mapped[dict | None] = mapped_column(JSONB)  # validated structured output
