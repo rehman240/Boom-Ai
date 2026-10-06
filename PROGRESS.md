@@ -332,17 +332,33 @@ Deploy runs alongside, once Render access arrives.
     approve lock, refresh keeps the open asset. No console errors, no sideways scroll. Typecheck,
     lint and build pass.
 
+- 6 Oct, deploy (part 1): the backend is live on Render (free plan, Singapore, Docker, root
+  directory `backend`, health check `/health`, auto-deploy on commit to `main`). Database and
+  file storage are the client's Supabase project in Singapore (session pooler, private bucket
+  through the S3 API). Rehman made the repo public so Render could reach it. Checked on the
+  live server: health and database OK, migrations ran, CORS allows only the Vercel site, the
+  real visitor IP reaches the API (so rate limits are per person), and a file upload and
+  download through Supabase storage works (the temporary test account was deleted after).
+  Secrets are only in Render's environment variables.
+- 6 Oct: the client asked for a light/dark switch. Agreed with Ali: build it at the end of
+  Week 3, once every screen is finished.
+
 ## Next
-11. Deploy. Vercel already serves the frontend from the repo, but with no backend
-    (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
-    the repo is Rehman's: he must give the Render GitHub app access to `rehman240/Boom-Ai`.
-    Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
-    `BACKEND_URL` on Vercel, redeploy.
-12. Test and wrap up (with the deploy).
-- Week 2, task 9: AI safety check across every stage (prompt review, injection test, "AI suggestions need review" note, error messages).
+11. Deploy, part 2 (waiting on Rehman, whose Vercel is a personal plan that can't add members):
+    set `BACKEND_URL` to the Render URL for Production and Preview, check Root Directory is
+    `frontend`, turn off Deployment Protection for production (today the site needs a share
+    link), then Redeploy. Then check `/api/health` through Vercel and do a live test on laptop
+    and phone with the real AI.
+12. Send the client a ready `index.html` with an "Open BOOOM More" button (a plain link) and a
+    small button snippet for their booom.com page, once the live link works end to end.
+- Week 2, task 9: AI safety check across every stage (prompt review, injection test, "AI
+  suggestions need review" note, error messages).
+- Week 2, task 10: full flow with the real AI on laptop and phone, fixes, a vertical update video.
+- Decide whether the repo goes back to private (the Render GitHub app must be installed first).
+- Change the Render password (it was shared in chat). Set the privacy page's server region to
+  Singapore.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
-- Change the Render password once deploy is done (it was shared in chat).
 
 ## Decisions agreed with Ali (28 Sep 2026)
 - Brief includes all client-brief fields; currency fixed to USD.
