@@ -220,6 +220,28 @@ Deploy runs alongside, once Render access arrives.
     the screen needs a clear progress state.
   - 133 backend tests pass (17 new).
 
+- Week 2, task 3: Identify Target screen (6 Oct), `/projects/{id}/target`.
+  - States: brief not confirmed (says why, links back), nothing yet ("Suggest audiences" or
+    "Write my own"), generating ("one to two minutes, keeps going if you leave or refresh";
+    survives a refresh), failed (the server's plain message, "Your audiences are unchanged",
+    Try again), loading and load errors.
+  - Cards in the style of the reference direction cards: coloured band with "Audience A",
+    "Hypothesis" or "Written by you", primary badge; need, why they would act, what holds
+    them back, message angle, channels, "Based on your brief", "Assumptions to check", and
+    review flags. Two columns on desktop, stacked on phones.
+  - Per card: Choose as primary, Edit (inline form, focus moves to the first field; sends
+    only changed fields), "Edited by you. Undo edits", History (every version, Restore), and
+    Remove (confirm dialog; archived, not deleted). "Write your own audience" dialog.
+  - "Who to leave out": chips, add and remove, saved at once. Bottom bar: the primary
+    audience, "New ideas" (keeps chosen, edited and own cards) and "Continue to campaign"
+    (enabled once a primary is chosen). Sticky on large screens; on phones it ends the page
+    with room below, so the round audio guide button never covers it.
+  - Reusable for the next stages: `StageHeader` + `useCampaign`, `useJobPolling`,
+    `VersionHistory`, `lib/items.ts`. The placeholder stage page now uses `StageHeader`.
+  - Checked in Chrome at 1440px and 390px with the mock AI (every state, edit, undo, choose,
+    exclusion, history, write own, new ideas): no console errors, no sideways scroll.
+    Typecheck, lint and `npm run build` pass.
+
 ## Next
 11. Deploy. Vercel already serves the frontend from the repo, but with no backend
     (`/api/health` fails with DNS_HOSTNAME_RESOLVED_PRIVATE). Render shows no repos because
@@ -227,7 +249,7 @@ Deploy runs alongside, once Render access arrives.
     Then: backend on Render (root directory `backend`), Postgres and storage on Supabase,
     `BACKEND_URL` on Vercel, redeploy.
 12. Test and wrap up (with the deploy).
-- Week 2, task 3: Identify Target screen.
+- Week 2, task 4: Generate Campaign backend (3 directions, regenerate one, short history).
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 - Change the Render password once deploy is done (it was shared in chat).
