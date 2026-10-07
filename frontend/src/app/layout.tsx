@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { ServerWakeNotice } from "@/components/ui/ServerWakeNotice";
 import { APP_NAME } from "@/lib/brand";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -18,7 +19,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <ServerWakeNotice />
+      </body>
     </html>
   );
 }
