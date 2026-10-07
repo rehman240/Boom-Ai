@@ -348,14 +348,21 @@ Deploy runs alongside, once Render access arrives.
 - 6 Oct: the client asked for a light/dark switch. Agreed with Ali: build it at the end of
   Week 3, once every screen is finished.
 
+- 7 Oct: live check of the whole flow on https://boom-ai-six.vercel.app with the real Claude:
+  sign up through the form, brief, summary (10 s), 4 audiences (19 s), 3 directions (19 s), all 7
+  assets (26 s), and a single-field rewrite (3 s) that left the other fields untouched; 92 s in
+  all. Screens checked at 1440 and 390px: no console errors, no sideways scroll. Test accounts
+  deleted.
+- 7 Oct: the free Render backend sleeps after 15 quiet minutes and the first request then took
+  89 s. Every page now pings `/api/health` on open (so the server is usually awake by sign in)
+  and shows a "Starting up, one moment" notice if it takes over 3 s. A free outside ping
+  (cron-job.org on `/health` every 10 minutes) would keep it awake; to set up by Ali or Rehman.
+- 7 Oct: client link page in `Client-Link-Page/` (not committed): `index.html` with the logo art
+  and a big "Open BOOOM More" plain link, the two hero images, `button-snippet.html` for the
+  booom.com hub, and a zip of all four. Checked at 1440 and 390px, the button opens the live app.
+
 ## Next
-11. Deploy, part 2 (waiting on Rehman, whose Vercel is a personal plan that can't add members):
-    set `BACKEND_URL` to the Render URL for Production and Preview, check Root Directory is
-    `frontend`, turn off Deployment Protection for production (today the site needs a share
-    link), then Redeploy. Then check `/api/health` through Vercel and do a live test on laptop
-    and phone with the real AI.
-12. Send the client a ready `index.html` with an "Open BOOOM More" button (a plain link) and a
-    small button snippet for their booom.com page, once the live link works end to end.
+- Set up the outside ping that keeps the Render backend awake.
 - Week 2, task 9: AI safety check across every stage (prompt review, injection test, "AI
   suggestions need review" note, error messages).
 - Week 2, task 10: full flow with the real AI on laptop and phone, fixes, a vertical update video.
