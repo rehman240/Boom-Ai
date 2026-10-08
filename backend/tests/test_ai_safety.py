@@ -111,3 +111,14 @@ def test_an_unexpected_failure_shows_only_a_plain_message(client, ai):
     page = json.dumps(client.get(f"/projects/{project_id}/brief").json())
     for leak in ("sk-ant", "SECRET", "You prepare", "request failed"):
         assert leak not in page
+
+
+def test_limits_the_strict_schema_drops_are_written_into_the_descriptions():
+    # A limit the model is never told turns a slightly long answer into a failed job.
+    direction = directions.SCHEMA["properties"]["directions"]
+    concept = direction["items"]["properties"]["concept"]
+    assert "maxLength" not in concept and concept["description"].endswith("At most 600 characters.")
+    assert direction["description"] == "At most 3 items."
+    # The assets give their own, shorter guidance, so it is not repeated.
+    subject = assets.SCHEMA["properties"]["email"]["properties"]["subject"]["description"]
+    assert subject.count("characters") == 1
