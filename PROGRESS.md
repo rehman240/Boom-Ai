@@ -418,12 +418,24 @@ Deploy runs alongside, once Render access arrives.
     Workspace (edit with counter, single-field rewrite, preview, versions, approve) and the
     safety note. AI waits are cut out. Dry run with the mock, final take with Claude.
   - 189 backend tests pass; typecheck and lint pass.
-  - **Week 2 is complete.** Commits b39d90f, 5d36042, cc6bac4 still to be pushed.
+  - **Week 2 is complete.** Ali pushed; the full flow passed on the live app (142 s, including
+    replacing one direction, v4 prompts live, test account deleted).
+
+- 8 Oct, checked against the Week 2 "What to Expect" PDF sent to the client: every point holds
+  on the live app. Two gaps closed:
+  - "Your typing saves by itself": audience and direction card edits needed Save changes. They
+    now autosave like the brief and assets (`useCardEditor`, shared `SaveState`), with Done in
+    place of Save changes / Cancel; nothing is sent while a required field is empty; leaving
+    the page saves what is waiting. Checked at 1440 and 390px (067f1f6).
+  - "It writes in the language your brief is written in": a Spanish brief went through every
+    stage with the real Claude (summary, audiences, directions, one replaced direction, all
+    seven assets, a headline rewrite): all Spanish, about 90 s in all. It showed that run-on
+    lists ("1) ... 2) ...") were flagged as invented figures; fixed (3157c8f). 190 tests pass.
 
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
   `Client-Link-Page/` and its zip.
-- Push b39d90f, 5d36042 and cc6bac4, then a short live check (Render redeploys on push).
+- Push 067f1f6, 3157c8f and the PROGRESS commit.
 - Week 3: propose the task list (Allocate Budget, Manage Conversions, Review and Export,
   landing page, testing, go live and handover; light/dark switch at the end) and wait for OK.
 - Decide whether the repo goes back to private (the Render GitHub app must be installed first).
