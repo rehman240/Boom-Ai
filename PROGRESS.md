@@ -435,7 +435,7 @@ Deploy runs alongside, once Render access arrives.
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
   `Client-Link-Page/` and its zip.
-- Push 067f1f6, 3157c8f and the PROGRESS commit.
+- Wait for client feedback on the Week 2 video (Ali sends it 8 Oct). Act on it first, then Week 3.
 - Week 3: propose the task list (Allocate Budget, Manage Conversions, Review and Export,
   landing page, testing, go live and handover; light/dark switch at the end) and wait for OK.
 - Decide whether the repo goes back to private (the Render GitHub app must be installed first).
