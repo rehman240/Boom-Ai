@@ -389,13 +389,45 @@ Deploy runs alongside, once Render access arrives.
     errors, no sideways scroll.
   - `tests/test_ai_safety.py` (17 tests). 188 backend tests pass; typecheck and lint pass.
 
+- Week 2, task 10: full flow with the real Claude, fixes, update video (8 Oct).
+  - A Playwright script clicks the whole flow through the real UI (sign up, new campaign,
+    brief, summary, confirm, audiences, primary, directions, choose, assets, single-field
+    rewrite, approve) with claude-opus-5-5. Laptop (1440px): 182 s, phone (390px, mobile
+    mode): 110 s. No console errors, no sideways scroll, the field rewrite left the other
+    fields untouched.
+  - Bugs found and fixed:
+    - Phone: Regenerate and Confirm facts sat side by side and pushed the page 27px wide;
+      the audio guide button then covered Confirm facts, so it could not be tapped. They now
+      stack full width. (Earlier 390px checks missed it: without mobile mode the browser
+      clips the overflow; the check now compares against 390.)
+    - Replacing one direction failed twice with "not in the expected format": Claude wrote
+      a 703-character concept against a 600 limit it never saw (strict structured output
+      can't carry length keywords). `strict_json_schema` now writes the limits into each
+      field's description; the same job then passed twice (about 520).
+    - The phone guide bar said "All set: review brief" even after confirming. It now says
+      "Check summary", then "Next: audience" (a link to Identify Target).
+    - The summary called the owner "the user"; the prompt now names the business or says "you".
+    - Assets ran a little over their suggested length (42/40); the prompt and schema now say
+      "at most". Still occasionally a few characters over; the counter warns.
+    - The ad preview cut the headline to "Same li…" on phones; it now shows two lines.
+  - Sidebar: Campaigns, Audiences, Creative, Budgets and Results open the open campaign's
+    stages (disabled outside a campaign), as agreed on 28 Sep.
+  - Vertical client video (no task numbers, no pace): `Week-2-Report/BOOOM-More-Week-2-
+    Update-Vertical.mp4`, 2 min 48 s, 1080x2340, captions, real Claude. Shows Identify Target,
+    exclusions, Generate Campaign with full details and replacing one direction, the Creative
+    Workspace (edit with counter, single-field rewrite, preview, versions, approve) and the
+    safety note. AI waits are cut out. Dry run with the mock, final take with Claude.
+  - 189 backend tests pass; typecheck and lint pass.
+  - **Week 2 is complete.** Commits b39d90f, 5d36042, cc6bac4 still to be pushed.
+
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
   `Client-Link-Page/` and its zip.
-- Week 2, task 10: full flow with the real AI on laptop and phone, fixes, a vertical update video.
+- Push b39d90f, 5d36042 and cc6bac4, then a short live check (Render redeploys on push).
+- Week 3: propose the task list (Allocate Budget, Manage Conversions, Review and Export,
+  landing page, testing, go live and handover; light/dark switch at the end) and wait for OK.
 - Decide whether the repo goes back to private (the Render GitHub app must be installed first).
-- Change the Render password (it was shared in chat). Set the privacy page's server region to
-  Singapore.
+- Set the privacy page's server region to Singapore.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
 
