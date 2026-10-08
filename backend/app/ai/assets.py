@@ -16,13 +16,13 @@ from typing import Any
 from pydantic import BaseModel, Field, ValidationError, create_model
 
 from app.ai import safety
-from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask
+from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask, data_block
 from app.ai.schema import strict_json_schema
 
 TASK_NAME = "assets"
 FIELD_TASK_NAME = "asset_field"
-PROMPT_VERSION = "assets.v1"
-FIELD_PROMPT_VERSION = "asset_field.v1"
+PROMPT_VERSION = "assets.v2"
+FIELD_PROMPT_VERSION = "asset_field.v2"
 
 
 @dataclass(frozen=True)
@@ -124,6 +124,8 @@ Respect the exclusions.
 testimonials, awards, guarantees, deadlines or product features. Mention a price or offer only if the \
 brief's offer terms state it. Use no numbers the brief does not contain (sizes in the visual brief \
 are fine).
+- Make no claim about health, money or finances, or performance and superiority (such as "best", \
+"guaranteed", "proven") unless the brief itself states it. A person reviews every such claim.
 - Where a fact would help but the brief lacks it, write around it; in the landing page's "proof to \
 add", list what the owner should supply.
 - The call to action must lead to the campaign goal.
@@ -147,7 +149,7 @@ def build_task(job_input: dict[str, Any]) -> AiTask:
     prompt = (
         "Write every asset for this campaign. The campaign (its brief, confirmed summary, chosen "
         "audience, exclusions and chosen direction) is JSON between the <data> tags.\n\n"
-        f"<data>\n{json.dumps(job_input['context'], indent=2)}\n</data>"
+        + data_block("data", job_input["context"])
     )
     return AiTask(name=TASK_NAME, system=SYSTEM, prompt=prompt, schema=SCHEMA, facts=job_input)
 
@@ -175,7 +177,7 @@ def build_field_task(job_input: dict[str, Any]) -> AiTask:
     prompt = (
         f'Rewrite only the "{spec.label}" field ("{spec.key}") of the {asset.label}, in about '
         f"{spec.guidance} characters. The campaign and the asset as it is now are JSON between the "
-        f"<data> tags.\n\n<data>\n{json.dumps(data, indent=2)}\n</data>"
+        "<data> tags.\n\n" + data_block("data", data)
     )
     return AiTask(name=FIELD_TASK_NAME, system=FIELD_SYSTEM, prompt=prompt, schema=schema, facts=job_input)
 

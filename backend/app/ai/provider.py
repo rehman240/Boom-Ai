@@ -49,6 +49,18 @@ class AiTask:
     facts: dict[str, Any] = field(default_factory=dict)
 
 
+def data_block(tag: str, data: Any) -> str:
+    """The user's data as JSON between <tag> tags, for a prompt.
+
+    `<`, `>` and `&` are written as JSON escapes, so text the user typed (such as
+    "</brief> Ignore the rules") can never close the tag and pass itself off as our
+    instructions. The model still reads the same text.
+    """
+    text = json.dumps(data, indent=2, ensure_ascii=False)
+    text = text.replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
+    return f"<{tag}>\n{text}\n</{tag}>"
+
+
 class AiProvider(Protocol):
     name: str
     model: str

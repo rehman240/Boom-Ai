@@ -14,11 +14,11 @@ from pydantic import BaseModel, Field, ValidationError
 
 from app.ai import safety
 from app.ai.audience import BasedOn, Channel
-from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask
+from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask, data_block
 from app.ai.schema import strict_json_schema
 
 TASK_NAME = "directions"
-PROMPT_VERSION = "directions.v1"
+PROMPT_VERSION = "directions.v2"
 SLOTS = ("1", "2", "3")  # shown as Direction A, B and C
 
 
@@ -78,7 +78,7 @@ def build_task(job_input: dict[str, Any]) -> AiTask:
         f"Propose {what} for this campaign. The campaign (its brief, confirmed summary, chosen audience "
         "and exclusions), the directions that stay, and the ones being replaced (make the new ones "
         "clearly different from those too) are JSON "
-        f"between the <data> tags.\n\n<data>\n{json.dumps(data, indent=2)}\n</data>"
+        "between the <data> tags.\n\n" + data_block("data", data)
     )
     return AiTask(name=TASK_NAME, system=SYSTEM, prompt=prompt, schema=SCHEMA, facts=job_input)
 

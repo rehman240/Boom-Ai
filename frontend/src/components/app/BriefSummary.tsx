@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { AlertTriangle, ArrowRight, Check, CircleHelp, RefreshCw, Sparkles } from "lucide-react";
+import { AiReviewNote } from "@/components/app/StageHeader";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { ApiError } from "@/lib/api";
 import { APP_NAME } from "@/lib/brand";
@@ -243,6 +244,9 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
             Made {formatDate(summary.generated_at)} · {summary.provider === "mock" ? "test mode (no AI model)" : summary.model} ·{" "}
             {summary.prompt_version}
           </p>
+          <div className="mt-3">
+            <AiReviewNote />
+          </div>
         </div>
         <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold ${badge.className}`}>
           <badge.Icon className="h-3.5 w-3.5" aria-hidden="true" /> {badge.text}

@@ -14,11 +14,11 @@ from pydantic import BaseModel, Field, ValidationError
 
 from app.ai import safety
 from app.ai.brief_summary import SourceField
-from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask
+from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask, data_block
 from app.ai.schema import strict_json_schema
 
 TASK_NAME = "audience"
-PROMPT_VERSION = "audience.v1"
+PROMPT_VERSION = "audience.v2"
 MIN_CARDS, MAX_CARDS = 2, 4
 MAX_EXCLUSIONS = 10
 
@@ -68,6 +68,7 @@ conditions, disability, pregnancy, political views, immigration status, or finan
 Mention such a trait only if the brief itself states it.
 - Never invent prices, discounts, statistics, market sizes, results or testimonials. Use no \
 numbers the brief does not contain.
+- Make no claim about health, money or performance that the brief does not state.
 - Respect the exclusions: do not propose audiences the user has ruled out.
 - Make the audiences clearly different from each other and from any existing audiences listed.
 - Channels must come from this list: {", ".join(Channel.__args__)}. Prefer the brief's channels of \
@@ -82,7 +83,7 @@ def build_task(job_input: dict[str, Any]) -> AiTask:
     prompt = (
         f"Propose {MIN_CARDS} to {count} audience hypotheses for this campaign. The campaign (with "
         "its confirmed summary and the user's exclusions) and the audiences the user already has "
-        f"are JSON between the <data> tags.\n\n<data>\n{json.dumps(data, indent=2)}\n</data>"
+        "are JSON between the <data> tags.\n\n" + data_block("data", data)
     )
     return AiTask(name=TASK_NAME, system=SYSTEM, prompt=prompt, schema=SCHEMA, facts=job_input)
 

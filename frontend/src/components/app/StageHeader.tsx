@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lock } from "lucide-react";
+import { Lock, ShieldCheck } from "lucide-react";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { EngineBadge } from "@/components/app/CampaignSetup";
 import { useUser } from "@/components/app/UserContext";
@@ -45,6 +45,19 @@ export function useCampaign(projectId: string) {
   return load;
 }
 
+/** Stages where the AI writes suggestions (Budget's split comes in Week 3). */
+const AI_STAGES: StageKey[] = ["brief", "target", "campaign", "creative", "budget"];
+
+/** The client's rule, said where the AI's work appears: it suggests, the person decides. */
+export function AiReviewNote() {
+  return (
+    <p className="flex items-start gap-2 text-sm text-muted">
+      <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyan" aria-hidden="true" />
+      <span>AI suggestions can be wrong. Check every claim before you use it. Nothing is published or spent for you.</span>
+    </p>
+  );
+}
+
 /** Breadcrumb, title, engine badge, progress bar and the read-only notice, the same on every stage. */
 export function StageHeader({
   load,
@@ -69,8 +82,9 @@ export function StageHeader({
       />
       <PageHeader eyebrow={eyebrow} title={title} subtitle={subtitle} />
       {load.status === "ready" ? (
-        <div className="mt-5">
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
           <EngineBadge engine={load.engine} />
+          {AI_STAGES.includes(stage) ? <AiReviewNote /> : null}
         </div>
       ) : null}
       <div className="mt-8">

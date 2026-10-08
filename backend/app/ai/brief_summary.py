@@ -15,13 +15,13 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, ValidationError
 
 from app.ai import safety
-from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask
+from app.ai.provider import MOCK_BUILDERS, AiError, AiProvider, AiTask, data_block
 from app.ai.schema import strict_json_schema
 from app.models import Brief
 from app.models.brief import CAMPAIGN_TYPES
 
 TASK_NAME = "brief_summary"
-PROMPT_VERSION = "brief_summary.v3"
+PROMPT_VERSION = "brief_summary.v4"
 
 # Brief fields a fact can point back to, so every fact shows what it is "based on".
 SourceField = Literal[
@@ -140,7 +140,7 @@ def is_confirmed(brief: Brief) -> bool:
 def build_task(facts: dict[str, Any]) -> AiTask:
     prompt = (
         "Summarise this campaign brief. The brief is JSON between the <brief> tags.\n\n"
-        f"<brief>\n{json.dumps(facts, indent=2)}\n</brief>"
+        + data_block("brief", facts)
     )
     return AiTask(name=TASK_NAME, system=SYSTEM, prompt=prompt, schema=SCHEMA, facts=facts)
 
