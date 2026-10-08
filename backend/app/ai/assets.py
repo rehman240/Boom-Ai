@@ -196,7 +196,8 @@ def generate_field(provider: AiProvider, job_input: dict[str, Any]) -> str:
 
 
 def review_flags(data: dict[str, Any], *, by_ai: bool, user_text: str) -> list[dict[str, str]]:
-    text = " ".join(str(v) for v in data.values())
+    # One field per line, so a list in one field and a sentence in the next are read apart.
+    text = "\n".join(str(v) for v in data.values())
     return safety.review_flags(text, by_ai=by_ai, user_text=user_text)
 
 

@@ -105,7 +105,7 @@ _PUBLIC = ("name", "promise", "headline", "key_message", "concept")
 
 def text_of(data: dict[str, Any], keys: tuple[str, ...] = (*_PUBLIC, "channel_fit", "rationale")) -> str:
     extra = [*data.get("risks", []), *data.get("assumptions", [])] if "rationale" in keys else []
-    return " ".join([*(str(data.get(k, "")) for k in keys), *extra])
+    return "\n".join([*(str(data.get(k, "")) for k in keys), *extra])
 
 
 def review_flags(data: dict[str, Any], *, by_ai: bool, user_text: str) -> list[dict[str, str]]:

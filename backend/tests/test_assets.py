@@ -320,9 +320,20 @@ def test_outline_numbers_and_image_sizes_are_not_called_invented_figures(client,
     project_id = with_direction(client)
     ai.use(FixedProvider(full_answer(
         landing_page={"sections": "1. The problem\n2. The product\n3) How to get it"},
-        visual_brief={"formats": "1080x1080 feed, 1080 x 1920 story, 1200x628px link ad"},
+        # Claude also runs the items on in one line, as in a real Spanish run.
+        visual_brief={
+            "formats": "1080x1080 feed, 1080 x 1920 story, 1200x628px link ad",
+            "scenes": "1) Two desks side by side. 2) Hands folding the lamp: 3) it opens on a new desk.",
+        },
     )))
     generate(client, project_id)
     state = by_key(stage(client, project_id))
     assert state["landing_page"]["review_flags"] == []
     assert state["visual_brief"]["review_flags"] == []
+
+
+def test_a_figure_in_a_sentence_is_still_flagged():
+    from app.ai import safety
+
+    assert safety.unsupported_numbers("Lasts 12 hours. 2) Folds flat.", "") == ["12"]
+    assert safety.unsupported_numbers("Save 30 dollars today", "") == ["30"]

@@ -80,9 +80,10 @@ def numbers_in(text: str) -> set[str]:
     return {_normalise(n) for n in _NUMBER.findall(text or "")}
 
 
-# Numbers that are layout, not claims: "1." or "2)" at the start of a line in an outline,
+# Numbers that are layout, not claims: "1." or "2)" opening an item in an outline, whether
+# each item starts a line or they run on in one ("1) Monday at home. 2) It fits the bag."),
 # and image sizes such as 1080x1920 in a visual brief.
-_LIST_MARKER = re.compile(r"^\s*\d{1,2}[.)]\s", re.MULTILINE)
+_LIST_MARKER = re.compile(r"(?:^|(?<=[.!?;:]\s))\s*\d{1,2}[.)]\s", re.MULTILINE)
 _IMAGE_SIZE = re.compile(r"\b\d{2,5}\s?[x×]\s?\d{2,5}(?:\s?px)?\b", re.IGNORECASE)
 
 

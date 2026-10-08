@@ -109,7 +109,7 @@ def new_card_count(kept: int) -> int:
 
 def _card_text(card: dict[str, Any]) -> str:
     parts = [card.get(k, "") for k in ("name", "definition", "need", "motivation", "objection", "message_angle")]
-    return " ".join([*parts, *card.get("assumptions", [])])
+    return "\n".join([*parts, *card.get("assumptions", [])])
 
 
 def review_flags(card: dict[str, Any], *, by_ai: bool, user_text: str) -> list[dict[str, str]]:
