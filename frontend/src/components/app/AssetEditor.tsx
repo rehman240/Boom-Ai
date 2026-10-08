@@ -5,7 +5,6 @@ import {
   AlertTriangle,
   Check,
   Clock,
-  CloudOff,
   Copy,
   History,
   ImageIcon,
@@ -18,6 +17,7 @@ import { VersionHistory } from "@/components/app/VersionHistory";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { Field } from "@/components/ui/Field";
+import { SaveState } from "@/components/ui/SaveState";
 import { ApiError } from "@/lib/api";
 import { isActive, type Job } from "@/lib/brief";
 import {
@@ -365,34 +365,6 @@ function AssetField({
       ) : null}
     </div>
   );
-}
-
-function SaveState({ status, error, retry }: { status: string; error: string; retry: () => void }) {
-  if (status === "error") {
-    return (
-      <span className="flex items-center gap-2 text-sm text-danger" role="alert">
-        <CloudOff className="h-4 w-4" aria-hidden="true" /> {error || "Not saved."}
-        <button onClick={retry} className="font-semibold underline underline-offset-2">
-          Retry
-        </button>
-      </span>
-    );
-  }
-  if (status === "saving") {
-    return (
-      <span className="flex items-center gap-2 text-sm text-subtle" role="status">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Saving…
-      </span>
-    );
-  }
-  if (status === "saved") {
-    return (
-      <span className="flex items-center gap-1.5 text-sm text-subtle" role="status">
-        <Check className="h-4 w-4" aria-hidden="true" /> Saved
-      </span>
-    );
-  }
-  return null;
 }
 
 function NameVersion({ onClose, onSave, saving }: { onClose: () => void; onSave: (label: string) => void; saving: boolean }) {

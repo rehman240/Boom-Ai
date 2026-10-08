@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { AlertTriangle, Check, Clock, History, Lightbulb, Loader2, Pencil, RefreshCw, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 import { ChipGroup, Textarea } from "@/components/ui/Inputs";
+import { SaveState } from "@/components/ui/SaveState";
 import { CHANNELS, SOURCE_LABELS } from "@/lib/brief";
 import { MAX_RISKS, slotLetter, type Direction, type DirectionDraft } from "@/lib/directions";
 import { FLAG_LABELS } from "@/lib/items";
+import { useCardEditor } from "@/lib/useCardEditor";
 
 // Header bands as in the reference screen: blue, teal, violet. White text on each passes AA.
 const BANDS: Record<string, string> = { "1": "bg-[#1a56b0]", "2": "bg-[#146a80]", "3": "bg-[#55449a]" };
@@ -94,14 +96,18 @@ export function DirectionCard({
   rewriting: boolean;
   slotError: string;
   onChoose: () => void;
-  onSave: (changes: Partial<DirectionDraft>) => Promise<boolean>;
+  onSave: (changes: Partial<DirectionDraft>) => Promise<unknown>;
   onUndo: () => void;
   onRegenerate: () => void;
   onHistory: () => void;
 }) {
-  const [editing, setEditing] = useState<DirectionDraft | null>(null);
-  const [errors, setErrors] = useState<Partial<Record<keyof DirectionDraft, string>>>({});
-  const [saving, setSaving] = useState(false);
+  const editor = useCardEditor<DirectionDraft>({
+    draft: () => directionDraft(direction),
+    clean: (e) => ({ ...e, risks: e.risks.map((r) => r.trim()).filter(Boolean) }),
+    validate,
+    save: onSave,
+  });
+  const editing = editor.editing;
   const formRef = useRef<HTMLDivElement>(null);
   const isEditing = editing !== null;
   const d = direction.data;
@@ -114,26 +120,6 @@ export function DirectionCard({
     formRef.current?.querySelector<HTMLElement>("input, textarea")?.focus({ preventScroll: true });
     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [isEditing]);
-
-  async function save() {
-    if (!editing) return;
-    const cleaned = { ...editing, risks: editing.risks.map((r) => r.trim()).filter(Boolean) };
-    const found = validate(cleaned);
-    setErrors(found);
-    if (Object.keys(found).length) return;
-    const before = directionDraft(direction);
-    const changes = Object.fromEntries(
-      Object.entries(cleaned).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(before[k as keyof DirectionDraft])),
-    ) as Partial<DirectionDraft>;
-    if (!Object.keys(changes).length) {
-      setEditing(null);
-      return;
-    }
-    setSaving(true);
-    const ok = await onSave(changes);
-    setSaving(false);
-    if (ok) setEditing(null);
-  }
 
   return (
     <article
@@ -160,15 +146,14 @@ export function DirectionCard({
           <h3 id={titleId} className="mb-5 font-display text-xl font-bold">
             Edit direction {letter}
           </h3>
-          <DirectionForm value={editing} onChange={setEditing} errors={errors} />
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={save} loading={saving}>
-              <Check className="h-4 w-4" aria-hidden="true" /> Save changes
+          <DirectionForm value={editing} onChange={editor.change} errors={editor.errors} />
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
+            <Button onClick={editor.done}>
+              <Check className="h-4 w-4" aria-hidden="true" /> Done
             </Button>
-            <Button variant="secondary" onClick={() => (setEditing(null), setErrors({}))} disabled={saving}>
-              Cancel
-            </Button>
+            <SaveState status={editor.status} error={editor.error} retry={editor.retry} />
           </div>
+          <p className="mt-3 text-sm text-subtle">Changes save as you type.</p>
         </div>
       ) : (
         <div className="flex flex-1 flex-col p-5 sm:p-6">
@@ -310,7 +295,7 @@ export function DirectionCard({
                     Choose direction
                   </Button>
                 )}
-                <Button variant="secondary" onClick={() => setEditing(directionDraft(direction))} disabled={busy} className="grow">
+                <Button variant="secondary" onClick={editor.open} disabled={busy} className="grow">
                   <Pencil className="h-4 w-4" aria-hidden="true" /> Edit
                 </Button>
                 {approved ? null : (

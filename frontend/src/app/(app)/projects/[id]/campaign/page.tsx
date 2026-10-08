@@ -67,6 +67,13 @@ export default function CampaignPage() {
 
   const readOnly = load.status === "ready" && load.project.is_demo;
 
+  // Card edits save as you type, so they don't set the page's busy state; the card shows
+  // Saving, Saved or the error with a Retry.
+  const saveEdits = async (itemId: string, changes: object) => {
+    await editItem(id, itemId, changes);
+    await refresh();
+  };
+
   async function act(key: string, run: () => Promise<unknown>, fallback: string) {
     setError("");
     setBusy(key);
@@ -199,7 +206,7 @@ export default function CampaignPage() {
                     rewriting={runningSlots.includes(d.slot)}
                     slotError={slotError(d.slot)}
                     onChoose={() => act(d.id, () => selectItem(id, d.id), "Couldn't choose this direction.")}
-                    onSave={(changes) => act(d.id, () => editItem(id, d.id, changes), "Couldn't save your changes.")}
+                    onSave={(changes) => saveEdits(d.id, changes)}
                     onUndo={() => act(d.id, () => restoreVersion(id, d.id, d.version), "Couldn't undo. Please try again.")}
                     onRegenerate={() => (d.selected || d.unsaved_changes ? setReplacing(d) : regenerate(d))}
                     onHistory={() => setHistory(d)}

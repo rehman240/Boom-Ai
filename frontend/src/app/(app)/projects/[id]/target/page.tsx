@@ -71,6 +71,13 @@ export default function TargetPage() {
     }
   }
 
+  // Card edits save as you type, so they don't set the page's busy state; the card shows
+  // Saving, Saved or the error with a Retry.
+  const saveEdits = async (itemId: string, changes: object) => {
+    await editItem(id, itemId, changes);
+    await refresh();
+  };
+
   // The refresh after starting brings back the running job, which starts the polling.
   const generate = () => act("generate", () => generateAudiences(id), "Couldn't start. Please try again.");
 
@@ -166,7 +173,7 @@ export default function TargetPage() {
                   readOnly={readOnly}
                   busy={busy !== ""}
                   onChoose={() => act(card.id, () => selectItem(id, card.id), "Couldn't choose this audience.")}
-                  onSave={(changes) => act(card.id, () => editItem(id, card.id, changes), "Couldn't save your changes.")}
+                  onSave={(changes) => saveEdits(card.id, changes)}
                   onUndo={() => act(card.id, () => restoreVersion(id, card.id, card.version), "Couldn't undo. Please try again.")}
                   onHistory={() => setHistory(card)}
                   onRemove={() => setRemoving(card)}

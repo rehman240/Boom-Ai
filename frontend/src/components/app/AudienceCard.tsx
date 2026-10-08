@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { AlertTriangle, Check, History, Lightbulb, Pencil, Trash2, Undo2, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
+import { SaveState } from "@/components/ui/SaveState";
 import { ChipGroup, Textarea } from "@/components/ui/Inputs";
 import { MAX_CHANNELS, type AudienceCard as Card, type AudienceDraft } from "@/lib/audiences";
 import { CHANNELS, SOURCE_LABELS } from "@/lib/brief";
 import { FLAG_LABELS } from "@/lib/items";
+import { useCardEditor } from "@/lib/useCardEditor";
 
 // Header bands, after the direction cards in the reference screens. White text on each passes AA.
 const BANDS = ["bg-[#1a56b0]", "bg-[#146a80]", "bg-[#55449a]", "bg-[#7a3e78]"];
@@ -100,14 +102,13 @@ export function AudienceCardView({
   readOnly: boolean;
   busy: boolean;
   onChoose: () => void;
-  onSave: (changes: Partial<AudienceDraft>) => Promise<boolean>;
+  onSave: (changes: Partial<AudienceDraft>) => Promise<unknown>;
   onUndo: () => void;
   onHistory: () => void;
   onRemove: () => void;
 }) {
-  const [editing, setEditing] = useState<AudienceDraft | null>(null);
-  const [errors, setErrors] = useState<Partial<Record<keyof AudienceDraft, string>>>({});
-  const [saving, setSaving] = useState(false);
+  const editor = useCardEditor<AudienceDraft>({ draft: () => draftOf(card), validate: validateAudience, save: onSave });
+  const editing = editor.editing;
   const formRef = useRef<HTMLDivElement>(null);
   const isEditing = editing !== null;
   const d = card.data;
@@ -121,25 +122,6 @@ export function AudienceCardView({
   }, [isEditing]);
   const own = card.origin === "user";
   const titleId = `audience-${card.id}`;
-
-  async function save() {
-    if (!editing) return;
-    const found = validateAudience(editing);
-    setErrors(found);
-    if (Object.keys(found).length) return;
-    const before = draftOf(card);
-    const changes = Object.fromEntries(
-      Object.entries(editing).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(before[k as keyof AudienceDraft])),
-    ) as Partial<AudienceDraft>;
-    if (!Object.keys(changes).length) {
-      setEditing(null);
-      return;
-    }
-    setSaving(true);
-    const ok = await onSave(changes);
-    setSaving(false);
-    if (ok) setEditing(null);
-  }
 
   return (
     <article
@@ -164,15 +146,14 @@ export function AudienceCardView({
           <h3 id={titleId} className="mb-5 font-display text-xl font-bold">
             Edit audience {letter(index)}
           </h3>
-          <AudienceForm value={editing} onChange={setEditing} errors={errors} />
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button onClick={save} loading={saving}>
-              <Check className="h-4 w-4" aria-hidden="true" /> Save changes
+          <AudienceForm value={editing} onChange={editor.change} errors={editor.errors} />
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3">
+            <Button onClick={editor.done}>
+              <Check className="h-4 w-4" aria-hidden="true" /> Done
             </Button>
-            <Button variant="secondary" onClick={() => (setEditing(null), setErrors({}))} disabled={saving}>
-              Cancel
-            </Button>
+            <SaveState status={editor.status} error={editor.error} retry={editor.retry} />
           </div>
+          <p className="mt-3 text-sm text-subtle">Changes save as you type.</p>
         </div>
       ) : (
         <div className="flex flex-1 flex-col p-5 sm:p-6">
@@ -263,7 +244,7 @@ export function AudienceCardView({
                     Choose as primary
                   </Button>
                 )}
-                <Button variant="secondary" onClick={() => setEditing(draftOf(card))} disabled={busy}>
+                <Button variant="secondary" onClick={editor.open} disabled={busy}>
                   <Pencil className="h-4 w-4" aria-hidden="true" /> Edit
                 </Button>
                 <Button variant="ghost" onClick={onHistory} disabled={busy} aria-label={`History of audience ${letter(index)}`}>
