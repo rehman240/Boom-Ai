@@ -98,7 +98,7 @@ BY_KEY: dict[str, AssetSpec] = {a.key: a for a in ASSETS}
 
 def _asset_model(spec: AssetSpec) -> type[BaseModel]:
     fields: dict[str, Any] = {
-        f.key: (str, Field(max_length=f.limit, description=f"{f.label}. About {f.guidance} characters.")) for f in spec.fields
+        f.key: (str, Field(max_length=f.limit, description=f"{f.label}. At most {f.guidance} characters.")) for f in spec.fields
     }
     return create_model(f"Asset_{spec.key}", **fields)
 
@@ -129,7 +129,7 @@ are fine).
 - Where a fact would help but the brief lacks it, write around it; in the landing page's "proof to \
 add", list what the owner should supply.
 - The call to action must lead to the campaign goal.
-- Keep each field close to its suggested length.
+- Keep each field at or under its suggested length.
 - The visual production brief directs a photographer or designer. Do not claim any image exists.
 - Never describe or target people by protected or sensitive traits.
 - Write in the language the brief is written in, in the brand voice if one is given. The market is \
@@ -164,7 +164,7 @@ def generate(provider: AiProvider, job_input: dict[str, Any]) -> dict[str, dict[
 
 def field_schema(spec: FieldSpec) -> tuple[type[BaseModel], dict[str, Any]]:
     model = create_model(
-        "FieldAnswer", value=(str, Field(max_length=spec.limit, description=f"About {spec.guidance} characters."))
+        "FieldAnswer", value=(str, Field(max_length=spec.limit, description=f"At most {spec.guidance} characters."))
     )
     return model, strict_json_schema(model)
 
@@ -175,7 +175,7 @@ def build_field_task(job_input: dict[str, Any]) -> AiTask:
     _, schema = field_schema(spec)
     data = {"campaign": job_input["context"], "asset": asset.label, "current_asset": job_input["current"]}
     prompt = (
-        f'Rewrite only the "{spec.label}" field ("{spec.key}") of the {asset.label}, in about '
+        f'Rewrite only the "{spec.label}" field ("{spec.key}") of the {asset.label}, in at most '
         f"{spec.guidance} characters. The campaign and the asset as it is now are JSON between the "
         "<data> tags.\n\n" + data_block("data", data)
     )

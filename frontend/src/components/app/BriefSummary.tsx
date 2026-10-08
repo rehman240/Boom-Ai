@@ -331,7 +331,8 @@ export function SummaryPanel({ s, projectId, readOnly }: { s: BriefSummaryState;
             </ButtonLink>
           </div>
         ) : (
-          <div className="flex shrink-0 gap-3">
+          // Stacked full width on phones (Confirm on top), side by side from the small breakpoint.
+          <div className="flex shrink-0 flex-col-reverse gap-3 sm:flex-row [&>button]:w-full sm:[&>button]:w-auto">
             <Button variant="secondary" onClick={s.start} loading={s.busy === "starting"} disabled={s.active}>
               <RefreshCw className="h-4 w-4" aria-hidden="true" /> {status === "outdated" ? "Refresh" : "Regenerate"}
             </Button>

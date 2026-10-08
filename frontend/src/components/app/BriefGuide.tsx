@@ -1,12 +1,15 @@
 "use client";
 
-import { ArrowDown, Check } from "lucide-react";
-import { REQUIRED_LABELS, type BriefDraft } from "@/lib/brief";
+import Link from "next/link";
+import { ArrowDown, ArrowRight, Check } from "lucide-react";
+import { REQUIRED_LABELS, type BriefDraft, type Summary } from "@/lib/brief";
 
 /** Required fields the person has not filled in yet, in the order they appear in the form. */
 export function missingFields(draft: BriefDraft): string[] {
   return Object.keys(REQUIRED_LABELS).filter((key) => !String(draft[key as keyof BriefDraft] ?? "").trim());
 }
+
+const DONE_BUTTON = "flex min-h-14 shrink-0 items-center gap-2 whitespace-nowrap rounded-2xl px-4 py-2 text-lg font-semibold";
 
 function scrollBehavior(): ScrollBehavior {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
@@ -33,9 +36,22 @@ export function goToElement(id: string) {
 /**
  * A bar fixed to the bottom of the screen on phones and tablets: how far along the brief is,
  * and one large button that jumps to the next field to fill in. On wide screens the checklist
- * beside the form does the same job.
+ * beside the form does the same job. Once the brief is complete, the button follows the summary:
+ * review the brief, then check the AI summary, then go on to the audience.
  */
-export function BriefGuide({ missing, reviewId }: { missing: string[]; reviewId: string }) {
+export function BriefGuide({
+  missing,
+  reviewId,
+  summaryId,
+  summaryStatus,
+  nextHref,
+}: {
+  missing: string[];
+  reviewId: string;
+  summaryId: string;
+  summaryStatus?: Summary["status"];
+  nextHref: string;
+}) {
   const total = Object.keys(REQUIRED_LABELS).length;
   const done = total - missing.length;
   const next = missing[0];
@@ -62,12 +78,16 @@ export function BriefGuide({ missing, reviewId }: { missing: string[]; reviewId:
             </span>
             <ArrowDown className="h-5 w-5 shrink-0" aria-hidden="true" />
           </button>
+        ) : summaryStatus === "confirmed" ? (
+          <Link href={nextHref} className={`${DONE_BUTTON} bg-success text-[#062014]`}>
+            Next: audience <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
+          </Link>
+        ) : summaryStatus === "ready" ? (
+          <button type="button" onClick={() => goToElement(summaryId)} className={`${DONE_BUTTON} bg-primary text-white`}>
+            Check summary <ArrowDown className="h-5 w-5 shrink-0" aria-hidden="true" />
+          </button>
         ) : (
-          <button
-            type="button"
-            onClick={() => goToElement(reviewId)}
-            className="flex h-14 shrink-0 items-center gap-2 rounded-2xl bg-success px-5 text-lg font-semibold text-[#062014]"
-          >
+          <button type="button" onClick={() => goToElement(reviewId)} className={`${DONE_BUTTON} bg-success text-[#062014]`}>
             <Check className="h-5 w-5" aria-hidden="true" /> All set: review brief
           </button>
         )}

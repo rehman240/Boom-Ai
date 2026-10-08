@@ -408,7 +408,13 @@ export default function BriefPage() {
         <>
           {/* Room for the guide bar, so it never covers the end of the page. */}
           <div className="h-24 lg:hidden" aria-hidden="true" />
-          <BriefGuide missing={missingFields(draft)} reviewId="review-brief" />
+          <BriefGuide
+            missing={missingFields(draft)}
+            reviewId="review-brief"
+            summaryId="brief-summary"
+            summaryStatus={summary.summary?.status}
+            nextHref={`/projects/${id}/target`}
+          />
         </>
       )}
     </>

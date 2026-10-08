@@ -6,17 +6,17 @@ import { BarChart3, Gem, LayoutGrid, Settings, Sparkles, Target, Wallet, type Lu
 import { Logo } from "@/components/ui/Logo";
 import { APP_NAME } from "@/lib/brand";
 
-type NavItem = { label: string; href?: string; icon: LucideIcon };
+type NavItem = { label: string; href?: string; stage?: string; icon: LucideIcon };
 
-// Campaigns, Audiences, Creative, Budgets and Results open sections of the current
-// campaign. They get links once those pages exist.
+// Campaigns, Audiences, Creative, Budgets and Results are shortcuts into the open campaign's
+// stages. Outside a campaign there is nothing to open, so they are shown but disabled.
 const NAV: NavItem[] = [
   { label: "Overview", href: "/overview", icon: LayoutGrid },
-  { label: "Campaigns", icon: Sparkles },
-  { label: "Audiences", icon: Target },
-  { label: "Creative", icon: Gem },
-  { label: "Budgets", icon: Wallet },
-  { label: "Results", icon: BarChart3 },
+  { label: "Campaigns", stage: "campaign", icon: Sparkles },
+  { label: "Audiences", stage: "target", icon: Target },
+  { label: "Creative", stage: "creative", icon: Gem },
+  { label: "Budgets", stage: "budget", icon: Wallet },
+  { label: "Results", stage: "conversions", icon: BarChart3 },
 ];
 
 function initials(name: string) {
@@ -30,6 +30,7 @@ function initials(name: string) {
 
 export function Sidebar({ workspaceName, onNavigate }: { workspaceName: string; onNavigate?: () => void }) {
   const pathname = usePathname();
+  const campaign = pathname.match(/^\/projects\/([^/]+)/)?.[1];
 
   const itemClass = (active: boolean) =>
     "flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors " +
@@ -48,7 +49,8 @@ export function Sidebar({ workspaceName, onNavigate }: { workspaceName: string; 
       <nav aria-label="Workspace" className="flex-1 px-3">
         <p className="px-3 pb-3 text-sm font-semibold uppercase tracking-[0.14em] text-subtle">Workspace</p>
         <ul className="space-y-1">
-          {NAV.map(({ label, href, icon: Icon }) => {
+          {NAV.map(({ label, href: fixed, stage, icon: Icon }) => {
+            const href = stage ? (campaign ? `/projects/${campaign}/${stage}` : undefined) : fixed;
             const active = href ? pathname.startsWith(href) : false;
             return (
               <li key={label}>

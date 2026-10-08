@@ -69,7 +69,7 @@ def test_the_seven_assets_of_the_client_brief_are_defined_with_guidance():
     item = assets.SCHEMA["properties"]["email"]
     assert item["additionalProperties"] is False
     assert set(item["required"]) == {"subject", "preview_text", "body", "call_to_action"}
-    assert "About 50 characters" in item["properties"]["subject"]["description"]
+    assert "At most 50 characters" in item["properties"]["subject"]["description"]
 
 
 def test_the_screen_gets_the_definitions(client):
