@@ -22,8 +22,9 @@ from sqlalchemy.orm import Session
 
 from fastapi import BackgroundTasks, HTTPException
 
-from app import audiences, creative, directions
+from app import audiences, budget, creative, directions
 from app.ai import assets, audience, brief_summary
+from app.ai import budget as budget_ai
 from app.ai import directions as directions_ai
 from app.ai.provider import AiError, AiProvider
 from app.config import get_settings
@@ -78,6 +79,7 @@ HANDLERS: dict[str, JobHandler] = {
     JobKind.DIRECTIONS: JobHandler(directions.run, directions.apply, directions_ai.PROMPT_VERSION),
     JobKind.ASSETS: JobHandler(creative.run, creative.apply, assets.PROMPT_VERSION),
     JobKind.FIELD: JobHandler(creative.run_field, creative.apply_field, assets.FIELD_PROMPT_VERSION),
+    JobKind.BUDGET: JobHandler(budget.run, budget.apply, budget_ai.PROMPT_VERSION),
 }
 
 

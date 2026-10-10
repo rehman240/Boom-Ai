@@ -432,6 +432,32 @@ Deploy runs alongside, once Render access arrives.
     seven assets, a headline rewrite): all Spanish, about 90 s in all. It showed that run-on
     lists ("1) ... 2) ...") were flagged as invented figures; fixed (3157c8f). 190 tests pass.
 
+- 10 Oct: client-facing Week 3 "What to Expect" PDF (`Week-3-Report/`, not committed).
+  Ali started Week 3 early: commit only, **no push** until Ali says so. Scope today:
+  Budget, Conversions, Review and Export, landing. Light/dark, testing and go live later.
+- Week 3, task 1: Allocate Budget backend.
+  - One plan item per campaign (`ItemKind.BUDGET`, key `plan`), so versions, restore
+    ("Reset suggestion"), approve and autosave come from the shared item routes.
+  - Following the reference screen, the brief's budget is the total media budget. Production
+    costs are a separate list whose amounts only the user enters; they are not part of it.
+  - The AI (prompt `budget.v1`) suggests channels, whole-percent shares, a role for each,
+    reasoning, assumptions, "based on" and production needs by name. It writes no money,
+    forecasts or results. `app/budget_math.py` turns shares into cents with the largest
+    remainder, so the lines add up to the budget exactly, even if the shares don't add up to 100.
+  - `PATCH/POST/DELETE /projects/{id}/budget/lines`: a new amount keeps that line and the
+    locked ones and spreads the rest over the unlocked ones; adding starts at $0; removing
+    moves the money to the unlocked ones. More than the budget, or nowhere to move it, is
+    refused with a plain message. `POST /budget/fit` spreads a changed brief budget.
+  - The plan's schema checks that the lines add up on every save, also through the generic
+    item edit. Generating again keeps the user's edits as a revision and their entered
+    production costs, and never replaces an approved plan. Generating moves the campaign to
+    the Budget stage.
+  - Review flags: claims and made-up figures in the AI's words; the plan's own shares and
+    amounts are not counted as made up.
+  - 244 backend tests pass (54 new). Real Claude run (NOVA, $12,000, Instagram, Google
+    Search, Email): 55/30/15, $6,600 + $3,600 + $1,800 = $12,000, only the brief's channels,
+    no figures or forecasts, no flags.
+
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
   `Client-Link-Page/` and its zip.

@@ -16,6 +16,7 @@ class ItemKind(enum.StrEnum):
     AUDIENCE = "audience"  # one audience hypothesis card
     DIRECTION = "direction"  # one of the three campaign directions
     ASSET = "asset"  # one creative asset, e.g. the short ad copy
+    BUDGET = "budget"  # the budget plan: channel split and production costs
 
 
 class ItemOrigin(enum.StrEnum):

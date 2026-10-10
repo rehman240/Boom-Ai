@@ -16,6 +16,7 @@ class JobKind(enum.StrEnum):
     DIRECTIONS = "directions"
     ASSETS = "assets"
     FIELD = "field"  # regenerate a single field
+    BUDGET = "budget"
 
 
 class JobStatus(enum.StrEnum):
