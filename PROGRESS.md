@@ -500,16 +500,43 @@ Deploy runs alongside, once Render access arrives.
     versions, and the results.
   - 265 backend tests pass (21 new). A test caught "Newsletter sign ups" not counting as leads.
 
+- Week 3, task 4: Manage Conversions screen (`/projects/[id]/conversions`).
+  - Blocked state until the brief is confirmed; "Set up the plan" starts it from the template.
+  - Plan card (autosaves): what counts as a result, landing page, how often to check, and the
+    review dates as chips ("and 4 more, ending Mon, Nov 30"), or a note to add brief dates.
+  - Tracking checklist: tick (shows at once, taken back if the save fails), add your own
+    step, remove a step, "x of y done". Ticks still work when the plan is approved.
+  - Results: five cards (cost per lead, cost per sale, lead to sale rate, return on ad spend,
+    budget used), each with its value or what is missing, its definition, and the
+    "based on 1 of 2 entries" note. Says plainly that nothing is connected to ad accounts.
+  - Entries: form (period, spend, leads, sales, revenue, note) with field messages and "at
+    least one figure"; table with totals; change and delete (asks first). Phone: the table
+    scrolls inside its card.
+  - Plan versions, Save version, Approve/Unapprove; sticky bar with steps done and
+    "Continue to review" (Review is still the placeholder until task 6).
+  - Checked in Chrome at 1440 and 390px (mock AI): blocked, set up, cadence change, tick,
+    add/remove step, form errors, two weeks of results, change, delete, approve then tick,
+    reload. No console errors, no sideways scroll.
+  - Found on the phone: the results table (scrolls inside its card) still stretched the whole
+    page to 699px, so the delete dialog sat off screen. The cause was the screen-reader-only
+    "Actions" header: it is absolutely positioned, and its scroll box wasn't `relative`, so it
+    escaped the box. The box is now `relative`.
+
 ## Next
-- New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
-  `Client-Link-Page/` and its zip.
-- Wait for client feedback on the Week 2 video (Ali sends it 8 Oct). Act on it first, then Week 3.
-- Week 3: propose the task list (Allocate Budget, Manage Conversions, Review and Export,
-  landing page, testing, go live and handover; light/dark switch at the end) and wait for OK.
+- **Monday 12 Oct 2026:** Ali pushes today's 4 commits himself first (e9f5830, d3c1c38,
+  089d7f5 and the task 4 commit). Render then runs migration cc4a568f3e38 on deploy; check
+  `/health` and the Budget and Conversions pages on the live link.
+- Then Week 3, task 5: export backend (approval checklist for brief, target, concept,
+  assets, budget, measurement plan; PDF and Word; version label and date; "Not published").
+  Task 6: Review and Export screen. Task 7: landing page final + sidebar shortcuts.
+- Later in Week 3 (Ali's order): light/dark switch, final testing on laptop and phone with
+  the real Claude, go live and handover with README.
 - Decide whether the repo goes back to private (the Render GitHub app must be installed first).
 - Set the privacy page's server region to Singapore.
 - Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
   sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
+- Client feedback on the Week 2 video: none yet (10 Oct). The booom-more link change is not
+  needed for now (Rehman, 9 Oct).
 
 ## Decisions agreed with Ali (28 Sep 2026)
 - Brief includes all client-brief fields; currency fixed to USD.

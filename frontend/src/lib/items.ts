@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 /** One audience card, direction or asset. `data` is the working copy the user edits. */
 export type Item<T = Record<string, unknown>> = {
   id: string;
-  kind: "audience" | "direction" | "asset" | "budget";
+  kind: "audience" | "direction" | "asset" | "budget" | "measurement";
   key: string;
   position: number;
   data: T;
