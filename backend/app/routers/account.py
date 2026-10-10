@@ -11,7 +11,7 @@ from app.config import get_settings
 from app.db import get_db
 from app.deps import get_current_user
 from app.events import track
-from app.models import Brief, Project, Upload, User
+from app.models import Brief, CampaignItem, MetricEntry, Project, Revision, Upload, User
 from app.rate_limit import rate_limit
 from app.schemas.account import AccountDelete, EmailChange, PasswordChange, WorkspaceUpdate
 from app.schemas.auth import UserOut
@@ -87,14 +87,35 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
         for b in (db.scalars(select(Brief).where(Brief.project_id.in_(project_ids))).all() if project_ids else [])
     }
     uploads: dict = {}
+    work: dict = {}
+    results: dict = {}
+    history: dict = {}
     if project_ids:
         for u in db.scalars(select(Upload).where(Upload.project_id.in_(project_ids))).all():
             uploads.setdefault(u.project_id, []).append(u)
+        # The work of every stage after the brief, with every saved version of it.
+        for item in db.scalars(
+            select(CampaignItem)
+            .where(CampaignItem.project_id.in_(project_ids))
+            .order_by(CampaignItem.kind, CampaignItem.position, CampaignItem.created_at)
+        ).all():
+            work.setdefault(item.project_id, []).append(item)
+        for r in db.scalars(
+            select(Revision).where(Revision.project_id.in_(project_ids)).order_by(Revision.number)
+        ).all():
+            history.setdefault(r.item_id, []).append(r)
+        for e in db.scalars(
+            select(MetricEntry).where(MetricEntry.project_id.in_(project_ids)).order_by(MetricEntry.created_at)
+        ).all():
+            results.setdefault(e.project_id, []).append(e)
 
     project_fields = _columns(Project, {"owner_id"})
     brief_fields = _columns(Brief, {"project_id"})
     # File contents live in private storage; the export lists what was uploaded.
     upload_fields = _columns(Upload, {"project_id", "storage_key"})
+    item_fields = _columns(CampaignItem, {"project_id"})
+    revision_fields = _columns(Revision, {"item_id", "project_id", "job_id"})
+    entry_fields = _columns(MetricEntry, {"project_id"})
 
     payload = {
         "exported_at": datetime.now(UTC),
@@ -106,6 +127,14 @@ def export_data(user: User = Depends(get_current_user), db: Session = Depends(ge
                     {f: getattr(briefs[p.id], f) for f in brief_fields} if p.id in briefs else None
                 ),
                 "uploads": [{f: getattr(u, f) for f in upload_fields} for u in uploads.get(p.id, [])],
+                "work": [
+                    {
+                        **{f: getattr(i, f) for f in item_fields},
+                        "versions": [{f: getattr(r, f) for f in revision_fields} for r in history.get(i.id, [])],
+                    }
+                    for i in work.get(p.id, [])
+                ],
+                "results": [{f: getattr(e, f) for f in entry_fields} for e in results.get(p.id, [])],
             }
             for p in projects
         ],

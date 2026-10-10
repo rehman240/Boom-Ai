@@ -17,6 +17,7 @@ class ItemKind(enum.StrEnum):
     DIRECTION = "direction"  # one of the three campaign directions
     ASSET = "asset"  # one creative asset, e.g. the short ad copy
     BUDGET = "budget"  # the budget plan: channel split and production costs
+    MEASUREMENT = "measurement"  # the measurement plan: goal, landing page, tracking checklist, reviews
 
 
 class ItemOrigin(enum.StrEnum):

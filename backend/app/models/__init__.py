@@ -4,6 +4,7 @@ from app.models.ai_job import AiJob, JobKind, JobStatus
 from app.models.brief import Brief
 from app.models.event import Event
 from app.models.item import CampaignItem, ItemKind, ItemOrigin, Revision, RevisionSource
+from app.models.metric import MetricEntry
 from app.models.project import Project, ProjectStage, ProjectStatus
 from app.models.upload import Upload
 from app.models.user import User
@@ -17,6 +18,7 @@ __all__ = [
     "ItemOrigin",
     "JobKind",
     "JobStatus",
+    "MetricEntry",
     "Project",
     "ProjectStage",
     "ProjectStatus",

@@ -479,6 +479,26 @@ Deploy runs alongside, once Render access arrives.
     bad text, add and remove, production autosave, reload, reset, brief budget change (the
     page waits for the re-confirmed brief, then Fit), approve. No sideways scroll; the only
     console error is the expected 422 of the refused amount. 244 backend tests pass.
+- Week 3, task 3: Manage Conversions backend (`app/measurement.py`, `/projects/{id}/conversions`).
+  - Measurement plan = one item (`ItemKind.MEASUREMENT`): goal (desired action), landing page,
+    tracking checklist, review cadence. Edits, versions and approval use the shared item
+    routes. No AI: it starts from a template (agreed with Ali) that follows the brief's goal
+    in the user's own words (sales, leads or general), adds an email step when Email is a
+    channel, and takes the landing page from the product URL. Short campaigns get a tighter
+    default cadence; review dates come from the brief's dates and always end on the last day.
+  - Ticking a checklist step (`PUT /conversions/plan/checklist/{id}`) is progress, not a plan
+    change: it keeps an approval and makes no version.
+  - Results are a new `metric_entries` table (migration cc4a568f3e38), not part of the plan,
+    so entering them later never unapproves it. Period label plus any of spend, leads, sales,
+    revenue (at least one; no negatives). Add, change (whole entry), delete.
+  - Calculations on the server, each with a definition: cost per lead, cost per sale, lead to
+    sale rate, return on ad spend, budget used. Each ratio uses only entries that have both
+    figures and says so ("Based on 1 of 3 entries..."); otherwise a plain message says what to
+    add or that there are no leads/sales/spend yet. No recommendations or forecasts.
+  - Events only record "results_entered", never figures.
+  - Week 2 gap closed: the Settings data export now includes every stage's work with all its
+    versions, and the results.
+  - 265 backend tests pass (21 new). A test caught "Newsletter sign ups" not counting as leads.
 
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
