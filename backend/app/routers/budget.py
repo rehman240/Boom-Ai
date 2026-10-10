@@ -135,3 +135,9 @@ def remove_line(line_id: str, project: Project = Depends(get_editable_project), 
 def fit_to_brief(project: Project = Depends(get_editable_project), db: Session = Depends(get_db)):
     """Spread the brief's current budget over the plan, keeping locked channels."""
     return _apply(db, project, lambda item: stage.fit_to_total(db, item, stage.brief_total(db, project)))
+
+
+@router.post("/reset", response_model=BudgetPlanOut)
+def reset_suggestion(project: Project = Depends(get_editable_project), db: Session = Depends(get_db)):
+    """Bring back the AI's latest mix, keeping the production costs the user entered."""
+    return _apply(db, project, lambda item: stage.reset_to_suggestion(db, item))

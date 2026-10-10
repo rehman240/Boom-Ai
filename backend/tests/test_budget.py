@@ -288,13 +288,21 @@ def test_production_costs_stay_apart_from_the_media_budget(client):
     assert total_of(r.json()) == TOTAL  # the media lines don't change
 
 
-def test_reset_suggestion_brings_back_the_ai_plan(client):
+def test_reset_suggestion_brings_back_the_ai_mix_but_keeps_production_costs(client):
     project_id, plan = planned(client)
     line = plan["data"]["lines"][0]
     client.patch(f"/projects/{project_id}/budget/lines/{line['id']}", json={"amount_cents": 1})
-    r = client.post(f"/projects/{project_id}/items/{plan['id']}/versions/1/restore")
-    assert r.status_code == 200
-    assert r.json()["data"]["lines"] == plan["data"]["lines"]
+    production = [{**plan["data"]["production"][0], "amount_cents": 50_000}]
+    client.patch(f"/projects/{project_id}/items/{plan['id']}", json={"data": {"production": production}})
+
+    r = client.post(f"/projects/{project_id}/budget/reset")
+    assert r.status_code == 200, r.text
+    out = r.json()
+    assert out["data"]["lines"] == plan["data"]["lines"]
+    assert out["data"]["production"] == production
+    history = client.get(f"/projects/{project_id}/items/{plan['id']}/versions").json()
+    assert [h["source"] for h in history] == ["restored", "kept_edits", "generated"]
+    assert history[1]["data"]["lines"][0]["amount_cents"] == 1  # the changes before the reset are kept
 
 
 def test_someone_elses_budget_is_not_found(client):

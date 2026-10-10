@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from app import budget_math, items, pipeline
 from app.ai import budget
 from app.ai.provider import AiProvider
-from app.models import AiJob, Brief, CampaignItem, ItemKind, JobKind, Project, ProjectStage
+from app.models import AiJob, Brief, CampaignItem, ItemKind, JobKind, Project, ProjectStage, Revision, RevisionSource
 
 pipeline.ITEM_SCHEMAS[ItemKind.BUDGET] = lambda item: budget.BudgetPlan
 
@@ -180,3 +180,18 @@ def fit_to_total(db: Session, item: CampaignItem, total_cents: int) -> CampaignI
         raise budget_math.BudgetError(NEEDS_BUDGET)
     lines = budget_math.rebalance(item.data["lines"], total_cents)
     return _save(db, item, {**item.data, "total_cents": total_cents, "lines": lines})
+
+
+def reset_to_suggestion(db: Session, item: CampaignItem) -> CampaignItem:
+    """"Reset suggestion": the AI's latest mix comes back as a new version. The user's
+    production costs stay, and their changes before the reset are kept in the history."""
+    number = db.scalar(
+        select(Revision.number)
+        .where(Revision.item_id == item.id, Revision.source == RevisionSource.GENERATED)
+        .order_by(Revision.number.desc())
+        .limit(1)
+    )
+    if number is None:
+        raise budget_math.BudgetError("There is no AI suggestion to go back to.")
+    items.restore(db, item, number, keep=("production",))
+    return item

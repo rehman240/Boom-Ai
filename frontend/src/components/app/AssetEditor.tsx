@@ -367,7 +367,7 @@ function AssetField({
   );
 }
 
-function NameVersion({ onClose, onSave, saving }: { onClose: () => void; onSave: (label: string) => void; saving: boolean }) {
+export function NameVersion({ onClose, onSave, saving }: { onClose: () => void; onSave: (label: string) => void; saving: boolean }) {
   const [label, setLabel] = useState("");
   function submit(e: FormEvent) {
     e.preventDefault();

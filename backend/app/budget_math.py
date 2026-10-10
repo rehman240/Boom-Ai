@@ -60,8 +60,8 @@ def rebalance(lines: list[dict[str, Any]], total_cents: int, fixed_ids: set[str]
     remaining = total_cents - kept
     if remaining < 0:
         raise BudgetError(
-            f"That is more than the budget allows. Locked and changed channels come to {money(kept)} "
-            f"of {money(total_cents)}."
+            f"That is more than the budget allows. With the locked channels it comes to {money(kept)}, "
+            f"and the budget is {money(total_cents)}."
         )
     if not free:
         if remaining != 0:

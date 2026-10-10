@@ -224,13 +224,14 @@ def replace_field_by_ai(
     return _add_revision(db, item, RevisionSource.FIELD_REGENERATED, provenance=provenance, field=field)
 
 
-def restore(db: Session, item: CampaignItem, number: int) -> Revision:
-    """Bring an earlier revision back as a new one, so the history only ever grows."""
+def restore(db: Session, item: CampaignItem, number: int, *, keep: tuple[str, ...] = ()) -> Revision:
+    """Bring an earlier revision back as a new one, so the history only ever grows.
+    Fields in `keep` stay as they are now (the budget's production costs, say)."""
     old = get_revision(db, item, number)
     if old is None:
         raise LookupError(number)
     _keep_unsaved_edits(db, item)
-    item.data = dict(old.data)
+    item.data = {**old.data, **{k: item.data[k] for k in keep if k in item.data}}
     item.approved_at = None
     return _add_revision(db, item, RevisionSource.RESTORED, restored_from=number)
 

@@ -457,6 +457,28 @@ Deploy runs alongside, once Render access arrives.
   - 244 backend tests pass (54 new). Real Claude run (NOVA, $12,000, Instagram, Google
     Search, Email): 55/30/15, $6,600 + $3,600 + $1,800 = $12,000, only the brief's channels,
     no figures or forecasts, no flags.
+- Week 3, task 2: Allocate Budget screen (`/projects/[id]/budget`).
+  - Follows the reference screen: total media budget and campaign length, a row per channel
+    with role, share, a $ box, lock and remove, a bar, and "Allocated $X / $Y ✓". Side panel
+    with the reasoning, assumptions and "based on", and any review flags.
+  - An amount is sent on Enter or leaving the box; the server rebalances and the page shows
+    its answer. A refused change shows the reason and puts the old amount back; text that
+    isn't an amount gets a field message and sends nothing.
+  - Add a channel (from the list or "Other"), remove one. Production costs are their own card,
+    autosaved, with "Not entered" until the user types a figure, and media + production shown.
+  - Banners: approved (inputs locked), brief budget changed ("Fit to $X"), suggested for an
+    earlier brief. Empty, running (survives refresh), failed with Try again, and blocked states.
+  - Versions, Save version, Reset suggestion, New suggestion (asks first) under the cards; the
+    sticky bar has only the status, Approve and Continue, so it doesn't cover the plan.
+  - Found while checking: "Reset suggestion" restored the whole old version and wiped the
+    production costs. New `POST /budget/reset` brings back the AI's latest mix, keeps the
+    production costs, and keeps the changes before it in the history (`items.restore` takes
+    `keep=`). Also an amount refused on Enter was sent twice (Enter, then the blur from the
+    box being disabled); fixed.
+  - Checked in Chrome at 1440 and 390px (mock AI): change with a locked channel, refusal,
+    bad text, add and remove, production autosave, reload, reset, brief budget change (the
+    page waits for the re-confirmed brief, then Fit), approve. No sideways scroll; the only
+    console error is the expected 422 of the refused amount. 244 backend tests pass.
 
 ## Next
 - New `booom-more-...` Vercel link from Rehman → Render `CORS_ORIGINS`, live check, update
