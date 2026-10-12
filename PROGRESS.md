@@ -522,13 +522,33 @@ Deploy runs alongside, once Render access arrives.
     "Actions" header: it is absolutely positioned, and its scroll box wasn't `relative`, so it
     escaped the box. The box is now `relative`.
 
+- 12 Oct: Ali pushed tasks 1-4; live `/health` ok. Then tasks 5 and 6 (pushed by Ali), 7 and a fix:
+- Week 3, task 5: export backend (`app/review.py`, `app/export_files.py`, `/projects/{id}/review`,
+  `/export.pdf`, `/export.docx`).
+  - Approval checklist for brief, target, concept, assets, budget and measurement plan: status
+    (approved / not approved yet / not done yet), what to do next, count of claims to check.
+  - PDF (fpdf2, DejaVu Sans bundled in `app/fonts` with its free licence) and editable Word
+    (python-docx) from the same content: version label, export date, Draft or Final, a "Not
+    published" notice on every page, assumptions, based-on reasons, budget with production
+    costs apart, measurement plan with results, and "Claims to check before use".
+  - Exports work any time; only a campaign with every part approved is marked Final. The
+    dashboard's "ready to export" follows approvals (an edit takes it back).
+  - Exports are counted as events (`exported_pdf` / `exported_docx`), never their content;
+    `Cache-Control: no-store`. PDF covers Latin, Greek, Cyrillic; Word covers any language.
+- Week 3, task 6: Review and Export screen (`/projects/[id]/review`): checklist with Approve
+  for audience, direction, budget and measurement (assets are approved one by one in
+  Creative), View links, Draft / Ready to export badge, PDF and Word download with loading
+  and error states, "Not published" card, copy any single asset. Checked at 1440 and 390.
+- Fix: the campaign stage now moves on at budget generation, measurement plan start, and
+  when everything is approved or exported, so the dashboard's "continue" opens the right step.
+- Week 3, task 7: landing "What you get" sample output (fictional NOVA Desk Lamp, static:
+  audience, campaign, ad, budget split, results, export). Sidebar gets "Review and export".
+  Other sidebar shortcuts were already done in Week 2.
+- 276 backend tests pass; typecheck and lint pass.
+
 ## Next
-- **Monday 12 Oct 2026:** Ali pushes today's 4 commits himself first (e9f5830, d3c1c38,
-  089d7f5 and the task 4 commit). Render then runs migration cc4a568f3e38 on deploy; check
-  `/health` and the Budget and Conversions pages on the live link.
-- Then Week 3, task 5: export backend (approval checklist for brief, target, concept,
-  assets, budget, measurement plan; PDF and Word; version label and date; "Not published").
-  Task 6: Review and Export screen. Task 7: landing page final + sidebar shortcuts.
+- Ali pushes the task 7 commits (stage fix 1fd855e, landing + sidebar 962bb1e). Render
+  installs fpdf2 and python-docx on deploy (no migration). Then check a live export.
 - Later in Week 3 (Ali's order): light/dark switch, final testing on laptop and phone with
   the real Claude, go live and handover with README.
 - Decide whether the repo goes back to private (the Render GitHub app must be installed first).
