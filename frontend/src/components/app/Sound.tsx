@@ -83,7 +83,7 @@ export function SoundToggle({ muted, onToggle }: { muted: boolean; onToggle: () 
   return (
     <button
       onClick={onToggle}
-      className="grid h-11 w-11 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-text"
+      className="grid h-10 w-10 place-items-center rounded-lg text-muted sm:h-11 sm:w-11 hover:bg-surface-2 hover:text-text"
       aria-label={muted ? "Turn section sounds on" : "Turn section sounds off"}
       aria-pressed={!muted}
       title={muted ? "Section sounds are off" : "Section sounds are on"}

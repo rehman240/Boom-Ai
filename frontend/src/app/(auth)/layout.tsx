@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { APP_NAME } from "@/lib/brand";
 
 const CAPABILITIES = [
@@ -54,9 +55,12 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
 
       {/* Form */}
       <main className="flex flex-col px-4 py-8 sm:px-8">
-        <Link href="/" className="lg:hidden" aria-label={`${APP_NAME} home`}>
-          <Logo withProduct />
-        </Link>
+        <div className="flex items-center justify-between lg:justify-end">
+          <Link href="/" className="lg:hidden" aria-label={`${APP_NAME} home`}>
+            <Logo withProduct />
+          </Link>
+          <ThemeToggle />
+        </div>
         <div className="m-auto w-full max-w-sm py-10">{children}</div>
         <p className="text-center text-sm text-subtle">AI suggests. You decide. Nothing is published or spent for you.</p>
       </main>

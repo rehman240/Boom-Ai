@@ -301,7 +301,7 @@ function AssetField({
   const control =
     "w-full rounded-xl border bg-bg/60 px-4 text-lg text-text placeholder:text-subtle transition-colors " +
     "focus:outline-none focus:border-cyan focus:ring-2 focus:ring-cyan/25 disabled:opacity-60 read-only:bg-surface-2 " +
-    (error ? "border-danger" : "border-border-strong hover:border-[#33529a]");
+    (error ? "border-danger" : "border-border-strong hover:border-border-hover");
 
   return (
     <div>

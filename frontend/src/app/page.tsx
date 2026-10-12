@@ -3,6 +3,7 @@ import { getImageProps } from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SampleOutput } from "@/components/landing/SampleOutput";
 import { StepsDiagram } from "@/components/landing/StepsDiagram";
 import { APP_NAME } from "@/lib/brand";
@@ -34,9 +35,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col px-4 sm:px-8">
       <header className="flex h-20 items-center justify-between">
         <Logo withProduct />
-        <ButtonLink href="/login" variant="ghost" className="h-12! px-5! text-lg!">
-          Sign in
-        </ButtonLink>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <ButtonLink href="/login" variant="ghost" className="h-12! px-5! text-lg!">
+            Sign in
+          </ButtonLink>
+        </div>
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 py-8 text-center sm:gap-16 sm:py-12">

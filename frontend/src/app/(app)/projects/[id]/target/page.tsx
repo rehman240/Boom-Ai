@@ -448,7 +448,7 @@ function ExclusionsPanel({
             maxLength={200}
             onChange={(e) => setText(e.target.value)}
             placeholder="Add a group to leave out"
-            className="h-14 w-full rounded-xl border border-border-strong bg-bg/60 px-4 text-lg text-text placeholder:text-subtle hover:border-[#33529a] focus:border-cyan focus:ring-2 focus:ring-cyan/25 focus:outline-none sm:max-w-md"
+            className="h-14 w-full rounded-xl border border-border-strong bg-bg/60 px-4 text-lg text-text placeholder:text-subtle hover:border-border-hover focus:border-cyan focus:ring-2 focus:ring-cyan/25 focus:outline-none sm:max-w-md"
           />
           <Button type="submit" variant="secondary" disabled={!text.trim() || status === "saving"}>
             <Plus className="h-4 w-4" aria-hidden="true" /> Add

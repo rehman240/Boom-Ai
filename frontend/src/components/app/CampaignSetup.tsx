@@ -46,7 +46,7 @@ export function CampaignTypePicker({
               htmlFor={`${id}-${type.value}`}
               className={
                 "relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 p-4 sm:flex-col sm:items-start transition-colors has-focus-visible:outline-2 has-focus-visible:outline-cyan " +
-                (on ? "border-cyan bg-primary/15" : "border-border-strong hover:border-[#33529a]")
+                (on ? "border-cyan bg-primary/15" : "border-border-strong hover:border-border-hover")
               }
             >
               <input
@@ -113,7 +113,7 @@ export function EnginePicker({
                 (on
                   ? "border-cyan bg-primary/15"
                   : engine.live
-                    ? "border-border-strong hover:border-[#33529a]"
+                    ? "border-border-strong hover:border-border-hover"
                     : "border-dashed border-border-strong opacity-80 hover:opacity-100")
               }
             >

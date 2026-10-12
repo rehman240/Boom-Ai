@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Download, ExternalLink, KeyRound, Lock, ShieldCheck, Trash2, UserX, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { APP_NAME } from "@/lib/brand";
 
 export const metadata: Metadata = {
@@ -50,6 +51,7 @@ const STORED = [
   ["Files", "Logos and reference files you upload, in private storage."],
   ["Usage counts", "An event name and ids only (for example \"campaign created\"), never your campaign text."],
   ["Sign-in cookie", "One cookie that keeps you signed in. It is needed for the app to work."],
+  ["Where it is kept", "Our app server, database and file storage are in Singapore (Asia Pacific)."],
 ] as const;
 
 const LAWS = [
@@ -81,9 +83,12 @@ export default function PrivacyPage() {
         <Link href="/" aria-label={`${APP_NAME} home`}>
           <Logo withProduct />
         </Link>
-        <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-muted hover:text-text">
-          <ArrowLeft className="h-5 w-5" aria-hidden="true" /> Home
-        </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link href="/" className="flex items-center gap-2 text-lg font-semibold text-muted hover:text-text">
+            <ArrowLeft className="h-5 w-5" aria-hidden="true" /> Home
+          </Link>
+        </div>
       </header>
 
       <main className="mx-auto max-w-4xl pt-6 pb-20">

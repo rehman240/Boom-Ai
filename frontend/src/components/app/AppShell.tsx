@@ -6,6 +6,7 @@ import { LogOut, Menu, X } from "lucide-react";
 import { api, ApiError, type User } from "@/lib/api";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { BreadcrumbContext, BreadcrumbTrail, type Crumb } from "./Breadcrumbs";
 import { Sidebar } from "./Sidebar";
 import { AudioGuide, SectionGong, SoundToggle, sectionOf, useSoundSetting } from "./Sound";
@@ -121,7 +122,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         <div className="flex min-w-0 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-bg/80 px-4 backdrop-blur sm:px-6 lg:px-10">
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-1 border-b border-border bg-bg/80 px-3 backdrop-blur sm:gap-3 sm:px-6 lg:px-10">
             <button
               className="grid h-10 w-10 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-text lg:hidden"
               aria-label="Open menu"
@@ -136,7 +137,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="hidden min-w-0 flex-1 lg:block">
               <BreadcrumbTrail items={crumbs} />
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex items-center sm:gap-2">
+              <ThemeToggle />
               <SoundToggle muted={sound.muted} onToggle={sound.toggle} />
               <span className="hidden max-w-[220px] truncate text-sm text-subtle sm:block">{user.email}</span>
               <button

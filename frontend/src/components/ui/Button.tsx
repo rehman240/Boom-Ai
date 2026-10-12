@@ -14,7 +14,7 @@ const variants: Record<Variant, string> = {
   ghost: "text-muted hover:text-text hover:bg-surface-2",
   // Destructive actions. A background colour passed in className cannot override the
   // variant reliably, so anything that deletes uses this.
-  danger: "bg-danger text-[#2a0a0a] hover:bg-[#ff9494]",
+  danger: "bg-danger text-on-danger hover:bg-danger-hover",
 };
 
 export function buttonClass(variant: Variant = "primary", className = "") {

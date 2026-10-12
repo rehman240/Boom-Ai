@@ -79,7 +79,7 @@ export function BriefGuide({
             <ArrowDown className="h-5 w-5 shrink-0" aria-hidden="true" />
           </button>
         ) : summaryStatus === "confirmed" ? (
-          <Link href={nextHref} className={`${DONE_BUTTON} bg-success text-[#062014]`}>
+          <Link href={nextHref} className={`${DONE_BUTTON} bg-success text-on-success`}>
             Next: audience <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
           </Link>
         ) : summaryStatus === "ready" ? (
@@ -87,7 +87,7 @@ export function BriefGuide({
             Check summary <ArrowDown className="h-5 w-5 shrink-0" aria-hidden="true" />
           </button>
         ) : (
-          <button type="button" onClick={() => goToElement(reviewId)} className={`${DONE_BUTTON} bg-success text-[#062014]`}>
+          <button type="button" onClick={() => goToElement(reviewId)} className={`${DONE_BUTTON} bg-success text-on-success`}>
             <Check className="h-5 w-5" aria-hidden="true" /> All set: review brief
           </button>
         )}

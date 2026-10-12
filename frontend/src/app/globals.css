@@ -12,6 +12,7 @@
   --surface-3: #12264f;
   --border: #172a58;
   --border-strong: #26407e;
+  --border-hover: #33529a;
 
   --text: #eaf1fb;
   --text-muted: #a3b3d1;
@@ -23,12 +24,49 @@
   --success: #3ddc97;
   --warning: #f5c451;
   --danger: #ff7a7a;
+  --danger-hover: #ff9494;
+  --on-danger: #2a0a0a;
+  --on-success: #062014;
 
   --accent-red: #ff4d55;
   --accent-green: #2fe07a;
   --accent-blue: #3f8cff;
 
   color-scheme: dark;
+}
+
+/*
+ * Light theme, chosen with the switch in the header (saved in the browser, dark is the default).
+ * Same brand hues, darkened where they carry text so everything still passes WCAG AA on white.
+ */
+:root[data-theme="light"] {
+  --bg: #f3f6fc;
+  --surface: #ffffff;
+  --surface-2: #edf2fa;
+  --surface-3: #dfe7f5;
+  --border: #d5dfef;
+  --border-strong: #b3c3df;
+  --border-hover: #879ec9;
+
+  --text: #0b1530;
+  --text-muted: #43516d;
+  --text-subtle: #586683;
+
+  --primary: #2456f0;
+  --primary-hover: #1a45d1;
+  --cyan: #036796;
+  --success: #047553;
+  --warning: #9a5b04;
+  --danger: #c81e1e;
+  --danger-hover: #a71919;
+  --on-danger: #ffffff;
+  --on-success: #ffffff;
+
+  --accent-red: #e5243b;
+  --accent-green: #14a34a;
+  --accent-blue: #2563eb;
+
+  color-scheme: light;
 }
 
 @theme inline {
@@ -38,6 +76,7 @@
   --color-surface-3: var(--surface-3);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-hover: var(--border-hover);
   --color-text: var(--text);
   --color-muted: var(--text-muted);
   --color-subtle: var(--text-subtle);
@@ -47,6 +86,9 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-on-danger: var(--on-danger);
+  --color-on-success: var(--on-success);
   --color-accent-red: var(--accent-red);
   --color-accent-green: var(--accent-green);
   --color-accent-blue: var(--accent-blue);
