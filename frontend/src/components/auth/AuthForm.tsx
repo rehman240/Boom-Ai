@@ -122,6 +122,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
           onChange={(e) => setPassword(e.target.value)}
         />
 
+        {mode === "login" ? (
+          <p className="-mt-2 text-right text-sm">
+            <Link href="/forgot-password" className="font-semibold text-cyan hover:underline">
+              Forgot password?
+            </Link>
+          </p>
+        ) : null}
+
         {mode === "signup" ? (
           <p className="text-sm text-muted">
             We keep only what you enter, behind your password. Read{" "}

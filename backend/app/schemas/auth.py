@@ -24,6 +24,20 @@ class LoginIn(BaseModel):
         return v.lower()
 
 
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+    @field_validator("email")
+    @classmethod
+    def lowercase(cls, v: str) -> str:
+        return v.lower()
+
+
+class ResetPasswordIn(BaseModel):
+    token: str = Field(min_length=1, max_length=2000)
+    password: str = Field(min_length=8, max_length=128)
+
+
 class UserOut(BaseModel):
     id: uuid.UUID
     email: str

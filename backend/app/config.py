@@ -21,6 +21,15 @@ class Settings(BaseSettings):
     session_cookie_name: str = "boooom_session"
     session_days: int = 7
 
+    # Password reset email. APP_URL is the frontend address the reset link opens.
+    app_url: str = "http://localhost:3000"
+    smtp_host: str = ""  # empty: no email is sent (development logs it instead)
+    smtp_port: int = 587  # 587 uses STARTTLS, 465 uses TLS from the start
+    smtp_user: str = ""
+    smtp_password: str = ""
+    mail_from: str = "BOOOM More <no-reply@booom.com>"
+    reset_token_minutes: int = 60
+
     # Database
     database_url: str
 

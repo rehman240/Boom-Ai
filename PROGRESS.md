@@ -545,8 +545,19 @@ Deploy runs alongside, once Render access arrives.
   audience, campaign, ad, budget split, results, export). Sidebar gets "Review and export".
   Other sidebar shortcuts were already done in Week 2.
 - 276 backend tests pass; typecheck and lint pass.
+- Forgot password (Ali found it missing after the push): "Forgot password?" on the login page,
+  `/forgot-password` and `/reset-password`. The backend emails a signed link that works once
+  (it carries a fingerprint of the current password hash) for 60 minutes; the token sits after
+  `#` so it never reaches a server log, and the page removes it from the address bar. The
+  answer is the same for unknown emails. Resetting signs the user in and signs out every other
+  device. Email goes through any SMTP server (`app/mail.py`, `SMTP_*`, `MAIL_FROM`, `APP_URL`);
+  without `SMTP_HOST` development writes the email to the log and production sends nothing.
+  285 backend tests pass; checked in the browser at 1440 and 390.
 
 ## Next
+- **Before forgot password works live:** set on Render `APP_URL=https://boom-ai-six.vercel.app`
+  and the SMTP settings of an email service (Brevo/Resend/Gmail app password; later AWS SES),
+  plus `MAIL_FROM` on a domain that service allows. Until then no reset email is sent.
 - Ali pushes the task 7 commits (stage fix 1fd855e, landing + sidebar 962bb1e). Render
   installs fpdf2 and python-docx on deploy (no migration). Then check a live export.
 - Later in Week 3 (Ali's order): light/dark switch, final testing on laptop and phone with
