@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app import jobs
+from app import jobs, review
 from app.ai import brief_summary
 from app.ai.provider import AiProvider, get_ai_provider
 from app.db import get_db
@@ -103,6 +103,7 @@ def update_brief(
     # The brief is part of the campaign, so editing it counts as editing the campaign.
     # Without this the dashboard would keep showing the moment the campaign was created.
     project.updated_at = func.now()
+    review.sync_status(db, project)
 
     db.commit()
     db.refresh(brief)
@@ -151,6 +152,7 @@ def confirm_summary(project: Project = Depends(get_editable_project), db: Sessio
     if project.stage == ProjectStage.BRIEF:
         project.stage = ProjectStage.TARGET
     project.updated_at = func.now()
+    review.sync_status(db, project)
     db.commit()
     db.refresh(brief)
     return _state(brief, db)

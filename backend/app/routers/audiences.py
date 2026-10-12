@@ -10,7 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app import audiences, items, jobs, pipeline
+from app import audiences, items, jobs, pipeline, review
 from app.ai import audience, brief_summary, safety
 from app.ai.provider import AiProvider, get_ai_provider
 from app.db import get_db
@@ -91,6 +91,7 @@ def remove_audience(item_id: uuid.UUID, project: Project = Depends(get_editable_
         raise HTTPException(status_code=404, detail="Audience not found.")
     items.archive(db, item)
     project.updated_at = func.now()
+    review.sync_status(db, project)
     db.commit()
 
 

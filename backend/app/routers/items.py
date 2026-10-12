@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app import items, pipeline
+from app import items, pipeline, review
 from app.db import get_db
 from app.deps import get_editable_project, get_owned_project
 from app.events import track
@@ -52,6 +52,7 @@ def _item(project: Project, item_id: uuid.UUID, db: Session, *, for_update: bool
 
 def _changed(db: Session, project: Project, item: CampaignItem) -> ItemOut:
     project.updated_at = func.now()  # shows on the dashboard as "last edited"
+    review.sync_status(db, project)
     db.commit()
     db.refresh(item)
     return item_out(db, item)

@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app import budget as stage
-from app import budget_math, items, jobs, pipeline
+from app import budget_math, items, jobs, pipeline, review
 from app.ai import brief_summary, budget, safety
 from app.ai.audience import Channel
 from app.ai.provider import AiProvider, get_ai_provider
@@ -69,6 +69,7 @@ def _plan(db: Session, project: Project) -> CampaignItem:
 
 def _changed(db: Session, project: Project, item: CampaignItem) -> BudgetPlanOut:
     project.updated_at = func.now()  # shows on the dashboard as "last edited"
+    review.sync_status(db, project)
     db.commit()
     db.refresh(item)
     return _plan_out(db, project, item)
