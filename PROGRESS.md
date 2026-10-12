@@ -557,21 +557,29 @@ Deploy runs alongside, once Render access arrives.
     says `password_reset: false` in production without `SMTP_HOST`) and `/forgot-password`
     says it isn't available yet, so no one is told an email was sent. Ali's call (12 Oct):
     leave email off for the MVP; add a mail service (e.g. AWS SES) later, env vars only.
+- Week 3: light / dark switch (the client asked for it). A sun / moon button in the app header,
+  on the landing, sign-in and privacy pages. Dark stays the default; the choice is saved in
+  the browser and applied by a small script in `<head>` before the first paint, so there is no
+  flash. Light colours are tokens on `:root[data-theme="light"]` in `globals.css`, darker
+  where they carry text so they pass WCAG AA on white; the last fixed colours became tokens.
+  The phone header was tightened to still fit at 390px. Checked every screen in light mode at
+  1440 and 390 (no sideways scroll, no console errors), and that the choice survives a reload.
+- Privacy page: "Where it is kept: our app server, database and file storage are in
+  Singapore (Asia Pacific)."
+- Handover: `README.md` rewritten (what the app does, how it is built, run, check, deploy,
+  AWS), new `HANDOVER.md` (live services, every setting per service, common tasks such as
+  turning on forgot password or pausing the AI, free-plan limits, Phase 2, open items),
+  `frontend/README.md` replaces the create-next-app text.
+- Final testing on laptop and phone with the real Claude: Ali does this himself on the live app.
 
 ## Next
-- **Optional, later:** to turn on forgot password live, set on Render `APP_URL=https://boom-ai-six.vercel.app`
-  and the SMTP settings of an email service (Brevo/Resend/Gmail app password; later AWS SES),
-  plus `MAIL_FROM` on a domain that service allows. Until then no reset email is sent.
-- Ali pushes the task 7 commits (stage fix 1fd855e, landing + sidebar 962bb1e). Render
-  installs fpdf2 and python-docx on deploy (no migration). Then check a live export.
-- Later in Week 3 (Ali's order): light/dark switch, final testing on laptop and phone with
-  the real Claude, go live and handover with README.
-- Decide whether the repo goes back to private (the Render GitHub app must be installed first).
-- Set the privacy page's server region to Singapore.
-- Tell the client which of the 4 Oct items were beyond the MVP (engine choice, role,
-  sound, audio guide, privacy page: small and done; full UI translation: Phase 2).
-- Client feedback on the Week 2 video: none yet (10 Oct). The booom-more link change is not
-  needed for now (Rehman, 9 Oct).
+- Ali pushes the light/dark, privacy and README/handover commits, then checks the live app
+  (switch the theme, reload, a phone).
+- Ali tests the whole flow on the live app with the real Claude, laptop and phone. Any issue
+  goes into a new session.
+- **Optional, later:** turn on forgot password live (see `HANDOVER.md`, section 3).
+- Later, only when Ali asks: repo back to private, tell the client which 4 Oct items were
+  beyond the MVP, other open questions below.
 
 ## Decisions agreed with Ali (28 Sep 2026)
 - Brief includes all client-brief fields; currency fixed to USD.
