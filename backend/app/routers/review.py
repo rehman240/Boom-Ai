@@ -7,11 +7,11 @@ only a campaign with every part approved is marked final; a draft says so on eve
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from app import export_files, review
+from app import export_files, pipeline, review
 from app.db import get_db
 from app.deps import get_owned_project
 from app.events import track
-from app.models import Project
+from app.models import Project, ProjectStage
 from app.schemas.review import ReviewStage
 
 router = APIRouter(prefix="/projects/{project_id}", tags=["review"])
@@ -42,6 +42,8 @@ def _export(fmt: str, project: Project, db: Session) -> Response:
     body = build(pkg)
     # Only that an export happened is counted, never what was in it.
     track(db, f"exported_{fmt}", user_id=project.owner_id, project_id=project.id)
+    if not project.is_demo:
+        pipeline.advance(project, ProjectStage.REVIEW)  # the dashboard now continues at Review
     db.commit()
     return Response(
         content=body,

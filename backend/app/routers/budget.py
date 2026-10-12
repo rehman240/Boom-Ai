@@ -16,7 +16,7 @@ from app.ai.audience import Channel
 from app.ai.provider import AiProvider, get_ai_provider
 from app.db import get_db
 from app.deps import get_current_user, get_editable_project, get_owned_project
-from app.models import Brief, CampaignItem, ItemOrigin, JobKind, Project, User
+from app.models import Brief, CampaignItem, ItemOrigin, JobKind, Project, ProjectStage, User
 from app.routers.items import item_out
 from app.schemas.budget import BudgetPlanOut, BudgetStage, LineAdd, LineChange
 from app.schemas.job import JobOut
@@ -109,6 +109,7 @@ def generate_budget(
     current = stage.plan_item(db, project.id)
     if current is not None and current.approved_at is not None:
         raise HTTPException(status_code=409, detail=APPROVED)
+    pipeline.advance(project, ProjectStage.BUDGET)
     return jobs.start_job(
         db, background, project, user, JobKind.BUDGET, stage.job_input(db, project),
         provider=provider, session_factory=session_factory,

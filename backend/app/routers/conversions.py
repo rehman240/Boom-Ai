@@ -11,11 +11,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app import items, measurement, review
+from app import items, measurement, pipeline, review
 from app.db import get_db
 from app.deps import get_editable_project, get_owned_project
 from app.events import track
-from app.models import CampaignItem, MetricEntry, Project
+from app.models import CampaignItem, MetricEntry, Project, ProjectStage
 from app.routers.items import item_out
 from app.schemas.measurement import ConversionStage, EntryIn, EntryOut, MeasurementPlanOut, StepDone, Totals
 
@@ -80,6 +80,7 @@ def create_plan(project: Project = Depends(get_editable_project), db: Session = 
     _require_ready(db, project)
     if measurement.plan_item(db, project.id) is None:
         measurement.create_plan(db, project)
+        pipeline.advance(project, ProjectStage.CONVERSIONS)
         track(db, "measurement_plan_created", user_id=project.owner_id, project_id=project.id)
     return _touched(db, project)
 

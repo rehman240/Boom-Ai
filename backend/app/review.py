@@ -12,10 +12,10 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app import budget, budget_math, creative, items, measurement
+from app import budget, budget_math, creative, items, measurement, pipeline
 from app.ai import assets, audience, brief_summary, directions, safety
 from app.ai import budget as ai_budget
-from app.models import Brief, CampaignItem, ItemKind, ItemOrigin, Project, ProjectStatus
+from app.models import Brief, CampaignItem, ItemKind, ItemOrigin, Project, ProjectStage, ProjectStatus
 
 APPROVED = "approved"
 WAITING = "waiting"  # there is something to approve, but it isn't approved yet
@@ -173,6 +173,7 @@ def sync_status(db: Session, project: Project) -> None:
     final = is_final(checklist(Parts(db, project)))
     if final:
         project.status = ProjectStatus.READY
+        pipeline.advance(project, ProjectStage.REVIEW)
     elif project.status == ProjectStatus.READY:
         project.status = ProjectStatus.IN_PROGRESS
 

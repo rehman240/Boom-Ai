@@ -160,3 +160,21 @@ def test_exports_are_private(client):
     signup(client, "other@example.com")
     for path in ("review", "export.pdf", "export.docx"):
         assert client.get(f"/projects/{project_id}/{path}").status_code == 404
+
+
+def test_the_dashboard_continues_where_the_campaign_got_to(client, db):
+    project_id = with_direction(client)
+    stage_now = lambda: client.get(f"/projects/{project_id}").json()["stage"]  # noqa: E731
+    assert stage_now() == "creative"
+    generate_budget(client, project_id)
+    assert stage_now() == "budget"
+    assert client.post(f"/projects/{project_id}/conversions/plan").status_code == 201
+    assert stage_now() == "conversions"
+    client.get(f"/projects/{project_id}/export.docx")
+    assert stage_now() == "review"
+
+
+def test_approving_everything_moves_the_campaign_to_review(client):
+    project_id = complete(client)
+    approve_all(client, project_id)
+    assert client.get(f"/projects/{project_id}").json()["stage"] == "review"
