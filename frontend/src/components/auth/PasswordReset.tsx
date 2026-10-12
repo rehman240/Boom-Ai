@@ -29,8 +29,21 @@ function BackToSignIn() {
   );
 }
 
+/** Whether email reset works on this server. Hidden until it does, so nobody is told an email
+ * was sent when it can't be. `null` while asking. */
+export function useResetAvailable() {
+  const [available, setAvailable] = useState<boolean | null>(null);
+  useEffect(() => {
+    api<{ password_reset: boolean }>("/auth/options")
+      .then((o) => setAvailable(o.password_reset))
+      .catch(() => setAvailable(false));
+  }, []);
+  return available;
+}
+
 /** Step 1: ask for the email. The answer is the same whether or not it has an account. */
 export function ForgotPasswordForm() {
+  const available = useResetAvailable();
   const [email, setEmail] = useState("");
   const [fieldError, setFieldError] = useState("");
   const [error, setError] = useState("");
@@ -54,6 +67,18 @@ export function ForgotPasswordForm() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (available === null) return null;
+
+  if (!available) {
+    return (
+      <div>
+        <h1 className="font-display text-3xl font-bold tracking-tight">Password reset isn&apos;t available yet</h1>
+        <p className="mt-2 text-muted">Resetting a password by email will be added soon.</p>
+        <BackToSignIn />
+      </div>
+    );
   }
 
   if (sent) {

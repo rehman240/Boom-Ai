@@ -553,9 +553,13 @@ Deploy runs alongside, once Render access arrives.
   device. Email goes through any SMTP server (`app/mail.py`, `SMTP_*`, `MAIL_FROM`, `APP_URL`);
   without `SMTP_HOST` development writes the email to the log and production sends nothing.
   285 backend tests pass; checked in the browser at 1440 and 390.
+  - Until SMTP is set up on the live server, "Forgot password?" is hidden (`GET /auth/options`
+    says `password_reset: false` in production without `SMTP_HOST`) and `/forgot-password`
+    says it isn't available yet, so no one is told an email was sent. Ali's call (12 Oct):
+    leave email off for the MVP; add a mail service (e.g. AWS SES) later, env vars only.
 
 ## Next
-- **Before forgot password works live:** set on Render `APP_URL=https://boom-ai-six.vercel.app`
+- **Optional, later:** to turn on forgot password live, set on Render `APP_URL=https://boom-ai-six.vercel.app`
   and the SMTP settings of an email service (Brevo/Resend/Gmail app password; later AWS SES),
   plus `MAIL_FROM` on a domain that service allows. Until then no reset email is sent.
 - Ali pushes the task 7 commits (stage fix 1fd855e, landing + sidebar 962bb1e). Render

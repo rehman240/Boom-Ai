@@ -143,3 +143,19 @@ def test_without_smtp_development_logs_the_email(caplog, monkeypatch):
     with caplog.at_level("INFO"):
         LogMailer().send("a@example.com", "Subject", "the link")
     assert "the link" not in caplog.text and "SMTP_HOST is not set" in caplog.text
+
+
+def test_reset_is_offered_only_when_email_can_be_sent(client, monkeypatch, outbox):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "app_env", "development")
+    assert client.get("/auth/options").json() == {"password_reset": True}  # logged in development
+
+    monkeypatch.setattr(settings, "app_env", "production")
+    monkeypatch.setattr(settings, "smtp_host", "")
+    assert client.get("/auth/options").json() == {"password_reset": False}
+    signup(client)
+    r = client.post("/auth/forgot-password", json={"email": "owner@example.com"})
+    assert r.status_code == 503 and not outbox.sent
+
+    monkeypatch.setattr(settings, "smtp_host", "smtp.example.com")
+    assert client.get("/auth/options").json() == {"password_reset": True}

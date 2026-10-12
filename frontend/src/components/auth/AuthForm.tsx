@@ -8,6 +8,7 @@ import { api, ApiError } from "@/lib/api";
 import { APP_NAME } from "@/lib/brand";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
+import { useResetAvailable } from "@/components/auth/PasswordReset";
 
 type Mode = "login" | "signup";
 
@@ -39,6 +40,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const router = useRouter();
   const params = useSearchParams();
   const copy = COPY[mode];
+  const resetAvailable = useResetAvailable();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -122,7 +124,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {mode === "login" ? (
+        {mode === "login" && resetAvailable ? (
           <p className="-mt-2 text-right text-sm">
             <Link href="/forgot-password" className="font-semibold text-cyan hover:underline">
               Forgot password?

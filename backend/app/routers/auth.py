@@ -78,6 +78,18 @@ def _reset_email(link: str) -> str:
     )
 
 
+def reset_available() -> bool:
+    """A reset email can reach the user: SMTP is set up, or this is development (it is logged)."""
+    settings = get_settings()
+    return bool(settings.smtp_host) or not settings.is_production
+
+
+@router.get("/options")
+def auth_options() -> dict[str, bool]:
+    """What the sign-in pages may offer. "Forgot password?" is hidden until email works."""
+    return {"password_reset": reset_available()}
+
+
 @router.post("/forgot-password", status_code=202, dependencies=[auth_limit])
 def forgot_password(
     body: ForgotPasswordIn,
@@ -85,6 +97,8 @@ def forgot_password(
     db: Session = Depends(get_db),
     mailer: Mailer = Depends(get_mailer),
 ) -> dict[str, str]:
+    if not reset_available():
+        raise HTTPException(status_code=503, detail="Password reset by email isn't available yet.")
     user = db.scalar(select(User).where(User.email == body.email))
     if user is not None:
         token = create_reset_token(user.id, user.password_hash)
