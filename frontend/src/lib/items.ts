@@ -37,6 +37,8 @@ export const editItem = <T>(projectId: string, itemId: string, data: Partial<T>)
   api<Item<T>>(base(projectId, itemId), { method: "PATCH", json: { data } });
 export const selectItem = (projectId: string, itemId: string) =>
   api<Item>(`${base(projectId, itemId)}/select`, { method: "POST" });
+export const approveItem = (projectId: string, itemId: string) =>
+  api<Item>(`${base(projectId, itemId)}/approve`, { method: "POST" });
 export const listVersions = (projectId: string, itemId: string) => api<Revision[]>(`${base(projectId, itemId)}/versions`);
 export const saveVersion = (projectId: string, itemId: string, label?: string) =>
   api<Revision>(`${base(projectId, itemId)}/versions`, { method: "POST", json: { label: label ?? null } });
