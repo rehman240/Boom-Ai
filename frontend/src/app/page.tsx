@@ -3,6 +3,7 @@ import { getImageProps } from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
+import { SampleOutput } from "@/components/landing/SampleOutput";
 import { StepsDiagram } from "@/components/landing/StepsDiagram";
 import { APP_NAME } from "@/lib/brand";
 
@@ -54,6 +55,8 @@ export default function Home() {
         </section>
 
         <StepsDiagram />
+
+        <SampleOutput />
 
         <section aria-label="Get started" className="flex w-full flex-col items-center gap-8">
           <p className="max-w-2xl text-2xl leading-snug text-balance text-muted sm:text-3xl">

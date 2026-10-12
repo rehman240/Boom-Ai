@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Gem, LayoutGrid, Settings, Sparkles, Target, Wallet, type LucideIcon } from "lucide-react";
+import { BarChart3, FileCheck2, Gem, LayoutGrid, Settings, Sparkles, Target, Wallet, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { APP_NAME } from "@/lib/brand";
 
 type NavItem = { label: string; href?: string; stage?: string; icon: LucideIcon };
 
-// Campaigns, Audiences, Creative, Budgets and Results are shortcuts into the open campaign's
-// stages. Outside a campaign there is nothing to open, so they are shown but disabled.
+// Campaigns, Audiences, Creative, Budgets, Results and Review are shortcuts into the open
+// campaign's stages. Outside a campaign there is nothing to open, so they are shown but disabled.
 const NAV: NavItem[] = [
   { label: "Overview", href: "/overview", icon: LayoutGrid },
   { label: "Campaigns", stage: "campaign", icon: Sparkles },
@@ -17,6 +17,7 @@ const NAV: NavItem[] = [
   { label: "Creative", stage: "creative", icon: Gem },
   { label: "Budgets", stage: "budget", icon: Wallet },
   { label: "Results", stage: "conversions", icon: BarChart3 },
+  { label: "Review and export", stage: "review", icon: FileCheck2 },
 ];
 
 function initials(name: string) {
