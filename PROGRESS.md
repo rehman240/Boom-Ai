@@ -571,12 +571,18 @@ Deploy runs alongside, once Render access arrives.
   turning on forgot password or pausing the AI, free-plan limits, Phase 2, open items),
   `frontend/README.md` replaces the create-next-app text.
 - Final testing on laptop and phone with the real Claude: Ali does this himself on the live app.
+- Client feedback, 15 Oct (pushed, Ali checked live): the favicon is now just the red bomb
+  (`frontend/src/app/favicon.ico`, `icon.png`, `apple-icon.png`, cut from the client's art,
+  transparent). New `/usage-policy` page: our own wording on the structure of Anthropic's
+  usage policy (the client sent it; we did not copy their text). It is linked from the landing
+  footer and the sign-up form. The link page (`Client-Link-Page/`, live on booom.com via
+  Netlify) now has the button "BOOOM →" and the bomb favicon; the new zip went to the client
+  with Netlify upload steps.
 
 ## Next
-- Ali pushes the light/dark, privacy and README/handover commits, then checks the live app
-  (switch the theme, reload, a phone).
-- Ali tests the whole flow on the live app with the real Claude, laptop and phone. Any issue
-  goes into a new session.
+- Wait for the client: upload of the new link page zip to Netlify, and the answer on
+  "boom vs booom".
+- Any new client feedback goes into a new session.
 - **Optional, later:** turn on forgot password live (see `HANDOVER.md`, section 3).
 - Later, only when Ali asks: repo back to private, tell the client which 4 Oct items were
   beyond the MVP, other open questions below.
@@ -638,3 +644,8 @@ Deploy runs alongside, once Render access arrives.
 - Name: the client wants BOOOM with three O's everywhere. Renaming the repo (now "Boom-Ai")
   is up to Rehman.
 - Domain: the client owns booom.com. Plan: a subdomain such as app.booom.com at launch.
+- Domain (15 Oct): booom.com now points to Netlify and shows the link page, which is
+  correct. Its button opens the app on Vercel. Don't change that DNS.
+- "Should be boom not booom" (15 Oct): the client said this about boom-ai-six.vercel.app. We
+  asked whether they mean the link should be spelled "booom". If yes, rename the Vercel project
+  (or add a domain) and update the button link in `Client-Link-Page/`.
