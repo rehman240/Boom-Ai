@@ -8,7 +8,7 @@ this file: they live only in each service's settings. For how to run the code lo
 
 | Part | Where | Notes |
 | --- | --- | --- |
-| Web app | https://boom-ai-six.vercel.app | Vercel (Hobby plan), root folder `frontend` |
+| Web app | https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app (old boom-ai-six.vercel.app redirects here) | Vercel (Hobby plan), root folder `frontend` |
 | API | https://boom-ai-rrdv.onrender.com | Render free plan, Docker, root folder `backend`, region Singapore, health check `/health` |
 | Database and files | Supabase project "Boom Ai" | Region Singapore. Plain Postgres (session pooler, port 5432) and a private bucket `boooom-uploads` used through the S3 API |
 | AI | Anthropic (Claude) | Prepaid credits with a spend limit, set by the client in the Anthropic console |
@@ -28,7 +28,7 @@ All settings are environment variables. Change them in the service's dashboard, 
 | `APP_ENV` | `production` |
 | `SECRET_KEY` | Long random string that signs login cookies. Changing it signs everyone out |
 | `DATABASE_URL` | Supabase Postgres connection string |
-| `CORS_ORIGINS` | The web app address, `https://boom-ai-six.vercel.app` (comma separated if more than one) |
+| `CORS_ORIGINS` | The web app address, `https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app` (comma separated if more than one) |
 | `STORAGE_BACKEND`, `S3_ENDPOINT_URL`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | File storage (Supabase S3 keys) |
 | `AI_PROVIDER` | `anthropic` (also possible: `openai`, or `mock` for free test answers) |
 | `AI_MODEL` | Model name, default `claude-opus-5-5` |
@@ -49,7 +49,7 @@ Full list with comments: `backend/.env.example` and `frontend/.env.example`.
 
 **Turn on "Forgot password".** It is hidden while no email service is set, so users are never
 told an email was sent when it wasn't. To turn it on, pick an SMTP service (for example Brevo,
-Resend, or AWS SES later), then set on Render: `APP_URL=https://boom-ai-six.vercel.app`, the
+Resend, or AWS SES later), then set on Render: `APP_URL=https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app`, the
 `SMTP_*` values and `MAIL_FROM` (an address on a domain the service allows). After the
 redeploy the link shows up by itself. No code change needed.
 

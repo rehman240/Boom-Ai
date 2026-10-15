@@ -651,6 +651,9 @@ Deploy runs alongside, once Render access arrives.
 - Domain: the client owns booom.com. Plan: a subdomain such as app.booom.com at launch.
 - Domain (15 Oct): booom.com now points to Netlify and shows the link page, which is
   correct. Its button opens the app on Vercel. Don't change that DNS.
-- "Should be boom not booom" (15 Oct): the client said this about boom-ai-six.vercel.app. We
-  asked whether they mean the link should be spelled "booom". If yes, rename the Vercel project
-  (or add a domain) and update the button link in `Client-Link-Page/`.
+- App link spelling (15 Oct, done): the client wanted "booom" in the link. Rehman added
+  https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app (Production) and the old
+  boom-ai-six.vercel.app now redirects there. The browser calls `/api` on the same site, so
+  login works without a CORS change; set Render `CORS_ORIGINS` to the new link to keep it tidy.
+  The link page (`Client-Link-Page/`, zip rebuilt) now points to the new link; the client
+  uploads the zip on Netlify again.

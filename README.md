@@ -5,7 +5,7 @@ ready campaign package: brief, target audience, campaign direction, ad copy and 
 budget split, conversion tracking plan, and a PDF / Word export. The AI suggests, the user
 decides. Nothing is published and no money is spent by the app.
 
-- **Live app:** https://boom-ai-six.vercel.app
+- **Live app:** https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app
 - **Live API:** https://boom-ai-rrdv.onrender.com (health check: `/health`)
 - **Handover notes (accounts, settings, day-to-day running):** [`HANDOVER.md`](HANDOVER.md)
 - **What was built, task by task:** [`PROGRESS.md`](PROGRESS.md)
