@@ -137,6 +137,10 @@ export function AuthForm({ mode }: { mode: Mode }) {
             We keep only what you enter, behind your password. Read{" "}
             <Link href="/privacy" className="font-semibold text-cyan underline underline-offset-2">
               how we handle your data
+            </Link>{" "}
+            and our{" "}
+            <Link href="/usage-policy" className="font-semibold text-cyan underline underline-offset-2">
+              usage policy
             </Link>
             .
           </p>

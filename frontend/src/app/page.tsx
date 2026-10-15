@@ -109,9 +109,14 @@ export default function Home() {
 
       <footer className="mx-auto flex w-full max-w-6xl flex-col items-center gap-2 border-t border-border py-8 text-base text-muted sm:flex-row sm:justify-between">
         <span>#yourworldforyou · WWW.BOOOM.COM™</span>
-        <Link href="/privacy" className="font-semibold hover:text-text">
-          Privacy and your data
-        </Link>
+        <span className="flex gap-6">
+          <Link href="/usage-policy" className="font-semibold hover:text-text">
+            Usage policy
+          </Link>
+          <Link href="/privacy" className="font-semibold hover:text-text">
+            Privacy and your data
+          </Link>
+        </span>
       </footer>
     </div>
   );
