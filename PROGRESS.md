@@ -578,6 +578,11 @@ Deploy runs alongside, once Render access arrives.
   footer and the sign-up form. The link page (`Client-Link-Page/`, live on booom.com via
   Netlify) now has the button "BOOOM →" and the bomb favicon; the new zip went to the client
   with Netlify upload steps.
+- Supabase security warning, 15 Oct ("RLS disabled in public", 10 tables): the app never used
+  Supabase's Data API, but it was open. Ali turned the Data API off in Supabase. New migration
+  `5e1f0c2a9b7d` turns on Row Level Security (no policies) on every table, which blocks that
+  API. The backend owns the tables, so it is not affected. **Any new table needs the same
+  `ENABLE ROW LEVEL SECURITY` line.** 286 backend tests pass.
 
 ## Next
 - Wait for the client: upload of the new link page zip to Netlify, and the answer on
