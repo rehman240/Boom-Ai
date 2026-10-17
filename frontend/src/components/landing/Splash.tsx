@@ -1,43 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getImageProps } from "next/image";
 import { APP_NAME } from "@/lib/brand";
 
-const SEEN_KEY = "booom.splash-seen";
 const MUTE_KEY = "booom.sound-muted"; // same switch as the section sounds in the app
-const SPLASH_SOUND = "/audio/splash.mp3";
 
 /**
- * Hides the splash before the first paint when it was already opened in this tab, so going
- * back to the landing page doesn't show it again (and doesn't flash it either).
+ * The client is sending his own sound (credit-free). When it arrives, put it in
+ * public/audio/splash.mp3 and set this to "/audio/splash.mp3". Until then the tap is silent.
  */
-const SEEN_SCRIPT = `try{if(sessionStorage.getItem("${SEEN_KEY}"))document.documentElement.dataset.splash="seen"}catch(e){}`;
+const SPLASH_SOUND: string | null = null;
 
-/** Full-screen logo art shown on arrival. A tap (or Enter) plays the sound and opens the page. */
+/** Full-screen logo art shown every time the page opens. A tap (or Enter) plays the sound and opens the page. */
 export function Splash() {
   const [open, setOpen] = useState(true);
+  const sound = useRef<HTMLAudioElement | null>(null);
 
-  // The page behind must not scroll while the splash covers it. When it was already seen in
-  // this tab, CSS hides it (see globals.css) and the page scrolls as usual.
+  // Load the sound up front so a tap plays it at once, even on a slow phone connection.
   useEffect(() => {
-    const covering = open && document.documentElement.dataset.splash !== "seen";
-    document.body.style.overflow = covering ? "hidden" : "";
+    if (!SPLASH_SOUND) return;
+    const audio = new Audio(SPLASH_SOUND);
+    audio.preload = "auto";
+    audio.load();
+    sound.current = audio;
+  }, []);
+
+  // The page behind must not scroll while the splash covers it.
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [open]);
 
   function enter() {
+    let muted = false;
     try {
-      if (window.localStorage.getItem(MUTE_KEY) !== "1") {
-        new Audio(SPLASH_SOUND).play().catch(() => undefined);
-      }
-      window.sessionStorage.setItem(SEEN_KEY, "1");
+      muted = window.localStorage.getItem(MUTE_KEY) === "1";
     } catch {
-      // Blocked storage: the splash simply shows again next time.
+      // Blocked storage: treat sound as on.
     }
-    document.documentElement.dataset.splash = "seen";
+    if (!muted) sound.current?.play().catch(() => undefined);
     setOpen(false);
   }
 
@@ -52,23 +56,20 @@ export function Splash() {
   } = getImageProps({ ...common, src: "/brand/hero-tall.webp", width: 800, height: 1422 });
 
   return (
-    <>
-      <script dangerouslySetInnerHTML={{ __html: SEEN_SCRIPT }} />
-      <button
-        type="button"
-        onClick={enter}
-        autoFocus
-        aria-label={`Enter ${APP_NAME}`}
-        className="splash fixed inset-0 z-50 block h-dvh w-full cursor-pointer bg-[#040a1e]"
-      >
-        <picture>
-          {/* Wide art on landscape screens, tall art on portrait ones. */}
-          <source media="(min-aspect-ratio: 1/1)" srcSet={wide} />
-          <source srcSet={tall} />
-          {/* eslint-disable-next-line jsx-a11y/alt-text -- decorative; the button has the label */}
-          <img {...rest} className="h-full w-full object-cover" />
-        </picture>
-      </button>
-    </>
+    <button
+      type="button"
+      onClick={enter}
+      autoFocus
+      aria-label={`Enter ${APP_NAME}`}
+      className="fixed inset-0 z-50 block h-dvh w-full cursor-pointer bg-[#040a1e]"
+    >
+      <picture>
+        {/* Wide art on landscape screens, tall art on portrait ones. */}
+        <source media="(min-aspect-ratio: 1/1)" srcSet={wide} />
+        <source srcSet={tall} />
+        {/* eslint-disable-next-line jsx-a11y/alt-text -- decorative; the button has the label */}
+        <img {...rest} className="h-full w-full object-cover" />
+      </picture>
+    </button>
   );
 }

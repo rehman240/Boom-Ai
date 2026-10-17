@@ -159,8 +159,3 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-
-/* The landing splash, already opened in this tab: hidden before the first paint. */
-[data-splash="seen"] .splash {
-  display: none;
-}

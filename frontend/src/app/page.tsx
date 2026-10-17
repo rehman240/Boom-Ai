@@ -119,15 +119,6 @@ export default function Home() {
             Privacy and your data
           </Link>
         </span>
-        {/* The splash sound is CC BY-NC 4.0, which requires this credit. */}
-        <a
-          href="https://freesound.org/s/426230/"
-          className="text-sm hover:text-text"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Sound: midaza.com (CC BY-NC 4.0)
-        </a>
       </footer>
     </div>
   );
