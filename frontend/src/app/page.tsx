@@ -6,6 +6,7 @@ import { Logo } from "@/components/ui/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { SampleOutput } from "@/components/landing/SampleOutput";
 import { StepsDiagram } from "@/components/landing/StepsDiagram";
+import { Splash } from "@/components/landing/Splash";
 import { APP_NAME } from "@/lib/brand";
 
 // Large on purpose: the client wants the two calls to action to be the biggest things on the page.
@@ -33,6 +34,7 @@ function HeroArt() {
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col px-4 sm:px-8">
+      <Splash />
       <header className="flex h-20 items-center justify-between">
         <Logo withProduct />
         <div className="flex items-center gap-2">
