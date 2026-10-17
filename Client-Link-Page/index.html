@@ -60,9 +60,21 @@
     .open:hover { background: var(--primary-hover); }
     .open:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
     .tag { color: var(--cyan); font-weight: 600; }
+    /* Full-screen splash: a tap anywhere shows the page. */
+    body.splashing { overflow: hidden; }
+    .splash { position: fixed; inset: 0; z-index: 50; width: 100%; height: 100vh; height: 100dvh; padding: 0; border: 0; background: var(--bg); cursor: pointer; }
+    .splash img { display: block; width: 100%; height: 100%; object-fit: cover; }
   </style>
 </head>
-<body>
+<body class="splashing">
+  <button class="splash" id="splash" type="button" aria-label="Enter BOOOM More" autofocus>
+    <picture>
+      <source media="(min-aspect-ratio: 1/1)" srcset="hero-wide.webp">
+      <img src="hero-tall.webp" alt="">
+    </picture>
+  </button>
+  <!-- Optional sound: put a file named splash.mp3 next to this page and it plays on the tap. -->
+  <audio id="splash-sound" src="splash.mp3" preload="auto"></audio>
   <picture>
     <source media="(min-width: 640px)" srcset="hero-wide.webp">
     <img class="art" src="hero-tall.webp" alt="BOOOM More logo">
@@ -71,8 +83,17 @@
   <h1>Make more <span>from your idea.</span></h1>
   <p>Find your audience. Shape the campaign. Create the ads, emails and posts. Plan the budget.</p>
 
-  <a class="open" href="https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app">BOOOM &rarr;</a>
+  <a class="open" href="https://booom-more-k7q2x9m4w8z1p6t3r5v0n2.vercel.app/?from=booom">BOOOM &rarr;</a>
 
   <p class="tag">#yourworldforyou</p>
+
+  <script>
+    document.getElementById("splash").addEventListener("click", function () {
+      var sound = document.getElementById("splash-sound");
+      if (sound) sound.play().catch(function () {});
+      this.remove();
+      document.body.classList.remove("splashing");
+    });
+  </script>
 </body>
 </html>

@@ -12,6 +12,12 @@ const MUTE_KEY = "booom.sound-muted"; // same switch as the section sounds in th
  */
 const SPLASH_SOUND: string | null = null;
 
+/**
+ * Visitors coming from booom.com already saw the same splash there (its button links here with
+ * ?from=booom). This hides ours before the first paint, so it neither shows twice nor flashes.
+ */
+const SKIP_SCRIPT = `if(/[?&]from=booom/.test(location.search))document.documentElement.dataset.splash="skip"`;
+
 /** Full-screen logo art shown every time the page opens. A tap (or Enter) plays the sound and opens the page. */
 export function Splash() {
   const [open, setOpen] = useState(true);
@@ -28,7 +34,8 @@ export function Splash() {
 
   // The page behind must not scroll while the splash covers it.
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    const covering = open && document.documentElement.dataset.splash !== "skip";
+    document.body.style.overflow = covering ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -50,26 +57,39 @@ export function Splash() {
   const common = { alt: "", preload: true, sizes: "100vw" };
   const {
     props: { srcSet: wide },
-  } = getImageProps({ ...common, src: "/brand/hero-wide.webp", width: 1600, height: 914 });
+  } = getImageProps({
+    ...common,
+    src: "/brand/hero-wide.webp",
+    width: 1600,
+    height: 914,
+  });
   const {
     props: { srcSet: tall, ...rest },
-  } = getImageProps({ ...common, src: "/brand/hero-tall.webp", width: 800, height: 1422 });
+  } = getImageProps({
+    ...common,
+    src: "/brand/hero-tall.webp",
+    width: 800,
+    height: 1422,
+  });
 
   return (
-    <button
-      type="button"
-      onClick={enter}
-      autoFocus
-      aria-label={`Enter ${APP_NAME}`}
-      className="fixed inset-0 z-50 block h-dvh w-full cursor-pointer bg-[#040a1e]"
-    >
-      <picture>
-        {/* Wide art on landscape screens, tall art on portrait ones. */}
-        <source media="(min-aspect-ratio: 1/1)" srcSet={wide} />
-        <source srcSet={tall} />
-        {/* eslint-disable-next-line jsx-a11y/alt-text -- decorative; the button has the label */}
-        <img {...rest} className="h-full w-full object-cover" />
-      </picture>
-    </button>
+    <>
+      <script dangerouslySetInnerHTML={{ __html: SKIP_SCRIPT }} />
+      <button
+        type="button"
+        onClick={enter}
+        autoFocus
+        aria-label={`Enter ${APP_NAME}`}
+        className="splash fixed inset-0 z-50 block h-dvh w-full cursor-pointer bg-[#040a1e]"
+      >
+        <picture>
+          {/* Wide art on landscape screens, tall art on portrait ones. */}
+          <source media="(min-aspect-ratio: 1/1)" srcSet={wide} />
+          <source srcSet={tall} />
+          {/* eslint-disable-next-line jsx-a11y/alt-text -- decorative; the button has the label */}
+          <img {...rest} className="h-full w-full object-cover" />
+        </picture>
+      </button>
+    </>
   );
 }

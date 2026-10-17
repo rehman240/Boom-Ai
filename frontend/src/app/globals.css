@@ -159,3 +159,8 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Came from booom.com, which already showed the splash (see Splash.tsx). */
+[data-splash="skip"] .splash {
+  display: none;
+}
