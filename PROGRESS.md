@@ -657,3 +657,9 @@ Deploy runs alongside, once Render access arrives.
   login works without a CORS change; set Render `CORS_ORIGINS` to the new link to keep it tidy.
   The link page (`Client-Link-Page/`, zip rebuilt) now points to the new link; the client
   uploads the zip on Netlify again.
+
+## 17 Oct 2026
+- Full-screen splash on the landing page (logo art, tap anywhere opens the page), shown on every visit. Live.
+- Splash sound: off for now. The client sends his own credit-free `splash.mp3`; put it in `frontend/public/audio/` and set `SPLASH_SOUND` in `src/components/landing/Splash.tsx`.
+- New project proposal (UI in Spanish, French, Chinese, Japanese, Arabic as a shared language foundation) made as a PDF for Rehman (outside the repo, `Languages-Proposal/`).
+- Open: booom.com on Netlify shows the wrong SSL certificate (client to fix in Netlify); proposal price (Rehman).
