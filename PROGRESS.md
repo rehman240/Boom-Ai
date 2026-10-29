@@ -663,3 +663,16 @@ Deploy runs alongside, once Render access arrives.
 - Splash sound: off for now. The client sends his own credit-free `splash.mp3`; put it in `frontend/public/audio/` and set `SPLASH_SOUND` in `src/components/landing/Splash.tsx`.
 - New project proposal (UI in Spanish, French, Chinese, Japanese, Arabic as a shared language foundation) made as a PDF for Rehman (outside the repo, `Languages-Proposal/`).
 - Open: booom.com on Netlify shows the wrong SSL certificate (client to fix in Netlify); proposal price (Rehman).
+
+## 29 Oct 2026
+- Client asked for (1) control of the code and how results are made, (2) where the AI credit goes,
+  and reported a "Connection Not Private" warning on booom.com. Rehman: no hosting move.
+- AI usage log: every model call (failed attempts too) is saved in `ai_usage` with user, project,
+  step, model, tokens and cost. Prices from `AI_PRICE_INPUT_PER_MTOK` / `AI_PRICE_OUTPUT_PER_MTOK`
+  (4 / 20 for Opus 5.5, set on Render). Live.
+- AI usage page: Settings > View AI usage (`/settings/usage`), own usage only. Live, checked by Ali.
+- HANDOVER.md: where the AI instructions live (`backend/app/ai/`), the usage report, price settings.
+- Code zip and a 3-page answers PDF (code, AI cost, Netlify SSL steps) in `Code-Handover/`
+  (not committed), sent to the client via Rehman.
+- Open: switch to Sonnet 5.5 to halve AI cost (client decision); client fixes the Netlify SSL
+  certificate (or invites us); client's next project; languages proposal.
