@@ -9,7 +9,9 @@ not a code change. The caller still validates the dict against its own schema.
 import json
 import logging
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any, Protocol
@@ -59,6 +61,35 @@ def data_block(tag: str, data: Any) -> str:
     text = json.dumps(data, indent=2, ensure_ascii=False)
     text = text.replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
     return f"<{tag}>\n{text}\n</{tag}>"
+
+
+@dataclass(frozen=True)
+class Usage:
+    """Tokens billed for one model call. Counted even when the answer is unusable."""
+
+    model: str
+    input_tokens: int
+    output_tokens: int
+
+
+_usage_sink: ContextVar[list[Usage] | None] = ContextVar("ai_usage_sink", default=None)
+
+
+@contextmanager
+def collect_usage() -> Iterator[list[Usage]]:
+    """Collects the usage of every model call made inside the block (a job's attempts)."""
+    calls: list[Usage] = []
+    token = _usage_sink.set(calls)
+    try:
+        yield calls
+    finally:
+        _usage_sink.reset(token)
+
+
+def _record_usage(model: str, input_tokens: int | None, output_tokens: int | None) -> None:
+    calls = _usage_sink.get()
+    if calls is not None:
+        calls.append(Usage(model, input_tokens or 0, output_tokens or 0))
 
 
 class AiProvider(Protocol):
@@ -122,6 +153,9 @@ class AnthropicProvider:
             log.warning("Anthropic call failed: %s", type(e).__name__)
             raise AiError("The AI service didn't respond. Please try again.") from None
 
+        usage = response.usage
+        # With a fallback, another model may have answered; bill it under that name.
+        _record_usage(getattr(response, "model", None) or self.model, usage.input_tokens, usage.output_tokens)
         if response.stop_reason == "refusal":
             raise AiError("The AI declined to work with this brief. Check it for sensitive claims.", retryable=False)
         if response.stop_reason == "max_tokens":
@@ -165,6 +199,8 @@ class OpenAIProvider:
             log.warning("OpenAI call failed: %s", type(e).__name__)
             raise AiError("The AI service didn't respond. Please try again.") from None
 
+        if response.usage is not None:
+            _record_usage(self.model, response.usage.input_tokens, response.usage.output_tokens)
         if response.status == "incomplete":
             raise AiError("The AI answer was cut short. Please try again.")
         return _parse_json(response.output_text)

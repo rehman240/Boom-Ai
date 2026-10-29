@@ -22,11 +22,11 @@ from sqlalchemy.orm import Session
 
 from fastapi import BackgroundTasks, HTTPException
 
-from app import audiences, budget, creative, directions
+from app import audiences, budget, creative, directions, usage
 from app.ai import assets, audience, brief_summary
 from app.ai import budget as budget_ai
 from app.ai import directions as directions_ai
-from app.ai.provider import AiError, AiProvider
+from app.ai.provider import AiError, AiProvider, collect_usage
 from app.config import get_settings
 from app.db import SessionLocal
 from app.events import track
@@ -240,20 +240,24 @@ def run_job(job_id: uuid.UUID, session_factory: SessionFactory, provider: AiProv
         result: dict[str, Any] | None = None
         error = UNEXPECTED_MESSAGE
         attempts = 0
-        while attempts < MAX_ATTEMPTS:
-            attempts += 1
-            try:
-                result = handler.run(provider, job_input)
-                break
-            except AiError as e:
-                error = e.message
-                log.warning("AI job %s attempt %s failed: %s", job_id, attempts, e.message)
-                if not e.retryable:
+        with collect_usage() as calls:
+            while attempts < MAX_ATTEMPTS:
+                attempts += 1
+                try:
+                    result = handler.run(provider, job_input)
                     break
-            except Exception:
-                log.exception("AI job %s crashed", job_id)
-                error = UNEXPECTED_MESSAGE
-                break
+                except AiError as e:
+                    error = e.message
+                    log.warning("AI job %s attempt %s failed: %s", job_id, attempts, e.message)
+                    if not e.retryable:
+                        break
+                except Exception:
+                    log.exception("AI job %s crashed", job_id)
+                    error = UNEXPECTED_MESSAGE
+                    break
+        # Saved on its own first, so the spend is on record whatever happens to the result.
+        usage.record(db, job, provider.name, calls)
+        db.commit()
 
         db.refresh(job)
         job.attempts = attempts

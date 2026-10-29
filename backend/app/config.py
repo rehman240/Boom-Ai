@@ -50,6 +50,9 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     ai_mock_delay_seconds: float = 2.0  # mock only: long enough to see the progress state
     ai_job_stale_minutes: int = 5  # a job active for longer than this is marked failed
+    # Dollars per million tokens, for the usage report. Set them to the model's list price.
+    ai_price_input_per_mtok: float = 4.0
+    ai_price_output_per_mtok: float = 20.0
 
     @field_validator("database_url")
     @classmethod

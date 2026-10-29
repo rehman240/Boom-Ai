@@ -1,6 +1,7 @@
 """All ORM models. Import every model here so Alembic autogenerate can see it."""
 
 from app.models.ai_job import AiJob, JobKind, JobStatus
+from app.models.ai_usage import AiUsage
 from app.models.brief import Brief
 from app.models.event import Event
 from app.models.item import CampaignItem, ItemKind, ItemOrigin, Revision, RevisionSource
@@ -11,6 +12,7 @@ from app.models.user import User
 
 __all__ = [
     "AiJob",
+    "AiUsage",
     "Brief",
     "CampaignItem",
     "Event",

@@ -107,6 +107,13 @@ def openai_reply(status="completed", text=json.dumps(ANSWER)):
             "parallel_tool_calls": True,
             "tool_choice": "auto",
             "tools": [],
+            "usage": {
+                "input_tokens": 7,
+                "input_tokens_details": {"cached_tokens": 0},
+                "output_tokens": 3,
+                "output_tokens_details": {"reasoning_tokens": 0},
+                "total_tokens": 10,
+            },
         },
     )
 
@@ -130,3 +137,18 @@ def test_openai_incomplete_answer_is_retryable():
     with pytest.raises(AiError) as e:
         OpenAIProvider("k", "m", http_client=client).generate(brief_summary.build_task(FACTS))
     assert e.value.retryable
+
+
+def test_both_adapters_report_the_tokens_they_were_billed():
+    from app.ai.provider import collect_usage
+
+    client, _ = fake(lambda r: anthropic_reply(stop_reason="max_tokens"))
+    with collect_usage() as calls:
+        with pytest.raises(AiError):  # a cut-short answer is still billed
+            AnthropicProvider("k", "claude-opus-5-5", http_client=client).generate(brief_summary.build_task(FACTS))
+    assert [(c.model, c.input_tokens, c.output_tokens) for c in calls] == [("claude-opus-5-5", 10, 10)]
+
+    client, _ = fake(lambda r: openai_reply())
+    with collect_usage() as calls:
+        OpenAIProvider("k", "test-model", http_client=client).generate(brief_summary.build_task(FACTS))
+    assert [(c.model, c.input_tokens, c.output_tokens) for c in calls] == [("test-model", 7, 3)]
