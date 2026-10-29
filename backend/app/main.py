@@ -21,6 +21,7 @@ from app.routers import (
     projects,
     review,
     uploads,
+    usage,
 )
 
 
@@ -61,6 +62,7 @@ def create_app() -> FastAPI:
     app.include_router(budget.router)
     app.include_router(conversions.router)
     app.include_router(review.router)
+    app.include_router(usage.router)
     return app
 
 

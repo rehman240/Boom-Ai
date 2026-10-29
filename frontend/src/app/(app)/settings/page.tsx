@@ -3,7 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Check, Download } from "lucide-react";
+import { BarChart3, Check, Download } from "lucide-react";
 import { SetBreadcrumbs } from "@/components/app/Breadcrumbs";
 import { useSetUser, useUser } from "@/components/app/UserContext";
 import { Button, buttonClass } from "@/components/ui/Button";
@@ -88,6 +88,12 @@ export default function SettingsPage() {
           </ul>
           <Link href="/privacy" className="mt-4 inline-block text-base font-semibold text-cyan underline underline-offset-4">
             Read the full privacy page
+          </Link>
+        </Section>
+
+        <Section title="AI usage" description="Tokens and estimated cost of the AI generations in this account.">
+          <Link href="/settings/usage" className={buttonClass("secondary")}>
+            <BarChart3 className="h-4 w-4" aria-hidden="true" /> View AI usage
           </Link>
         </Section>
 

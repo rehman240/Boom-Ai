@@ -3,7 +3,7 @@ from sqlalchemy import select
 from app.ai.provider import AiError, _record_usage
 from app.config import get_settings
 from app.models import AiUsage, JobKind, JobStatus
-from tests.test_brief_summary import FixedProvider, ready_project, summarise
+from tests.test_brief_summary import FixedProvider, ready_project, signup, summarise
 
 
 class BilledProvider(FixedProvider):
@@ -80,3 +80,40 @@ def test_usage_outlives_a_deleted_project(client, ai, db):
     db.expire_all()
     [row] = usage_rows(db)
     assert row.project_id is None  # the money was spent, so the row stays
+
+
+def test_the_report_adds_up_by_day_step_campaign_and_model(client, ai):
+    project_id, answer = a_summary(client, ai)
+    ai.use(BilledProvider(answer, fail_first=True))
+    summarise(client, project_id)
+
+    report = client.get("/account/usage").json()
+    assert report["recorded_since"] is not None
+    assert (report["price_input_per_mtok"], report["price_output_per_mtok"]) == (4.0, 20.0)
+    for key in ("today", "this_month", "all_time"):
+        assert report[key]["calls"] == 2
+        assert report[key]["input_tokens"] == 2000
+        assert report[key]["cost_usd"] == 0.016
+    assert [r["label"] for r in report["by_step"]] == [JobKind.BRIEF_SUMMARY]
+    assert [r["label"] for r in report["by_project"]] == ["NOVA Desk Lamp"]
+    assert [r["label"] for r in report["by_model"]] == ["claude-test"]
+    assert len(report["by_day"]) == 1 and report["by_day"][0]["calls"] == 2
+
+    client.delete(f"/projects/{project_id}")
+    assert client.get("/account/usage").json()["by_project"][0]["label"] == "Deleted campaign"
+
+
+def test_an_empty_report_and_privacy(client, ai):
+    project_id, answer = a_summary(client, ai)
+    ai.use(BilledProvider(answer))
+    summarise(client, project_id)
+
+    client.post("/auth/logout")
+    signup(client, "other@example.com")
+    report = client.get("/account/usage").json()
+    assert report["recorded_since"] is None
+    assert report["all_time"] == {"label": "All time", "calls": 0, "input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+    assert report["by_project"] == []
+
+    client.post("/auth/logout")
+    assert client.get("/account/usage").status_code == 401
