@@ -34,6 +34,7 @@ All settings are environment variables. Change them in the service's dashboard, 
 | `AI_MODEL` | Model name, default `claude-opus-5-5` |
 | `ANTHROPIC_API_KEY` | The client's Anthropic key |
 | `AI_ENABLED` | `false` pauses all AI generation; the app shows a clear message |
+| `AI_PRICE_INPUT_PER_MTOK`, `AI_PRICE_OUTPUT_PER_MTOK` | The model's price in dollars per million tokens (4 and 20 for `claude-opus-5-5`), used by the AI usage report |
 | `UPLOAD_MAX_MB`, `RATE_LIMIT_AI`, `AI_JOB_STALE_MINUTES` | Upload size limit (5), AI requests per user (30/hour), when a stuck job counts as failed (5 min) |
 | `APP_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | Email for "Forgot password". Not set yet, see section 3 |
 
@@ -54,7 +55,20 @@ Resend, or AWS SES later), then set on Render: `APP_URL=https://booom-more-k7q2x
 redeploy the link shows up by itself. No code change needed.
 
 **Change the AI model or provider.** Change `AI_MODEL` (and `AI_PROVIDER` plus its key) on
-Render. All AI calls go through `backend/app/ai/provider.py`.
+Render, and the two `AI_PRICE_*` values to the new model's price. All AI calls go through
+`backend/app/ai/provider.py`.
+
+**Read or change what the AI is told.** Each step has one file in `backend/app/ai/`, with its
+instructions (`SYSTEM`), what it is given from the brief, and the shape the answer must have:
+`brief_summary.py`, `audience.py`, `directions.py`, `assets.py`, `budget.py`. The rules that
+flag risky claims and figures the user never gave are in `safety.py`. After a change to the
+instructions, raise that file's `PROMPT_VERSION`, so each saved result shows which version
+made it.
+
+**See what the AI costs.** In the app: Settings → View AI usage. It shows tokens and
+estimated cost today, this month and in total, and by step, campaign, day and model. It
+counts from 29 Oct 2026; the full history and the real bill are in the Anthropic console
+(Usage and Cost pages).
 
 **Pause the AI** (for example when credits run out). Set `AI_ENABLED=false` on Render.
 Everything else keeps working.
